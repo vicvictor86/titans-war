@@ -9,15 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a776dd250670cf479d67d0f3c7e0e64, type: 3}
-  m_Name: Pleistarchus
+  m_Script: {fileID: 11500000, guid: 7fb11018e7a9c0041a27e0e861c036d1, type: 3}
+  m_Name: "Jo\xE3o das Quintas"
   m_EditorClassIdentifier: 
-  id: 1
-  cardName: Pleistarchus
-  cardImage: {fileID: 0}
-  type: Sparta
-  totalForce: 13
-  waterForce: 6
-  desertForce: 1
-  mountainsForce: 4
-  plainsForce: 2
+  Id: 0
+  CardName: 
+  CardImage: {fileID: 0}
+  WaterForce: 0
+  DesertForce: 0
+  MountainsForce: 0
+  PlainsForce: 0
+  Nationality: 
