@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class CardDatabase : MonoBehaviour
 {
-    public static List<WarriorCard> cardsList = new();
+    public static List<WarriorCard> SparthaCardList = new();
+    public static List<WarriorCard> PersaCardList = new();
 
     private void Awake()
     {
-        cardsList = Resources.LoadAll<WarriorCard>("ScriptableObjects/Cards").ToList();
+        SparthaCardList = Resources.LoadAll<WarriorCard>("ScriptableObjects/Cards/Spartha").ToList();
+        PersaCardList = Resources.LoadAll<WarriorCard>("ScriptableObjects/Cards/Persa").ToList();
     }
 }
