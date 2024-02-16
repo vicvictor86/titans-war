@@ -5,30 +5,42 @@ using UnityEngine;
 
 public class PlayerDeck : MonoBehaviour
 {
-    private List<WarriorCard> notDrawedWarriorCards = new();
-    private List<WarriorCard> drawedWarriorCards = new();
+    private List<WarriorCard> availableInDeckWarriorCards = new();
+    private List<WarriorCard> inPlayerHandsCards = new();
+    private List<WarriorCard> discartedWarriorCards = new();
+    
     private Transform firstCardDrawedTransform;
     public int InitialQuantity = 5;
+
     [SerializeField] private string playerSide = "Spartha";
     [SerializeField] private GameObject warriorPrefab;
     [SerializeField] private Transform canvasTransform;
 
     private void Start()
     {
-        notDrawedWarriorCards = playerSide == "Spartha" ? CardDatabase.SparthaCardList : CardDatabase.PersaCardList;
+        availableInDeckWarriorCards = playerSide == "Spartha" ? CardDatabase.SparthaCardList : CardDatabase.PersaCardList;
+        DrawInitialsWarriorsCard();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyUp(KeyCode.E))
+        {
+            DrawWarriorCard();
+        }
     }
 
     public List<WarriorCard> DrawInitialsWarriorsCard()
     {
-        for (int i = 0; i < InitialQuantity; i++)
+        for (int i = InitialQuantity; i > 0; i--)
         {
-            int randomCard = Random.Range(0, notDrawedWarriorCards.Count);
+            int randomCard = Random.Range(0, availableInDeckWarriorCards.Count);
 
             var cardInstance = Instantiate(warriorPrefab, new Vector3(i, 0, 0), Quaternion.identity, canvasTransform);
-            cardInstance.GetComponent<DisplayWarriorCard>().Card = notDrawedWarriorCards[randomCard];
+            cardInstance.GetComponent<DisplayWarriorCard>().Card = availableInDeckWarriorCards[randomCard];
 
-            drawedWarriorCards.Add(notDrawedWarriorCards[randomCard]);
-            notDrawedWarriorCards.Remove(notDrawedWarriorCards[randomCard]);
+            inPlayerHandsCards.Add(availableInDeckWarriorCards[randomCard]);
+            availableInDeckWarriorCards.Remove(availableInDeckWarriorCards[randomCard]);
 
             if (i == 0)
             {
@@ -36,32 +48,55 @@ public class PlayerDeck : MonoBehaviour
             }
         }
 
-        Debug.Log(notDrawedWarriorCards.Count);
-        return drawedWarriorCards;
+        Debug.Log(availableInDeckWarriorCards.Count);
+        return inPlayerHandsCards;
     }
 
     private void InstantiateNewWarriorCard(WarriorCard warriorCard)
     {
-        var cardInstance = Instantiate(warriorPrefab, new Vector3(firstCardDrawedTransform.position.x - 2, 0, 0), Quaternion.identity, canvasTransform);
+        var firstCardDrawedPositionX = firstCardDrawedTransform != null ? firstCardDrawedTransform.position.x : 0;
+        var cardInstance = Instantiate(warriorPrefab, new Vector3(firstCardDrawedPositionX - 2, 0, 0), Quaternion.identity, canvasTransform);
         cardInstance.GetComponent<DisplayWarriorCard>().Card = warriorCard;
     }
 
-    public WarriorCard DrawWarriorCard()
+    private WarriorCard DrawWarriorCard()
     {
-        if (notDrawedWarriorCards.Count <= 0)
+        if (availableInDeckWarriorCards.Count <= 0)
         {
-            Debug.Log("No more cards available in deck");
-            return null;
+            if (discartedWarriorCards.Count > 0)
+            {
+                ResetDeck();
+            } else
+            {
+                Debug.Log("No more cards available in deck");
+                return null;
+            }
         }
 
-        WarriorCard cardDrawed = notDrawedWarriorCards[0];
+        WarriorCard cardDrawed = availableInDeckWarriorCards[0];
 
-        drawedWarriorCards.Add(cardDrawed);
-        notDrawedWarriorCards.RemoveAt(0);
+        inPlayerHandsCards.Add(cardDrawed);
+        availableInDeckWarriorCards.RemoveAt(0);
 
         InstantiateNewWarriorCard(cardDrawed);
 
         return cardDrawed;
+    }
+
+    public void DiscartWarriorCard(WarriorCard warriorCardDiscarted)
+    {
+        inPlayerHandsCards.Remove(warriorCardDiscarted);
+        discartedWarriorCards.Add(warriorCardDiscarted);
+    }
+
+    private void ResetDeck()
+    {
+        foreach(var item in discartedWarriorCards)
+        {
+            availableInDeckWarriorCards.Add(item);
+        }
+
+        discartedWarriorCards.Clear();
     }
 
 }

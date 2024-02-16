@@ -88,6 +88,7 @@ GameObject:
   - component: {fileID: 7867290011616168398}
   - component: {fileID: 1790633888537392909}
   - component: {fileID: 5614375936862287713}
+  - component: {fileID: 3201051767491262367}
   m_Layer: 5
   m_Name: WarriorCard
   m_TagString: Untagged
@@ -180,6 +181,18 @@ MonoBehaviour:
   DesertForceText: {fileID: 7624126692047926991}
   MountainsForceText: {fileID: 7120543826019591455}
   PlainsForceText: {fileID: 7131748170273937148}
+--- !u!114 &3201051767491262367
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1246180340114724520}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae0216a5840b0964896b799a9eafb89d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1364613485768157003
 GameObject:
   m_ObjectHideFlags: 0
