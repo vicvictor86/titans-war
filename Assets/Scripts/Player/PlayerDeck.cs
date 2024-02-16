@@ -9,12 +9,11 @@ public class PlayerDeck : MonoBehaviour
     private List<WarriorCard> inPlayerHandsCards = new();
     private List<WarriorCard> discartedWarriorCards = new();
     
-    private Transform firstCardDrawedTransform;
     public int InitialQuantity = 5;
 
     [SerializeField] private string playerSide = "Spartha";
     [SerializeField] private GameObject warriorPrefab;
-    [SerializeField] private Transform canvasTransform;
+    [SerializeField] private Transform deckPanelTransform;
 
     private void Start()
     {
@@ -36,16 +35,10 @@ public class PlayerDeck : MonoBehaviour
         {
             int randomCard = Random.Range(0, availableInDeckWarriorCards.Count);
 
-            var cardInstance = Instantiate(warriorPrefab, new Vector3(i, 0, 0), Quaternion.identity, canvasTransform);
-            cardInstance.GetComponent<DisplayWarriorCard>().Card = availableInDeckWarriorCards[randomCard];
+            InstantiateNewWarriorCard(availableInDeckWarriorCards[randomCard]);
 
             inPlayerHandsCards.Add(availableInDeckWarriorCards[randomCard]);
             availableInDeckWarriorCards.Remove(availableInDeckWarriorCards[randomCard]);
-
-            if (i == 0)
-            {
-                firstCardDrawedTransform = cardInstance.transform;
-            }
         }
 
         Debug.Log(availableInDeckWarriorCards.Count);
@@ -54,9 +47,9 @@ public class PlayerDeck : MonoBehaviour
 
     private void InstantiateNewWarriorCard(WarriorCard warriorCard)
     {
-        var firstCardDrawedPositionX = firstCardDrawedTransform != null ? firstCardDrawedTransform.position.x : 0;
-        var cardInstance = Instantiate(warriorPrefab, new Vector3(firstCardDrawedPositionX - 2, 0, 0), Quaternion.identity, canvasTransform);
+        var cardInstance = Instantiate(warriorPrefab, new Vector3(0, 0, 0), Quaternion.identity, deckPanelTransform);
         cardInstance.GetComponent<DisplayWarriorCard>().Card = warriorCard;
+        cardInstance.transform.SetAsFirstSibling();
     }
 
     private WarriorCard DrawWarriorCard()
