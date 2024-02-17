@@ -22,7 +22,7 @@ public class PlayerDeck : MonoBehaviour
     [Header("Prefabs")]
     [SerializeField] private GameObject warriorPrefab;
     [SerializeField] private GameObject terrainPrefab;
-    [SerializeField] private Transform deckPanelTransform;
+    [SerializeField] private Transform playerHandPanelTransform;
 
     private void Start()
     {
@@ -79,19 +79,19 @@ public class PlayerDeck : MonoBehaviour
 
     private void InstantiateNewWarriorCard(WarriorCard warriorCard)
     {
-        var cardInstance = Instantiate(warriorPrefab, new Vector3(0, 0, 0), Quaternion.identity, deckPanelTransform);
+        var cardInstance = Instantiate(warriorPrefab, new Vector3(0, 0, 0), Quaternion.identity, playerHandPanelTransform);
         cardInstance.GetComponent<DisplayWarriorCard>().Card = warriorCard;
         cardInstance.transform.SetAsFirstSibling();
     }
 
     private void InstantiateNewTerrainCard(TerrainCard terrainCard)
     {
-        var cardInstance = Instantiate(terrainPrefab, new Vector3(0, 0, 0), Quaternion.identity, deckPanelTransform);
+        var cardInstance = Instantiate(terrainPrefab, new Vector3(0, 0, 0), Quaternion.identity, playerHandPanelTransform);
         cardInstance.GetComponent<DisplayTerrainCard>().Card = terrainCard;
         cardInstance.transform.SetAsFirstSibling();
     }
 
-    private WarriorCard DrawWarriorCard()
+    public WarriorCard DrawWarriorCard()
     {
         if (availableInDeckWarriorCards.Count <= 0)
         {
@@ -115,7 +115,7 @@ public class PlayerDeck : MonoBehaviour
         return cardDrawed;
     }
 
-    private TerrainCard DrawTerrainCard()
+    public TerrainCard DrawTerrainCard()
     {
         if (availableInDeckTerrainCards.Count <= 0)
         {

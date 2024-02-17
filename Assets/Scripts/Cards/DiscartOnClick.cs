@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class Click : MonoBehaviour, IPointerClickHandler
+public class DiscartOnClick : MonoBehaviour, IPointerClickHandler
 {
     private PlayerDeck playerDeck;
 
@@ -15,11 +15,12 @@ public class Click : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (playerDeck != null)
+
+        bool clickWithLeftButton = eventData.button == PointerEventData.InputButton.Left;
+        if (clickWithLeftButton && playerDeck != null)
         {
             var displayWarriorCard = gameObject.GetComponent<DisplayWarriorCard>();
             var displayTerrainCard = gameObject.GetComponent<DisplayTerrainCard>();
-
             if (displayWarriorCard != null)
             {
                 playerDeck.DiscartCard(displayWarriorCard.Card);
@@ -28,7 +29,8 @@ public class Click : MonoBehaviour, IPointerClickHandler
             {
                 playerDeck.DiscartCard(displayTerrainCard.Card);
             }
+
+            Destroy(gameObject);
         }
-        Destroy(gameObject);
     }
 }
