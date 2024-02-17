@@ -17,8 +17,18 @@ public class Click : MonoBehaviour, IPointerClickHandler
     {
         if (playerDeck != null)
         {
-            playerDeck.DiscartWarriorCard(this.gameObject.GetComponent<DisplayWarriorCard>().Card);
+            var displayWarriorCard = gameObject.GetComponent<DisplayWarriorCard>();
+            var displayTerrainCard = gameObject.GetComponent<DisplayTerrainCard>();
+
+            if (displayWarriorCard != null)
+            {
+                playerDeck.DiscartCard(displayWarriorCard.Card);
+            }
+            else if (displayTerrainCard != null)
+            {
+                playerDeck.DiscartCard(displayTerrainCard.Card);
+            }
         }
-        Destroy(this.gameObject);
+        Destroy(gameObject);
     }
 }
