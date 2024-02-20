@@ -142,12 +142,16 @@ public class PlayerDeck : MonoBehaviour
 
     public void DiscartCard(Card card)
     {
-        if (card.GetType() == typeof(WarriorCard))
+        switch (card)
         {
-            DiscartWarriorCard(card as WarriorCard);
-        } else if (card.GetType() == typeof(TerrainCard))
-        {
-            DiscartTerrainCard(card as TerrainCard);
+            case WarriorCard wc:
+                DiscartWarriorCard(wc);
+                break;
+            case TerrainCard tc:
+                DiscartTerrainCard(tc);
+                break;
+            default: 
+                throw new System.Exception($"Tipo de card não aceito na função {nameof(DiscartCard)}");
         }
     }
 
