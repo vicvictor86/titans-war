@@ -7,7 +7,7 @@ public class TerrainCard : Card
 {
     public enum TerrainType
     {
-        WATER,
+        RIVER,
         PLAINS,
         DESERT,
         MOUNTAINS

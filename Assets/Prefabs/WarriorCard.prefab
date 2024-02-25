@@ -206,7 +206,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48cfe81a9eafe2543837ff57cfb34d77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IsDraggable: 1
+  IsDraggable: 0
 --- !u!1 &1364613485768157003
 GameObject:
   m_ObjectHideFlags: 0
