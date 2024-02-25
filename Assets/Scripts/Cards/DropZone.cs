@@ -8,10 +8,16 @@ public class DropZone : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPoin
     public void OnDrop(PointerEventData eventData)
     {
         GameObject objectDropped = eventData.pointerDrag;
-        
+
         if (objectDropped.CompareTag("WarriorCard"))
         {
             DragCards dragWarriorCard = objectDropped.GetComponent<DragCards>();
+
+            if (!dragWarriorCard.IsDraggable)
+            {
+                return;
+            }
+
             objectDropped.transform.SetParent(transform);
             dragWarriorCard.IsDraggable = false;
         }
@@ -19,6 +25,12 @@ public class DropZone : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPoin
         if (objectDropped.CompareTag("TerrainCard"))
         {
             DragCards dragTerrainCard = objectDropped.GetComponent<DragCards>();
+
+            if (!dragTerrainCard.IsDraggable)
+            {
+                return;
+            }
+
             objectDropped.transform.SetParent(transform);
             dragTerrainCard.IsDraggable = false;
         }

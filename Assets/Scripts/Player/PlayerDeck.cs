@@ -9,13 +9,13 @@ public class PlayerDeck : MonoBehaviour
     private List<WarriorCard> availableInDeckWarriorCards = new();
     private List<WarriorCard> warriorCardsinPlayerHands = new();
     private List<WarriorCard> discartedWarriorCards = new();
-    public int WarriorsInitialQuantity = 5;
+    private readonly int warriorsInitialQuantity = 2;
 
     [Header("Terrain Cards")]
     private List<TerrainCard> availableInDeckTerrainCards = new();
     private List<TerrainCard> terrainCardsinPlayerHands = new();
     private List<TerrainCard> discartedTerrainCards = new();
-    public int TerrainsInitialQuantity = 1;
+    private readonly int terrainsInitialQuantity = 1;
 
     [SerializeField] private string playerSide = "Spartha";
 
@@ -23,14 +23,6 @@ public class PlayerDeck : MonoBehaviour
     [SerializeField] private GameObject warriorPrefab;
     [SerializeField] private GameObject terrainPrefab;
     [SerializeField] private Transform playerHandPanelTransform;
-
-    private void Start()
-    {
-        availableInDeckWarriorCards = playerSide == "Spartha" ? CardDatabase.SparthaCardList : CardDatabase.PersaCardList;
-        availableInDeckTerrainCards = CardDatabase.TerrainCardsList;
-        DrawInitialsWarriorsCard();
-        DrawInitialsTerrainsCard();
-    }
 
     private void Update()
     {
@@ -47,7 +39,9 @@ public class PlayerDeck : MonoBehaviour
 
     public List<WarriorCard> DrawInitialsWarriorsCard()
     {
-        for (int i = WarriorsInitialQuantity; i > 0; i--)
+        availableInDeckWarriorCards = playerSide == "Spartha" ? CardDatabase.SparthaCardList : CardDatabase.PersaCardList;
+
+        for (int i = warriorsInitialQuantity; i > 0; i--)
         {
             int randomCard = Random.Range(0, availableInDeckWarriorCards.Count);
 
@@ -57,13 +51,14 @@ public class PlayerDeck : MonoBehaviour
             availableInDeckWarriorCards.Remove(availableInDeckWarriorCards[randomCard]);
         }
 
-        Debug.Log(availableInDeckWarriorCards.Count);
         return warriorCardsinPlayerHands;
     }
 
     public List<WarriorCard> DrawInitialsTerrainsCard()
     {
-        for (int i = TerrainsInitialQuantity; i > 0; i--)
+        availableInDeckTerrainCards = CardDatabase.TerrainCardsList;
+
+        for (int i = terrainsInitialQuantity; i > 0; i--)
         {
             int randomCard = Random.Range(0, availableInDeckTerrainCards.Count);
 
@@ -73,22 +68,25 @@ public class PlayerDeck : MonoBehaviour
             availableInDeckTerrainCards.Remove(availableInDeckTerrainCards[randomCard]);
         }
 
-        Debug.Log(availableInDeckTerrainCards.Count);
         return warriorCardsinPlayerHands;
     }
 
-    private void InstantiateNewWarriorCard(WarriorCard warriorCard)
+    private GameObject InstantiateNewWarriorCard(WarriorCard warriorCard)
     {
         var cardInstance = Instantiate(warriorPrefab, new Vector3(0, 0, 0), Quaternion.identity, playerHandPanelTransform);
         cardInstance.GetComponent<DisplayWarriorCard>().Card = warriorCard;
         cardInstance.transform.SetAsFirstSibling();
+
+        return cardInstance;
     }
 
-    private void InstantiateNewTerrainCard(TerrainCard terrainCard)
+    private GameObject InstantiateNewTerrainCard(TerrainCard terrainCard)
     {
         var cardInstance = Instantiate(terrainPrefab, new Vector3(0, 0, 0), Quaternion.identity, playerHandPanelTransform);
         cardInstance.GetComponent<DisplayTerrainCard>().Card = terrainCard;
         cardInstance.transform.SetAsFirstSibling();
+
+        return cardInstance;
     }
 
     public WarriorCard DrawWarriorCard()
@@ -110,7 +108,8 @@ public class PlayerDeck : MonoBehaviour
         warriorCardsinPlayerHands.Add(cardDrawed);
         availableInDeckWarriorCards.RemoveAt(0);
 
-        InstantiateNewWarriorCard(cardDrawed);
+        var warriorCardInstance = InstantiateNewWarriorCard(cardDrawed);
+        warriorCardInstance.GetComponent<DragCards>().IsDraggable = true;
 
         return cardDrawed;
     }
@@ -135,7 +134,9 @@ public class PlayerDeck : MonoBehaviour
         terrainCardsinPlayerHands.Add(cardDrawed);
         availableInDeckTerrainCards.RemoveAt(0);
 
-        InstantiateNewTerrainCard(cardDrawed);
+        var terrainCardInstance =InstantiateNewTerrainCard(cardDrawed);
+
+        terrainCardInstance.GetComponent<DragCards>().IsDraggable = true;
 
         return cardDrawed;
     }
@@ -185,5 +186,23 @@ public class PlayerDeck : MonoBehaviour
         }
 
         discartedTerrainCards.Clear();
+    }
+
+    public void Round()
+    {
+        var playerCards = playerHandPanelTransform.GetComponentsInChildren<DragCards>();
+        foreach(var card in playerCards)
+        {
+            card.IsDraggable = true;
+        }
+    }
+
+    public void EndRound()
+    {
+        var playerCards = playerHandPanelTransform.GetComponentsInChildren<DragCards>();
+        foreach (var card in playerCards)
+        {
+            card.IsDraggable = false;
+        }
     }
 }

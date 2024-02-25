@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 public class DragCards : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     private Transform parentToReturnTo = null;
-    public bool IsDraggable = true;
+    public bool IsDraggable = false;
     private CanvasGroup canvasGroup;
 
     private void Start()
