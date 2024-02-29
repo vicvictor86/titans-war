@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -17,20 +18,42 @@ public class City : MonoBehaviour
     [SerializeField] private int plainsQuantity;
     [SerializeField] private int mountainsQuantity;
 
-    [SerializeField] private Sprite[] territorySprites;
+    [Header("Desert Quantity ReadOnly")]
+    [SerializeField] private int desertQuantityReadOnly;
+    [SerializeField] private int riverQuantityReadOnly;
+    [SerializeField] private int plainsQuantityReadOnly;
+    [SerializeField] private int mountainsQuantityReadOnly;
+    [SerializeField] private int totalTerrainTypesQuantityReadOnly;
+
+    [SerializeField] private int totalTerrainTypesQuantity => desertQuantity + riverQuantity + plainsQuantity + mountainsQuantity;
+
+    [SerializeField] private List<Sprite> territorySprites;
 
     private int minPoint = 1;
     private int maxPoint = 4;
 
     void Start()
     {
-        List<string> typesAvailable = new() { "DESERT", "RIVER", "PLAINS", "MOUNTAINS" };
+        desertQuantityReadOnly = desertQuantity;
+        riverQuantityReadOnly = riverQuantity;
+        plainsQuantityReadOnly = plainsQuantity;
+        mountainsQuantityReadOnly = mountainsQuantity;
+        totalTerrainTypesQuantityReadOnly = totalTerrainTypesQuantity;
+
+        if (totalTerrainTypesQuantity < 12)
+        {
+            Debug.LogError($"City {cityName} doesn't have 12 territories, instead have {totalTerrainTypesQuantity}." +
+                $"Please go to 'Territories Quantity' and define the quantity of each territory.");
+        }
+
+        territorySprites = Resources.LoadAll<Sprite>("Sprites/HexTerrains").ToList();
+        List<string> typesAvailable = new() { "DESERT", "MOUNTAINS", "PLAINS", "RIVER" };
         Dictionary<string, Sprite> spritesByName = new()
         {
             { "DESERT", territorySprites[0] },
-            { "RIVER", territorySprites[1] },
+            { "MOUNTAINS", territorySprites[1] },
             { "PLAINS", territorySprites[2] },
-            { "MOUNTAINS", territorySprites[3] },
+            { "RIVER", territorySprites[3] },
         };
 
         foreach (Transform child in transform)
