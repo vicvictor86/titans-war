@@ -436,10 +436,16 @@ MonoBehaviour:
   cityName: Salamina
   pointWhenConquered: 15
   multiplierWhenConquered: 2
+  tilemap: {fileID: 0}
   desertQuantity: 3
   riverQuantity: 3
   plainsQuantity: 2
   mountainsQuantity: 4
+  desertQuantityReadOnly: 0
+  riverQuantityReadOnly: 0
+  plainsQuantityReadOnly: 0
+  mountainsQuantityReadOnly: 0
+  totalTerrainTypesQuantityReadOnly: 0
   territorySprites: []
 --- !u!483693784 &126947436
 TilemapRenderer:
@@ -2301,6 +2307,7 @@ GameObject:
   - component: {fileID: 1426119885}
   - component: {fileID: 1426119884}
   - component: {fileID: 1426119887}
+  - component: {fileID: 1426119888}
   m_Layer: 0
   m_Name: Esparta
   m_TagString: Untagged
@@ -2437,11 +2444,29 @@ MonoBehaviour:
   cityName: Sparta
   pointWhenConquered: 15
   multiplierWhenConquered: 2
+  tilemap: {fileID: 1426119885}
   desertQuantity: 3
   riverQuantity: 3
   plainsQuantity: 3
   mountainsQuantity: 3
+  desertQuantityReadOnly: 0
+  riverQuantityReadOnly: 0
+  plainsQuantityReadOnly: 0
+  mountainsQuantityReadOnly: 0
+  totalTerrainTypesQuantityReadOnly: 0
   territorySprites: []
+--- !u!114 &1426119888
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1426119882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df174d56842890147a495d174dc0e23b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1443982313 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3030275400495657534, guid: 90a945cf0e07bdb48a42b7ce51fa8d0a, type: 3}

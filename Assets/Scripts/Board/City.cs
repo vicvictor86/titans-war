@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class City : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class City : MonoBehaviour
     [SerializeField] private string cityName;
     [SerializeField] private int pointWhenConquered;
     [SerializeField] private int multiplierWhenConquered;
+    [SerializeField] private Tilemap tilemap;
     private List<GameObject> territoriesGameObject = new();
 
     [Header("Territories Quantity")]
@@ -66,10 +68,13 @@ public class City : MonoBehaviour
             var territoryPointText = territory.GetComponentInChildren<TextMeshPro>();
             var territorySprite = territory.GetComponent<SpriteRenderer>();
             var territoryInstance = territory.GetComponent<Territory>();
+            var territoryLineRenderer = territory.GetComponent<LineRenderer>();
 
             ChooseTerritoryPoint(territoryPointText, territoryInstance);
 
             ChooseTerritoryType(typesAvailable, spritesByName, territorySprite, territoryInstance);
+
+            CityBorder.CreateCityBorder(territorySprite, territoryLineRenderer);
         }
     }
 
