@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
 public class CityBorder : MonoBehaviour
 {
     
-    public static void CreateCityBorder(SpriteRenderer spriteRenderer, LineRenderer territoryLineRenderer)
+    public static List<Vector3> CalculateEdges(SpriteRenderer spriteRenderer)
     {
         Bounds spriteBounders = spriteRenderer.bounds;
         Vector3 center = spriteBounders.center;
@@ -26,12 +27,40 @@ public class CityBorder : MonoBehaviour
         edges.Add(leftEdge);
         edges.Add(topLeftEdge);
         edges.Add(topRightEdge);
-        edges.Add(rightEdge);
+
+        return edges;
+    }
+
+    public static void CreateCityBorder(List<Vector3> edges, LineRenderer territoryLineRenderer)
+    {
+        List<Vector3> edgesNear = new()
+        {
+            edges.FirstOrDefault()
+        };
+
+        List<Vector3> availableEdges = new(edges);
+        availableEdges.RemoveAt(0);
+
+        foreach(var edge in edges)
+        {
+            var actualEdge = edgesNear.LastOrDefault();
+            var edgesSorted = edges.OrderBy(edge => Vector3.Distance(actualEdge, edge)).ToList();
+
+            foreach(var edgeSorted in edgesSorted)
+            {
+                if (availableEdges.Contains(edgeSorted))
+                {
+                    edgesNear.Add(edgeSorted);
+                    availableEdges.Remove(edgeSorted);
+                    break;
+                }
+            }
+        }
 
         territoryLineRenderer.startWidth = 0.05f;
         territoryLineRenderer.endWidth = 0.05f;
-        territoryLineRenderer.positionCount = edges.Count;
-        territoryLineRenderer.SetPositions(edges.ToArray());
+        territoryLineRenderer.positionCount = edgesNear.Count;
+        territoryLineRenderer.SetPositions(edgesNear.ToArray());
 
         //Debug.Log($"Sprite Center: {center}");
         //Debug.Log($"Sprite Extents: {extents}");

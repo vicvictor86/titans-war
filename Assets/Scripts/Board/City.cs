@@ -34,6 +34,8 @@ public class City : MonoBehaviour
     private int minPoint = 1;
     private int maxPoint = 4;
 
+    public GameObject TESTE;
+
     void Start()
     {
         desertQuantityReadOnly = desertQuantity;
@@ -63,19 +65,66 @@ public class City : MonoBehaviour
             territoriesGameObject.Add(child.gameObject);
         }
 
+        List<Vector3> allCitiesEdges = new();
         foreach (var territory in territoriesGameObject)
         {
             var territoryPointText = territory.GetComponentInChildren<TextMeshPro>();
             var territorySprite = territory.GetComponent<SpriteRenderer>();
             var territoryInstance = territory.GetComponent<Territory>();
-            var territoryLineRenderer = territory.GetComponent<LineRenderer>();
 
             ChooseTerritoryPoint(territoryPointText, territoryInstance);
 
             ChooseTerritoryType(typesAvailable, spritesByName, territorySprite, territoryInstance);
 
-            CityBorder.CreateCityBorder(territorySprite, territoryLineRenderer);
+            allCitiesEdges.AddRange(CityBorder.CalculateEdges(territorySprite));
         }
+
+        var territoryLineRenderer = gameObject.GetComponent<LineRenderer>();
+
+        foreach (var teste in allCitiesEdges)
+        {
+            Debug.Log($"X: {Mathf.Round(teste.x * 10f) / 10f} Y: {Mathf.Round(teste.y * 10f) / 10f}");
+        }
+
+        List<Vector3> distinctList = new() { allCitiesEdges.FirstOrDefault() };
+        
+        foreach (var cityEdge in allCitiesEdges)
+        {
+            int matchQuantity = 0;
+            foreach(var cityToCompare in allCitiesEdges)
+            {
+                if (cityEdge == cityToCompare)
+                {
+                    continue;
+                }
+
+                var distance = Vector3.Distance(cityEdge, cityToCompare);       
+                
+                if (distance < 0.1f)
+                {
+                    matchQuantity++;
+                }
+            }
+
+            if (matchQuantity < 2)
+            {
+                distinctList.Add(cityEdge);
+            }
+        }
+
+        //List<Vector3> citiesBorderEdges = allCitiesEdges
+        //    .GroupBy(edge => new { X = Mathf.Round(edge.x * 10f) / 10f, Y = Mathf.Round(edge.y * 10f) / 10f })
+        //    .Where(group => group.Count() == 1)
+        //    .Select(group => group.FirstOrDefault())
+        //    .ToList();
+
+
+        foreach (var citieEdges in distinctList)
+        {
+            Instantiate(TESTE, citieEdges, Quaternion.identity);
+        }
+
+        //CityBorder.CreateCityBorder(citiesBorderEdges, territoryLineRenderer);
     }
 
     private void ChooseTerritoryPoint(TextMeshPro territoryPointText, Territory territoryInstance)

@@ -6,6 +6,8 @@ TagManager:
   tags:
   - WarriorCard
   - TerrainCard
+  - City
+  - Territory
   layers:
   - Default
   - TransparentFX
