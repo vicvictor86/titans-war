@@ -1,3 +1,4 @@
+using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,7 +13,7 @@ public class CameraControl : MonoBehaviour
 
     private float cameraMovementVelocityX;
     private float cameraMovementVelocityY;
-
+    
     private float verticalInput;
     private float horizontalInput;
 
@@ -24,11 +25,11 @@ public class CameraControl : MonoBehaviour
     private float zoomVelocity;
     private float zoom;
 
-    [SerializeField] private Camera cam;
+    [SerializeField] CinemachineVirtualCamera vCam;
 
     void Start()
     {
-        zoom = cam.orthographicSize;
+        zoom = vCam.m_Lens.OrthographicSize;
     }
 
     void Update()
@@ -51,7 +52,7 @@ public class CameraControl : MonoBehaviour
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         zoom -= scroll * zoomMultiplier;
         zoom = Mathf.Clamp(zoom, minZoom, maxZoom);
-        cam.orthographicSize = Mathf.SmoothDamp(cam.orthographicSize, zoom, ref zoomVelocity, smoothTime);
+        vCam.m_Lens.OrthographicSize = Mathf.SmoothDamp(vCam.m_Lens.OrthographicSize, zoom, ref zoomVelocity, smoothTime);
     }
 
     private void MoveCamera()
