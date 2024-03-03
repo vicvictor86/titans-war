@@ -2,11 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 public class CityBorder : MonoBehaviour
 {
-    
     public static List<Vector3> CalculateEdges(SpriteRenderer spriteRenderer)
     {
         Bounds spriteBounders = spriteRenderer.bounds;
@@ -33,9 +31,10 @@ public class CityBorder : MonoBehaviour
 
     public static void CreateCityBorder(List<Vector3> edges, LineRenderer territoryLineRenderer)
     {
+        var firstEdge = edges.FirstOrDefault();
         List<Vector3> edgesNear = new()
         {
-            edges.FirstOrDefault()
+            firstEdge
         };
 
         List<Vector3> availableEdges = new(edges);
@@ -57,29 +56,11 @@ public class CityBorder : MonoBehaviour
             }
         }
 
+        edgesNear.Add(firstEdge);
+
         territoryLineRenderer.startWidth = 0.05f;
         territoryLineRenderer.endWidth = 0.05f;
         territoryLineRenderer.positionCount = edgesNear.Count;
         territoryLineRenderer.SetPositions(edgesNear.ToArray());
-
-        //Debug.Log($"Sprite Center: {center}");
-        //Debug.Log($"Sprite Extents: {extents}");
-        //Debug.Log($"Canto Direito - x: {center.x + extents.x}, y: {center.y}");
-        //Debug.Log($"Canto Inferior Direito - x: {center.x + (extents.x / 2)}, y: {center.y - (extents.y - 0.25)}");
-        //Debug.Log($"Canto Inferior Esquerdo - x: {center.x - (extents.x / 2)}, y: {center.y - (extents.y - 0.25)}");
-        //Debug.Log($"Canto Esquerdo - x: {center.x - extents.x}, y: {center.y}");
-        //Debug.Log($"Canto Superior Esquerdo - x: {center.x - (extents.x / 2)}, y: {center.y + (extents.y - 0.25)}");
-        //Debug.Log($"Canto Superior Direito - x: {center.x + (extents.x / 2)}, y: {center.y + (extents.y - 0.25)}");
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

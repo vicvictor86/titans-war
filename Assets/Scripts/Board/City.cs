@@ -34,8 +34,6 @@ public class City : MonoBehaviour
     private int minPoint = 1;
     private int maxPoint = 4;
 
-    public GameObject TESTE;
-
     void Start()
     {
         desertQuantityReadOnly = desertQuantity;
@@ -81,13 +79,7 @@ public class City : MonoBehaviour
 
         var territoryLineRenderer = gameObject.GetComponent<LineRenderer>();
 
-        foreach (var teste in allCitiesEdges)
-        {
-            Debug.Log($"X: {Mathf.Round(teste.x * 10f) / 10f} Y: {Mathf.Round(teste.y * 10f) / 10f}");
-        }
-
-        List<Vector3> distinctList = new() { allCitiesEdges.FirstOrDefault() };
-        
+        List<Vector3> cityBorderVertexes = new();
         foreach (var cityEdge in allCitiesEdges)
         {
             int matchQuantity = 0;
@@ -108,23 +100,14 @@ public class City : MonoBehaviour
 
             if (matchQuantity < 2)
             {
-                distinctList.Add(cityEdge);
+                if (!cityBorderVertexes.Any(edge => Vector3.Distance(edge, cityEdge) < 0.1f))
+                {
+                    cityBorderVertexes.Add(cityEdge);
+                }
             }
         }
 
-        //List<Vector3> citiesBorderEdges = allCitiesEdges
-        //    .GroupBy(edge => new { X = Mathf.Round(edge.x * 10f) / 10f, Y = Mathf.Round(edge.y * 10f) / 10f })
-        //    .Where(group => group.Count() == 1)
-        //    .Select(group => group.FirstOrDefault())
-        //    .ToList();
-
-
-        foreach (var citieEdges in distinctList)
-        {
-            Instantiate(TESTE, citieEdges, Quaternion.identity);
-        }
-
-        //CityBorder.CreateCityBorder(citiesBorderEdges, territoryLineRenderer);
+        CityBorder.CreateCityBorder(cityBorderVertexes, territoryLineRenderer);
     }
 
     private void ChooseTerritoryPoint(TextMeshPro territoryPointText, Territory territoryInstance)
