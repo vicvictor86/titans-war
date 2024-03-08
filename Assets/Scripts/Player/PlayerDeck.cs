@@ -1,5 +1,7 @@
+using Domain;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -23,6 +25,8 @@ public class PlayerDeck : MonoBehaviour
     [SerializeField] private GameObject warriorPrefab;
     [SerializeField] private GameObject terrainPrefab;
     [SerializeField] private Transform playerHandPanelTransform;
+
+    private List<Territory> territoriesWithPlayer = new();
 
     private void Update()
     {
@@ -134,7 +138,7 @@ public class PlayerDeck : MonoBehaviour
         terrainCardsinPlayerHands.Add(cardDrawed);
         availableInDeckTerrainCards.RemoveAt(0);
 
-        var terrainCardInstance =InstantiateNewTerrainCard(cardDrawed);
+        var terrainCardInstance = InstantiateNewTerrainCard(cardDrawed);
 
         terrainCardInstance.GetComponent<DragCards>().IsDraggable = true;
 
@@ -158,6 +162,9 @@ public class PlayerDeck : MonoBehaviour
 
     public void DiscartWarriorCard(WarriorCard warriorCardDiscarted)
     {
+        var warriorHand = playerHandPanelTransform.GetComponentsInChildren<DisplayWarriorCard>();
+        var warriorCard = warriorHand.FirstOrDefault(displayCard => displayCard.Card == warriorCardDiscarted);
+        Destroy(warriorCard.gameObject);
         warriorCardsinPlayerHands.Remove(warriorCardDiscarted);
         discartedWarriorCards.Add(warriorCardDiscarted);
     }
@@ -204,5 +211,42 @@ public class PlayerDeck : MonoBehaviour
         {
             card.IsDraggable = false;
         }
+    }
+
+    public List<TerrainCard> ListTerrainCardsInHand()
+    {
+        return terrainCardsinPlayerHands;
+    }
+
+    public List<TerrainType> ListTerrainTypesDisponibleToAttack()
+    {
+        return ListTerrainCardsInHand().Select(card => card.Type).Distinct().ToList();
+    }
+
+    public List<WarriorCard> ListWarriorsCardsInHand()
+    {
+        return warriorCardsinPlayerHands;
+    }
+
+    public void StartAttackDefenseRound() {
+        var playerCards = playerHandPanelTransform.GetComponentsInChildren<AttackDefense>();
+        foreach (var card in playerCards)
+        {
+            card.isClickable = true;
+        }
+    }
+
+    public void EndAttackDefenseRound()
+    {
+        var playerCards = playerHandPanelTransform.GetComponentsInChildren<AttackDefense>();
+        foreach (var card in playerCards)
+        {
+            card.isClickable = false;
+        }
+    }
+
+    public void AddTerritory(Territory territory)
+    {
+        territoriesWithPlayer.Add(territory);
     }
 }

@@ -1,3 +1,4 @@
+using Domain;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Card", menuName = "WarriorCard")]
@@ -15,5 +16,17 @@ public class WarriorCard : Card
     public int DesertValue => TotalForce + DesertForce;
     public int MountainsValue => TotalForce + MountainsForce;
     public int PlainsValue => TotalForce + PlainsForce;
+
+    public int GetPowerValue(TerrainType type)
+    {
+        return type switch
+        {
+            TerrainType.RIVER => WaterValue,
+            TerrainType.DESERT => DesertValue,
+            TerrainType.MOUNTAINS => MountainsValue,
+            TerrainType.PLAINS => PlainsValue,
+            _ => 0
+        };
+    }
 
 }
