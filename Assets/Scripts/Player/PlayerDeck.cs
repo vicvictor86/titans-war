@@ -171,8 +171,19 @@ public class PlayerDeck : MonoBehaviour
 
     public void DiscartTerrainCard(TerrainCard terrainCardDiscarted)
     {
+        var terrainHand = playerHandPanelTransform.GetComponentsInChildren<DisplayTerrainCard>();
+        var terrainCard = terrainHand.FirstOrDefault(displayCard => displayCard.Card == terrainCardDiscarted);
+        Destroy(terrainCard.gameObject);
         terrainCardsinPlayerHands.Remove(terrainCardDiscarted);
         discartedTerrainCards.Add(terrainCardDiscarted);
+    }
+
+    public void DiscartTerrainCardByType(TerrainType type)
+    {
+
+        var terrainHand = playerHandPanelTransform.GetComponentsInChildren<DisplayTerrainCard>();
+        var terrainCard = terrainHand.FirstOrDefault(displayCard => displayCard.Card.Type == type);
+        DiscartTerrainCard(terrainCard.Card);
     }
 
     private void ResetWarriorDeck()
@@ -248,5 +259,11 @@ public class PlayerDeck : MonoBehaviour
     public void AddTerritory(Territory territory)
     {
         territoriesWithPlayer.Add(territory);
+        territory.SetOwner(this);
+    }
+
+    public List<Territory> GetTerritoriesWithPlayer()
+    {
+        return territoriesWithPlayer;
     }
 }

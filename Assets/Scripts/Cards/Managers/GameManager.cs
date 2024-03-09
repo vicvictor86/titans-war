@@ -115,15 +115,23 @@ public class GameManager : MonoBehaviour
         else if (defenseValue > attackValue)
         {
             Debug.Log("Defesa Venceu");
-            playerList[(actualPlayerIndex + 1) % playerList.Count].AddTerritory(contestedTerritory);
+            if (playerList[(actualPlayerIndex + 1) % playerList.Count].GetTerritoriesWithPlayer().Contains(contestedTerritory))
+            {
+                //Adicionar carta de poder
+            }
+            else
+            {
+                playerList[(actualPlayerIndex + 1) % playerList.Count].AddTerritory(contestedTerritory);
+            }
         }
         else {
             Debug.Log("Empate");
         }
-        contestedTerritory = null;
         actualPlayer.DiscartWarriorCard(attackingCard);
         playerList[(actualPlayerIndex + 1) % playerList.Count].DiscartWarriorCard(defendindCard);
+        actualPlayer.DiscartTerrainCardByType(contestedTerritory.Type);
         attackingCard = null;
         defendindCard = null;
+        contestedTerritory = null;
     }
 }

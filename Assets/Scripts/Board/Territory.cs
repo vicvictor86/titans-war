@@ -6,6 +6,7 @@ public class Territory : MonoBehaviour
 {
     public TerrainType Type;
     public int Point;
+    private PlayerDeck owner;
 
     void OnMouseDown()
     {
@@ -26,6 +27,11 @@ public class Territory : MonoBehaviour
                 attackButton.GetComponent<AttackButton>().territory = this;
             };
         }
+    }
+
+    public void SetOwner(PlayerDeck newOwner)
+    {
+        owner = newOwner;
     }
 
 
