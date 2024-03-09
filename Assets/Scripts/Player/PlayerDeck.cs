@@ -11,7 +11,7 @@ public class PlayerDeck : MonoBehaviour
     private List<WarriorCard> availableInDeckWarriorCards = new();
     private List<WarriorCard> warriorCardsinPlayerHands = new();
     private List<WarriorCard> discartedWarriorCards = new();
-    private readonly int warriorsInitialQuantity = 2;
+    private readonly int warriorsInitialQuantity = 1;
 
     [Header("Terrain Cards")]
     private List<TerrainCard> availableInDeckTerrainCards = new();
@@ -24,7 +24,8 @@ public class PlayerDeck : MonoBehaviour
     [Header("Prefabs")]
     [SerializeField] private GameObject warriorPrefab;
     [SerializeField] private GameObject terrainPrefab;
-    [SerializeField] private Transform playerHandPanelTransform;
+    [SerializeField] private Transform playerWarriorHandPanelTransform;
+    [SerializeField] private Transform playerTerrainHandPanelTransform;
 
     private List<Territory> territoriesWithPlayer = new();
 
@@ -77,7 +78,7 @@ public class PlayerDeck : MonoBehaviour
 
     private GameObject InstantiateNewWarriorCard(WarriorCard warriorCard)
     {
-        var cardInstance = Instantiate(warriorPrefab, new Vector3(0, 0, 0), Quaternion.identity, playerHandPanelTransform);
+        var cardInstance = Instantiate(warriorPrefab, new Vector3(0, 0, 0), Quaternion.identity, playerWarriorHandPanelTransform);
         cardInstance.GetComponent<DisplayWarriorCard>().Card = warriorCard;
         cardInstance.transform.SetAsFirstSibling();
 
@@ -86,7 +87,7 @@ public class PlayerDeck : MonoBehaviour
 
     private GameObject InstantiateNewTerrainCard(TerrainCard terrainCard)
     {
-        var cardInstance = Instantiate(terrainPrefab, new Vector3(0, 0, 0), Quaternion.identity, playerHandPanelTransform);
+        var cardInstance = Instantiate(terrainPrefab, new Vector3(0, 0, 0), Quaternion.identity, playerTerrainHandPanelTransform);
         cardInstance.GetComponent<DisplayTerrainCard>().Card = terrainCard;
         cardInstance.transform.SetAsFirstSibling();
 
@@ -162,7 +163,7 @@ public class PlayerDeck : MonoBehaviour
 
     public void DiscartWarriorCard(WarriorCard warriorCardDiscarted)
     {
-        var warriorHand = playerHandPanelTransform.GetComponentsInChildren<DisplayWarriorCard>();
+        var warriorHand = playerWarriorHandPanelTransform.GetComponentsInChildren<DisplayWarriorCard>();
         var warriorCard = warriorHand.FirstOrDefault(displayCard => displayCard.Card == warriorCardDiscarted);
         Destroy(warriorCard.gameObject);
         warriorCardsinPlayerHands.Remove(warriorCardDiscarted);
@@ -171,7 +172,7 @@ public class PlayerDeck : MonoBehaviour
 
     public void DiscartTerrainCard(TerrainCard terrainCardDiscarted)
     {
-        var terrainHand = playerHandPanelTransform.GetComponentsInChildren<DisplayTerrainCard>();
+        var terrainHand = playerTerrainHandPanelTransform.GetComponentsInChildren<DisplayTerrainCard>();
         var terrainCard = terrainHand.FirstOrDefault(displayCard => displayCard.Card == terrainCardDiscarted);
         Destroy(terrainCard.gameObject);
         terrainCardsinPlayerHands.Remove(terrainCardDiscarted);
@@ -181,7 +182,7 @@ public class PlayerDeck : MonoBehaviour
     public void DiscartTerrainCardByType(TerrainType type)
     {
 
-        var terrainHand = playerHandPanelTransform.GetComponentsInChildren<DisplayTerrainCard>();
+        var terrainHand = playerTerrainHandPanelTransform.GetComponentsInChildren<DisplayTerrainCard>();
         var terrainCard = terrainHand.FirstOrDefault(displayCard => displayCard.Card.Type == type);
         DiscartTerrainCard(terrainCard.Card);
     }
@@ -208,20 +209,12 @@ public class PlayerDeck : MonoBehaviour
 
     public void Round()
     {
-        var playerCards = playerHandPanelTransform.GetComponentsInChildren<DragCards>();
-        foreach(var card in playerCards)
-        {
-            card.IsDraggable = true;
-        }
+        
     }
 
     public void EndRound()
     {
-        var playerCards = playerHandPanelTransform.GetComponentsInChildren<DragCards>();
-        foreach (var card in playerCards)
-        {
-            card.IsDraggable = false;
-        }
+        
     }
 
     public List<TerrainCard> ListTerrainCardsInHand()
@@ -240,7 +233,7 @@ public class PlayerDeck : MonoBehaviour
     }
 
     public void StartAttackDefenseRound() {
-        var playerCards = playerHandPanelTransform.GetComponentsInChildren<AttackDefense>();
+        var playerCards = playerWarriorHandPanelTransform.GetComponentsInChildren<AttackDefense>();
         foreach (var card in playerCards)
         {
             card.isClickable = true;
@@ -249,7 +242,7 @@ public class PlayerDeck : MonoBehaviour
 
     public void EndAttackDefenseRound()
     {
-        var playerCards = playerHandPanelTransform.GetComponentsInChildren<AttackDefense>();
+        var playerCards = playerWarriorHandPanelTransform.GetComponentsInChildren<AttackDefense>();
         foreach (var card in playerCards)
         {
             card.isClickable = false;

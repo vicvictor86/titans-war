@@ -1,3 +1,4 @@
+using Domain;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,8 @@ public class GameManager : MonoBehaviour
     public WarriorCard defendindCard;
     public Territory contestedTerritory = null;
     public bool attack = false;
+    public Transform cityInfoPanelPosition;
+    public Transform attackButtonPosition;
 
     private void Awake()
     {
@@ -133,5 +136,19 @@ public class GameManager : MonoBehaviour
         attackingCard = null;
         defendindCard = null;
         contestedTerritory = null;
+    }
+
+    public void InstantiateCityInfo(City city, TerrainType terrainType, Territory territory)
+    {
+        Destroy(GameObject.FindWithTag("CityInfo"));
+        Destroy(GameObject.FindWithTag("AttackButton"));
+        var canvas = GameObject.FindWithTag("Canvas").GetComponent<Canvas>();
+        var infoInstance = Instantiate(city.cityInfoPrefab, cityInfoPanelPosition.position, Quaternion.identity, canvas.transform);
+        infoInstance.GetComponent<DisplayCityInfo>().City = city;
+        if (actualPlayer.ListTerrainTypesDisponibleToAttack().Contains(terrainType) && !actionMade)
+        {
+            var attackButton = Instantiate(city.attackButton, attackButtonPosition.position, Quaternion.identity, canvas.transform);
+            attackButton.GetComponent<AttackButton>().territory = territory;
+        };
     }
 }
