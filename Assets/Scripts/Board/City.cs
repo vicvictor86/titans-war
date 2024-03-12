@@ -1,4 +1,5 @@
-using System.Collections;
+using Domain;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -20,12 +21,16 @@ public class City : MonoBehaviour
     [SerializeField] private int plainsQuantity;
     [SerializeField] private int mountainsQuantity;
 
-    [Header("Desert Quantity ReadOnly")]
+    [Header("Territories Quantity ReadOnly")]
     [SerializeField] private int desertQuantityReadOnly;
     [SerializeField] private int riverQuantityReadOnly;
     [SerializeField] private int plainsQuantityReadOnly;
     [SerializeField] private int mountainsQuantityReadOnly;
     [SerializeField] private int totalTerrainTypesQuantityReadOnly;
+
+    [Header("Prefabs")]
+    [SerializeField] public GameObject cityInfoPrefab;
+    [SerializeField] public GameObject attackButton;
 
     [SerializeField] private int totalTerrainTypesQuantity => desertQuantity + riverQuantity + plainsQuantity + mountainsQuantity;
 
@@ -49,13 +54,13 @@ public class City : MonoBehaviour
         }
 
         territorySprites = Resources.LoadAll<Sprite>("Sprites/HexTerrains").ToList();
-        List<string> typesAvailable = new() { "DESERT", "MOUNTAINS", "PLAINS", "RIVER" };
-        Dictionary<string, Sprite> spritesByName = new()
+        List<TerrainType> typesAvailable = Enum.GetValues(typeof(TerrainType)).Cast<TerrainType>().ToList();
+        Dictionary<TerrainType, Sprite> spritesByName = new()
         {
-            { "DESERT", territorySprites[0] },
-            { "MOUNTAINS", territorySprites[1] },
-            { "PLAINS", territorySprites[2] },
-            { "RIVER", territorySprites[3] },
+            { TerrainType.DESERT, territorySprites[0] },
+            { TerrainType.MOUNTAINS, territorySprites[1] },
+            { TerrainType.PLAINS, territorySprites[2] },
+            { TerrainType.RIVER, territorySprites[3] },
         };
 
         foreach (Transform child in transform)
@@ -110,35 +115,55 @@ public class City : MonoBehaviour
         CityBorder.CreateCityBorder(cityBorderVertexes, territoryLineRenderer);
     }
 
+    public int GetDesertQuantity()
+    {
+        return desertQuantityReadOnly;
+    }
+
+    public int GetPlainsQuantity()
+    {
+        return plainsQuantityReadOnly;
+    }
+
+    public int GetRiverQuantity()
+    { 
+        return riverQuantityReadOnly; 
+    }
+
+    public int GetMountainsQuantity()
+    {
+        return mountainsQuantityReadOnly;
+    }
+
     private void ChooseTerritoryPoint(TextMeshPro territoryPointText, Territory territoryInstance)
     {
-        int randomPoint = Random.Range(minPoint, maxPoint + 1);
+        int randomPoint = UnityEngine.Random.Range(minPoint, maxPoint + 1);
         territoryPointText.text = randomPoint.ToString();
         territoryInstance.Point = randomPoint;
     }
 
-    private void ChooseTerritoryType(List<string> typesAvailable, Dictionary<string, Sprite> spritesByName,
+    private void ChooseTerritoryType(List<TerrainType> typesAvailable, Dictionary<TerrainType, Sprite> spritesByName,
         SpriteRenderer territorySprite, Territory territoryInstance)
     {
-        int indexTypeChoosed = Random.Range(0, typesAvailable.Count);
-        string typeChoosed = typesAvailable[indexTypeChoosed];
+        int indexTypeChoosed = UnityEngine.Random.Range(0, typesAvailable.Count);
+        TerrainType typeChoosed = typesAvailable[indexTypeChoosed];
 
         bool needToRemove = false;
         switch (typeChoosed)
         {
-            case "DESERT":
+            case TerrainType.DESERT:
                 desertQuantity--;
                 needToRemove = desertQuantity == 0;
                 break;
-            case "RIVER":
+            case TerrainType.RIVER:
                 riverQuantity--;
                 needToRemove = riverQuantity == 0;
                 break;
-            case "PLAINS":
+            case TerrainType.PLAINS:
                 plainsQuantity--;
                 needToRemove = plainsQuantity == 0;
                 break;
-            case "MOUNTAINS":
+            case TerrainType.MOUNTAINS:
                 mountainsQuantity--;
                 needToRemove = mountainsQuantity == 0;
                 break;

@@ -1,5 +1,7 @@
+using Domain;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -9,7 +11,7 @@ public class PlayerDeck : MonoBehaviour
     private List<WarriorCard> availableInDeckWarriorCards = new();
     private List<WarriorCard> warriorCardsinPlayerHands = new();
     private List<WarriorCard> discartedWarriorCards = new();
-    private readonly int warriorsInitialQuantity = 2;
+    private readonly int warriorsInitialQuantity = 1;
 
     [Header("Terrain Cards")]
     private List<TerrainCard> availableInDeckTerrainCards = new();
@@ -19,10 +21,19 @@ public class PlayerDeck : MonoBehaviour
 
     [SerializeField] private string playerSide = "Spartha";
 
+    [Header("Mission Cards")]
+    public List<MissionCard> missionCardsinPlayerHands = new();
+    private int missionCardsInitialQuantity = 3;
+    [SerializeField] public Transform missionCardPlace;
+    [SerializeField] private GameObject missionPrefab;
+
     [Header("Prefabs")]
     [SerializeField] private GameObject warriorPrefab;
     [SerializeField] private GameObject terrainPrefab;
-    [SerializeField] private Transform playerHandPanelTransform;
+    [SerializeField] private Transform playerWarriorHandPanelTransform;
+    [SerializeField] private Transform playerTerrainHandPanelTransform;
+
+    private List<Territory> territoriesWithPlayer = new();
 
     private void Update()
     {
@@ -54,7 +65,7 @@ public class PlayerDeck : MonoBehaviour
         return warriorCardsinPlayerHands;
     }
 
-    public List<WarriorCard> DrawInitialsTerrainsCard()
+    public List<TerrainCard> DrawInitialsTerrainsCard()
     {
         availableInDeckTerrainCards = CardDatabase.TerrainCardsList;
 
@@ -68,12 +79,28 @@ public class PlayerDeck : MonoBehaviour
             availableInDeckTerrainCards.Remove(availableInDeckTerrainCards[randomCard]);
         }
 
-        return warriorCardsinPlayerHands;
+        return terrainCardsinPlayerHands;
+    }
+
+    public List<MissionCard> DrawInitialsMissionsCard(List<MissionCard> missionCardsAvailable)
+    {
+        for (int i = missionCardsInitialQuantity; i > 0; i--)
+        {
+            int randomCard = Random.Range(0, missionCardsAvailable.Count);
+
+            var cardSelected = missionCardsAvailable[randomCard];
+            InstantiateNewMissionCard(cardSelected);
+
+            missionCardsinPlayerHands.Add(cardSelected);
+            missionCardsAvailable.Remove(missionCardsAvailable[randomCard]);
+        }
+
+        return missionCardsinPlayerHands;
     }
 
     private GameObject InstantiateNewWarriorCard(WarriorCard warriorCard)
     {
-        var cardInstance = Instantiate(warriorPrefab, new Vector3(0, 0, 0), Quaternion.identity, playerHandPanelTransform);
+        var cardInstance = Instantiate(warriorPrefab, new Vector3(0, 0, 0), Quaternion.identity, playerWarriorHandPanelTransform);
         cardInstance.GetComponent<DisplayWarriorCard>().Card = warriorCard;
         cardInstance.transform.SetAsFirstSibling();
 
@@ -82,8 +109,18 @@ public class PlayerDeck : MonoBehaviour
 
     private GameObject InstantiateNewTerrainCard(TerrainCard terrainCard)
     {
-        var cardInstance = Instantiate(terrainPrefab, new Vector3(0, 0, 0), Quaternion.identity, playerHandPanelTransform);
+        var cardInstance = Instantiate(terrainPrefab, new Vector3(0, 0, 0), Quaternion.identity, playerTerrainHandPanelTransform);
         cardInstance.GetComponent<DisplayTerrainCard>().Card = terrainCard;
+        cardInstance.transform.SetAsFirstSibling();
+
+        return cardInstance;
+    }
+
+    private GameObject InstantiateNewMissionCard(MissionCard missionCard)
+    {
+        var canvas = GameObject.FindWithTag("Canvas").GetComponent<Canvas>();
+        var cardInstance = Instantiate(missionPrefab, missionCardPlace.position, Quaternion.identity, missionCardPlace.transform);
+        cardInstance.GetComponent<DisplayMissionCard>().Card = missionCard;
         cardInstance.transform.SetAsFirstSibling();
 
         return cardInstance;
@@ -134,7 +171,7 @@ public class PlayerDeck : MonoBehaviour
         terrainCardsinPlayerHands.Add(cardDrawed);
         availableInDeckTerrainCards.RemoveAt(0);
 
-        var terrainCardInstance =InstantiateNewTerrainCard(cardDrawed);
+        var terrainCardInstance = InstantiateNewTerrainCard(cardDrawed);
 
         terrainCardInstance.GetComponent<DragCards>().IsDraggable = true;
 
@@ -158,14 +195,37 @@ public class PlayerDeck : MonoBehaviour
 
     public void DiscartWarriorCard(WarriorCard warriorCardDiscarted)
     {
+        var warriorHand = playerWarriorHandPanelTransform.GetComponentsInChildren<DisplayWarriorCard>();
+        var warriorCard = warriorHand.FirstOrDefault(displayCard => displayCard.Card == warriorCardDiscarted);
+        Destroy(warriorCard.gameObject);
         warriorCardsinPlayerHands.Remove(warriorCardDiscarted);
         discartedWarriorCards.Add(warriorCardDiscarted);
     }
 
     public void DiscartTerrainCard(TerrainCard terrainCardDiscarted)
     {
+        var terrainHand = playerTerrainHandPanelTransform.GetComponentsInChildren<DisplayTerrainCard>();
+        var terrainCard = terrainHand.FirstOrDefault(displayCard => displayCard.Card == terrainCardDiscarted);
+        Destroy(terrainCard.gameObject);
         terrainCardsinPlayerHands.Remove(terrainCardDiscarted);
         discartedTerrainCards.Add(terrainCardDiscarted);
+    }
+
+    public void DiscartMissionCard(MissionCard missionCardToDiscart)
+    {
+        var missionHand = missionCardPlace.GetComponentsInChildren<DisplayMissionCard>();
+        var missionCard = missionHand.FirstOrDefault(displayCard => displayCard.Card == missionCardToDiscart);
+        Destroy(missionCard.gameObject);
+        missionCardsinPlayerHands.Remove(missionCardToDiscart);
+        GameManager.instance.missionCardsAvailables.Add(missionCardToDiscart);
+    }
+
+    public void DiscartTerrainCardByType(TerrainType type)
+    {
+
+        var terrainHand = playerTerrainHandPanelTransform.GetComponentsInChildren<DisplayTerrainCard>();
+        var terrainCard = terrainHand.FirstOrDefault(displayCard => displayCard.Card.Type == type);
+        DiscartTerrainCard(terrainCard.Card);
     }
 
     private void ResetWarriorDeck()
@@ -190,19 +250,54 @@ public class PlayerDeck : MonoBehaviour
 
     public void Round()
     {
-        var playerCards = playerHandPanelTransform.GetComponentsInChildren<DragCards>();
-        foreach(var card in playerCards)
-        {
-            card.IsDraggable = true;
-        }
+        
     }
 
     public void EndRound()
     {
-        var playerCards = playerHandPanelTransform.GetComponentsInChildren<DragCards>();
+        
+    }
+
+    public List<TerrainCard> ListTerrainCardsInHand()
+    {
+        return terrainCardsinPlayerHands;
+    }
+
+    public List<TerrainType> ListTerrainTypesDisponibleToAttack()
+    {
+        return ListTerrainCardsInHand().Select(card => card.Type).Distinct().ToList();
+    }
+
+    public List<WarriorCard> ListWarriorsCardsInHand()
+    {
+        return warriorCardsinPlayerHands;
+    }
+
+    public void StartAttackDefenseRound() {
+        var playerCards = playerWarriorHandPanelTransform.GetComponentsInChildren<AttackDefense>();
         foreach (var card in playerCards)
         {
-            card.IsDraggable = false;
+            card.isClickable = true;
         }
+    }
+
+    public void EndAttackDefenseRound()
+    {
+        var playerCards = playerWarriorHandPanelTransform.GetComponentsInChildren<AttackDefense>();
+        foreach (var card in playerCards)
+        {
+            card.isClickable = false;
+        }
+    }
+
+    public void AddTerritory(Territory territory)
+    {
+        territoriesWithPlayer.Add(territory);
+        territory.SetOwner(this);
+    }
+
+    public List<Territory> GetTerritoriesWithPlayer()
+    {
+        return territoriesWithPlayer;
     }
 }

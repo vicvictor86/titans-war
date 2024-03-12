@@ -1,21 +1,28 @@
-using System.Collections;
-using System.Collections.Generic;
+using Domain;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class Territory : MonoBehaviour
 {
-    public string Type;
+    public TerrainType Type;
     public int Point;
+    private PlayerDeck owner;
 
-    // Start is called before the first frame update
-    void Start()
+    void OnMouseDown()
     {
-        
+        if (Input.GetMouseButtonDown(0))
+        {
+            var city = transform.parent.GetComponent<City>();
+            var cityInfoPrefab = city.cityInfoPrefab;
+            GameManager.instance.InstantiateCityInfo(city, Type, this);
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    public void SetOwner(PlayerDeck newOwner)
     {
-        
+        owner = newOwner;
     }
+
+
+    
 }

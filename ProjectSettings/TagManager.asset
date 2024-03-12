@@ -8,6 +8,9 @@ TagManager:
   - TerrainCard
   - City
   - Territory
+  - Canvas
+  - CityInfo
+  - AttackButton
   layers:
   - Default
   - TransparentFX
