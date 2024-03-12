@@ -8,26 +8,25 @@ using UnityEngine;
 public class PlayerDeck : MonoBehaviour
 {
     [Header("Warrior Cards")]
-    private List<WarriorCard> availableInDeckWarriorCards = new();
-    private List<WarriorCard> warriorCardsinPlayerHands = new();
-    private List<WarriorCard> discartedWarriorCards = new();
-    private readonly int warriorsInitialQuantity = 1;
+    public List<WarriorCard> DiscartedWarriorCards = new();
+    public List<WarriorCard> WarriorCardsAvailableInDeck { get; set; } = new();
+    public List<WarriorCard> WarriorCardsInPlayerHand { get; private set; } = new();
+    public int WarriorsInitialQuantity { get; } = 1;
 
     [Header("Terrain Cards")]
-    private List<TerrainCard> terrainCardsinPlayerHands = new();
-    private List<TerrainCard> discartedTerrainCards = new();
-    private readonly int terrainsInitialQuantity = 1;
+    public int RiverCardsQuantity  = 0;
+    public int MountainCardsQuantity = 0;
+    public int PlainsCardsQuantity = 0;
+    public int DesertCardsQuantity = 0;
+    public List<TerrainCard> TerrainCardsInPlayerHand { get; set; } = new();
+    public int terrainsInitialQuantity { get; } = 1;
 
-    private int riverCardsQuantity = 0;
-    private int mountainCardsQuantity = 0;
-    private int plainsCardsQuantity = 0;
-    private int desertCardsQuantity = 0;
 
-    [SerializeField] private string playerSide = "Spartha";
+    [SerializeField] public string PlayerSide { get; } = "Spartha";
 
     [Header("Mission Cards")]
-    public List<MissionCard> missionCardsinPlayerHands = new();
-    private int missionCardsInitialQuantity = 3;
+    public List<MissionCard> MissionCardsInPlayerHand = new();
+    public int MissionCardsInitialQuantity { get; private set; } = 3;
     [SerializeField] public Transform missionCardPlace;
     [SerializeField] private GameObject missionPrefab;
 
@@ -38,6 +37,11 @@ public class PlayerDeck : MonoBehaviour
     [SerializeField] private Transform playerTerrainHandPanelTransform;
 
     private List<Territory> territoriesWithPlayer = new();
+
+    [Header("Related Scripts")]
+    [SerializeField] private DiscartCard discartCards;
+    [SerializeField] private DrawCard drawCard;
+    [SerializeField] private InstantiateCard instantiateCard;
 
     private void Update()
     {
@@ -54,119 +58,52 @@ public class PlayerDeck : MonoBehaviour
 
     public List<WarriorCard> DrawInitialsWarriorsCard()
     {
-        availableInDeckWarriorCards = playerSide == "Spartha" ? CardDatabase.SparthaCardList : CardDatabase.PersaCardList;
+        Debug.Log(drawCard);
+        drawCard.DrawInitialsWarriorsCard(this);
 
-        for (int i = warriorsInitialQuantity; i > 0; i--)
-        {
-            int randomCard = UnityEngine.Random.Range(0, availableInDeckWarriorCards.Count);
-
-            InstantiateNewWarriorCard(availableInDeckWarriorCards[randomCard]);
-
-            warriorCardsinPlayerHands.Add(availableInDeckWarriorCards[randomCard]);
-            availableInDeckWarriorCards.Remove(availableInDeckWarriorCards[randomCard]);
-        }
-
-        return warriorCardsinPlayerHands;
+        return WarriorCardsInPlayerHand;
     }
 
-    public List<TerrainCard> DrawInitialsTerrainsCard(Dictionary<TerrainType, TerrainCardDeck> terrainCardsAvailableInDeck)
+    public List<TerrainCard> DrawInitialsTerrainsCard()
     {
-        for (int i = terrainsInitialQuantity; i > 0; i--)
-        {
-            TerrainType terrainSelected = TerrainCardDeck.SelectRandomTerrainType();
+        drawCard.DrawInitialsTerrainsCard(this);
 
-            AddTerrainCardToHand(terrainSelected);
-        }
+        UIManager.instance.UpdateTerrainCards(RiverCardsQuantity, MountainCardsQuantity, PlainsCardsQuantity, DesertCardsQuantity);
 
-        UIManager.instance.UpdateTerrainCards(riverCardsQuantity, mountainCardsQuantity, plainsCardsQuantity, desertCardsQuantity);
-
-        return terrainCardsinPlayerHands;
+        return TerrainCardsInPlayerHand;
     }
 
     public List<MissionCard> DrawInitialsMissionsCard(List<MissionCard> missionCardsAvailable)
     {
-        for (int i = missionCardsInitialQuantity; i > 0; i--)
-        {
-            int randomCard = UnityEngine.Random.Range(0, missionCardsAvailable.Count);
+        drawCard.DrawInitialsMissionsCard(missionCardsAvailable, this);
 
-            var cardSelected = missionCardsAvailable[randomCard];
-            InstantiateNewMissionCard(cardSelected);
-
-            missionCardsinPlayerHands.Add(cardSelected);
-            missionCardsAvailable.Remove(missionCardsAvailable[randomCard]);
-        }
-
-        return missionCardsinPlayerHands;
+        return MissionCardsInPlayerHand;
     }
 
-    private GameObject InstantiateNewWarriorCard(WarriorCard warriorCard)
+    public GameObject InstantiateNewWarriorCard(WarriorCard warriorCard)
     {
-        var cardInstance = Instantiate(warriorPrefab, new Vector3(0, 0, 0), Quaternion.identity, playerWarriorHandPanelTransform);
-        cardInstance.GetComponent<DisplayWarriorCard>().Card = warriorCard;
-        cardInstance.transform.SetAsFirstSibling();
+        var cardInstance = instantiateCard.InstantiateNewWarriorCard(warriorCard, warriorPrefab, playerWarriorHandPanelTransform);
 
         return cardInstance;
     }
 
-    private GameObject InstantiateNewMissionCard(MissionCard missionCard)
+    public GameObject InstantiateNewMissionCard(MissionCard missionCard)
     {
-        var cardInstance = Instantiate(missionPrefab, missionCardPlace.position, Quaternion.identity, missionCardPlace.transform);
-        cardInstance.GetComponent<DisplayMissionCard>().Card = missionCard;
-        cardInstance.transform.SetAsFirstSibling();
+        var cardInstance = instantiateCard.InstantiateNewMissionCard(missionCard, missionPrefab, missionCardPlace);
 
         return cardInstance;
     }
 
     public WarriorCard DrawWarriorCard()
     {
-        if (availableInDeckWarriorCards.Count <= 0)
-        {
-            if (discartedWarriorCards.Count > 0)
-            {
-                ResetWarriorDeck();
-            } else
-            {
-                Debug.Log("No more cards available in deck");
-                return null;
-            }
-        }
-
-        WarriorCard cardDrawed = availableInDeckWarriorCards[0];
-
-        warriorCardsinPlayerHands.Add(cardDrawed);
-        availableInDeckWarriorCards.RemoveAt(0);
-
-        var warriorCardInstance = InstantiateNewWarriorCard(cardDrawed);
-        warriorCardInstance.GetComponent<DragCards>().IsDraggable = true;
+        var cardDrawed = drawCard.DrawWarriorCard(this);
 
         return cardDrawed;
     }
 
     public TerrainCard DrawTerrainCard()
     {
-        if (GameManager.instance.terrainCardsAvailable.Count <= 0)
-        {
-            if (discartedTerrainCards.Count > 0)
-            {
-                ResetTerrainDeck();
-            }
-            else
-            {
-                Debug.Log("No more cards available in deck");
-                return null;
-            }
-        }
-
-        TerrainType terrainSelected = TerrainCardDeck.SelectRandomTerrainType();
-        AddTerrainCardToHand(terrainSelected);
-
-        Debug.Log(terrainSelected);
-
-        var cardDrawed = GameManager.instance.terrainCardsAvailable[terrainSelected].terrainCard;
-
-        Debug.Log(cardDrawed);
-
-        Debug.Log(GameManager.instance.terrainCardsAvailable[terrainSelected].quantityCard);
+        var cardDrawed = drawCard.DrawTerrainCard(this);
 
         return cardDrawed;
     }
@@ -188,56 +125,32 @@ public class PlayerDeck : MonoBehaviour
 
     public void DiscartWarriorCard(WarriorCard warriorCardDiscarted)
     {
-        var warriorHand = playerWarriorHandPanelTransform.GetComponentsInChildren<DisplayWarriorCard>();
-        var warriorCard = warriorHand.FirstOrDefault(displayCard => displayCard.Card == warriorCardDiscarted);
-        Destroy(warriorCard.gameObject);
-        warriorCardsinPlayerHands.Remove(warriorCardDiscarted);
-        discartedWarriorCards.Add(warriorCardDiscarted);
+        discartCards.DiscartWarriorCard(warriorCardDiscarted, playerWarriorHandPanelTransform, WarriorCardsInPlayerHand, DiscartedWarriorCards);
     }
 
     public void DiscartTerrainCard(TerrainCard terrainCardDiscarted)
     {
-        var terrainHand = playerTerrainHandPanelTransform.GetComponentsInChildren<DisplayTerrainCard>();
-        var terrainCard = terrainHand.FirstOrDefault(displayCard => displayCard.Card == terrainCardDiscarted);
-        Destroy(terrainCard.gameObject);
-        terrainCardsinPlayerHands.Remove(terrainCardDiscarted);
-        discartedTerrainCards.Add(terrainCardDiscarted);
+        discartCards.DiscartTerrainCard(terrainCardDiscarted, playerTerrainHandPanelTransform,  TerrainCardsInPlayerHand);
     }
 
     public void DiscartMissionCard(MissionCard missionCardToDiscart)
     {
-        var missionHand = missionCardPlace.GetComponentsInChildren<DisplayMissionCard>();
-        var missionCard = missionHand.FirstOrDefault(displayCard => displayCard.Card == missionCardToDiscart);
-        Destroy(missionCard.gameObject);
-        missionCardsinPlayerHands.Remove(missionCardToDiscart);
-        GameManager.instance.missionCardsAvailables.Add(missionCardToDiscart);
+        discartCards.DiscartMissionCard(missionCardToDiscart, missionCardPlace, MissionCardsInPlayerHand);
     }
 
     public void DiscartTerrainCardByType(TerrainType type)
     {
-        var terrainHand = playerTerrainHandPanelTransform.GetComponentsInChildren<DisplayTerrainCard>();
-        var terrainCard = terrainHand.FirstOrDefault(displayCard => displayCard.Card.Type == type);
-        DiscartTerrainCard(terrainCard.Card);
+        discartCards.DiscartTerrainCardByType(type, playerTerrainHandPanelTransform, TerrainCardsInPlayerHand);
     }
 
-    private void ResetWarriorDeck()
+    public void ResetWarriorDeck()
     {
-        foreach(var item in discartedWarriorCards)
+        foreach(var item in DiscartedWarriorCards)
         {
-            availableInDeckWarriorCards.Add(item);
+            WarriorCardsAvailableInDeck.Add(item);
         }
 
-        discartedWarriorCards.Clear();
-    }
-
-    private void ResetTerrainDeck()
-    { 
-        foreach (var item in discartedTerrainCards)
-        {
-            //availableInDeckTerrainCards.Add(item);
-        }
-
-        discartedTerrainCards.Clear();
+        DiscartedWarriorCards.Clear();
     }
 
     public void Round()
@@ -252,7 +165,7 @@ public class PlayerDeck : MonoBehaviour
 
     public List<TerrainCard> ListTerrainCardsInHand()
     {
-        return terrainCardsinPlayerHands;
+        return  TerrainCardsInPlayerHand;
     }
 
     public List<TerrainType> ListTerrainTypesDisponibleToAttack()
@@ -262,7 +175,7 @@ public class PlayerDeck : MonoBehaviour
 
     public List<WarriorCard> ListWarriorsCardsInHand()
     {
-        return warriorCardsinPlayerHands;
+        return WarriorCardsInPlayerHand;
     }
 
     public void StartAttackDefenseRound() {
@@ -292,35 +205,5 @@ public class PlayerDeck : MonoBehaviour
     {
         return territoriesWithPlayer;
     }
-
-    private void AddTerrainCardToHand(TerrainType terrainType)
-    {
-        GameManager.instance.terrainCardsAvailable[terrainType].quantityCard--;
-        terrainCardsinPlayerHands.Add(GameManager.instance.terrainCardsAvailable[terrainType].terrainCard);
-
-        switch (terrainType)
-        {
-            case TerrainType.RIVER:
-                Debug.Log("Novo river");
-                riverCardsQuantity++;
-                break;
-            case TerrainType.MOUNTAINS:
-                Debug.Log("Novo mountain");
-                mountainCardsQuantity++;
-                break;
-            case TerrainType.PLAINS:
-                Debug.Log("Novo plains");
-                plainsCardsQuantity++;
-                break;
-            case TerrainType.DESERT:
-                Debug.Log("Novo desert");
-                desertCardsQuantity++;
-                break;
-            default:
-                break;
-        }
-
-        UIManager.instance.UpdateTerrainCards(riverCardsQuantity, mountainCardsQuantity, plainsCardsQuantity, desertCardsQuantity);
-
-    }
+    
 }

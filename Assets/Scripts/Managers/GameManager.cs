@@ -62,7 +62,7 @@ public class GameManager : MonoBehaviour
         foreach (var player in playerList)
         {
             player.DrawInitialsWarriorsCard();
-            player.DrawInitialsTerrainsCard(terrainCardsAvailable);
+            player.DrawInitialsTerrainsCard();
             player.DrawInitialsMissionsCard(missionCardsAvailables);
         }
 

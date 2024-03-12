@@ -539,21 +539,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6703254021995995401, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
-      propertyPath: drawCard
-      value: 
-      objectReference: {fileID: 1874129779}
-    - target: {fileID: 6703254021995995401, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
       propertyPath: playerSide
       value: Persa
       objectReference: {fileID: 0}
-    - target: {fileID: 6703254021995995401, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
-      propertyPath: discartCards
-      value: 
-      objectReference: {fileID: 1874129777}
-    - target: {fileID: 6703254021995995401, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
-      propertyPath: instantiateCard
-      value: 
-      objectReference: {fileID: 1874129778}
     - target: {fileID: 6750005592733487812, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 221
@@ -1955,72 +1943,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac0b09e7857660247b1477e93731de29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1874129777 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8839504218941381859, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
-  m_PrefabInstance: {fileID: 94262565}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 73d4bd552aee9da4ea60d516d4238a6c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1874129778 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2297557256921513640, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
-  m_PrefabInstance: {fileID: 94262565}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4da6154e2d2d3524ba9ccaaebb289384, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1874129779 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4586921219217348730, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
-  m_PrefabInstance: {fileID: 94262565}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a06d337cdffbdfc489210fbba2566c05, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1903643292 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8839504218941381859, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
-  m_PrefabInstance: {fileID: 6493579247718507560}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 73d4bd552aee9da4ea60d516d4238a6c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1903643293 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2297557256921513640, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
-  m_PrefabInstance: {fileID: 6493579247718507560}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4da6154e2d2d3524ba9ccaaebb289384, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1903643294 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4586921219217348730, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
-  m_PrefabInstance: {fileID: 6493579247718507560}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a06d337cdffbdfc489210fbba2566c05, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &2038130622 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6106239821347093272, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
@@ -2255,18 +2177,6 @@ PrefabInstance:
       propertyPath: m_ChildAlignment
       value: 4
       objectReference: {fileID: 0}
-    - target: {fileID: 6703254021995995401, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
-      propertyPath: drawCard
-      value: 
-      objectReference: {fileID: 1903643294}
-    - target: {fileID: 6703254021995995401, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
-      propertyPath: discartCards
-      value: 
-      objectReference: {fileID: 1903643292}
-    - target: {fileID: 6703254021995995401, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
-      propertyPath: instantiateCard
-      value: 
-      objectReference: {fileID: 1903643293}
     - target: {fileID: 7910068477804244293, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

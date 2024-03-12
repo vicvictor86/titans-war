@@ -153,6 +153,9 @@ GameObject:
   m_Component:
   - component: {fileID: 6291232410751843735}
   - component: {fileID: 6703254021995995401}
+  - component: {fileID: 4586921219217348730}
+  - component: {fileID: 2297557256921513640}
+  - component: {fileID: 8839504218941381859}
   m_Layer: 0
   m_Name: Player1
   m_TagString: Player
@@ -187,14 +190,57 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da20097f982acd042a9f3b29c07dfd46, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerSide: Spartha
-  missionCardsinPlayerHands: []
+  DiscartedWarriorCards: []
+  RiverCardsQuantity: 0
+  MountainCardsQuantity: 0
+  PlainsCardsQuantity: 0
+  DesertCardsQuantity: 0
+  MissionCardsInPlayerHand: []
   missionCardPlace: {fileID: 5387649957798384839}
   missionPrefab: {fileID: 1246180340114724520, guid: 449c5af2c8bd9a545aeabe311e955e65, type: 3}
   warriorPrefab: {fileID: 1246180340114724520, guid: 4ad30a70aa8c58e47b77d2bf2447d4fd, type: 3}
   terrainPrefab: {fileID: 1246180340114724520, guid: 1f17909f45989a44d8d8eb9844ea4623, type: 3}
   playerWarriorHandPanelTransform: {fileID: 9057653673634451769}
   playerTerrainHandPanelTransform: {fileID: 7719032761308614735}
+  discartCards: {fileID: 0}
+  drawCard: {fileID: 0}
+  instantiateCard: {fileID: 0}
+--- !u!114 &4586921219217348730
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4417549423773324465}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a06d337cdffbdfc489210fbba2566c05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2297557256921513640
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4417549423773324465}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4da6154e2d2d3524ba9ccaaebb289384, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8839504218941381859
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4417549423773324465}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73d4bd552aee9da4ea60d516d4238a6c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5262315020309420975
 GameObject:
   m_ObjectHideFlags: 0
