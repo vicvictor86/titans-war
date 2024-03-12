@@ -13,7 +13,12 @@ public class DrawTerrainCardOnClick : MonoBehaviour, IPointerClickHandler
         bool canDrawCard = GameManager.instance.CanDrawCard(playerDeck);
         if (clickWithLeftButton && canDrawCard && playerDeck != null)
         {
-            playerDeck.DrawTerrainCard();
+            var drawedCard = playerDeck.DrawTerrainCard();
+
+            if (drawedCard is not null)
+            {
+                GameManager.instance.actionMade = true;
+            }
         }
     }
 }

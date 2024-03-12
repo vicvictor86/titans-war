@@ -22,7 +22,6 @@ public class DisplayTerrainCard : DisplayCard<TerrainCard>, IPointerEnterHandler
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        Debug.Log("AAAAIIIIINNN");
         if (!isOverable)
         {
             return;

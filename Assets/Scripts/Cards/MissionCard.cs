@@ -4,4 +4,5 @@ using UnityEngine;
 public class MissionCard : Card
 {
     public string Description;
+    public int Points;
 }

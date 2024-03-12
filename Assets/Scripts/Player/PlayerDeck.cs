@@ -21,6 +21,12 @@ public class PlayerDeck : MonoBehaviour
 
     [SerializeField] private string playerSide = "Spartha";
 
+    [Header("Mission Cards")]
+    public List<MissionCard> missionCardsinPlayerHands = new();
+    private int missionCardsInitialQuantity = 3;
+    [SerializeField] public Transform missionCardPlace;
+    [SerializeField] private GameObject missionPrefab;
+
     [Header("Prefabs")]
     [SerializeField] private GameObject warriorPrefab;
     [SerializeField] private GameObject terrainPrefab;
@@ -59,7 +65,7 @@ public class PlayerDeck : MonoBehaviour
         return warriorCardsinPlayerHands;
     }
 
-    public List<WarriorCard> DrawInitialsTerrainsCard()
+    public List<TerrainCard> DrawInitialsTerrainsCard()
     {
         availableInDeckTerrainCards = CardDatabase.TerrainCardsList;
 
@@ -73,7 +79,23 @@ public class PlayerDeck : MonoBehaviour
             availableInDeckTerrainCards.Remove(availableInDeckTerrainCards[randomCard]);
         }
 
-        return warriorCardsinPlayerHands;
+        return terrainCardsinPlayerHands;
+    }
+
+    public List<MissionCard> DrawInitialsMissionsCard(List<MissionCard> missionCardsAvailable)
+    {
+        for (int i = missionCardsInitialQuantity; i > 0; i--)
+        {
+            int randomCard = Random.Range(0, missionCardsAvailable.Count);
+
+            var cardSelected = missionCardsAvailable[randomCard];
+            InstantiateNewMissionCard(cardSelected);
+
+            missionCardsinPlayerHands.Add(cardSelected);
+            missionCardsAvailable.Remove(missionCardsAvailable[randomCard]);
+        }
+
+        return missionCardsinPlayerHands;
     }
 
     private GameObject InstantiateNewWarriorCard(WarriorCard warriorCard)
@@ -89,6 +111,16 @@ public class PlayerDeck : MonoBehaviour
     {
         var cardInstance = Instantiate(terrainPrefab, new Vector3(0, 0, 0), Quaternion.identity, playerTerrainHandPanelTransform);
         cardInstance.GetComponent<DisplayTerrainCard>().Card = terrainCard;
+        cardInstance.transform.SetAsFirstSibling();
+
+        return cardInstance;
+    }
+
+    private GameObject InstantiateNewMissionCard(MissionCard missionCard)
+    {
+        var canvas = GameObject.FindWithTag("Canvas").GetComponent<Canvas>();
+        var cardInstance = Instantiate(missionPrefab, missionCardPlace.position, Quaternion.identity, missionCardPlace.transform);
+        cardInstance.GetComponent<DisplayMissionCard>().Card = missionCard;
         cardInstance.transform.SetAsFirstSibling();
 
         return cardInstance;
@@ -177,6 +209,15 @@ public class PlayerDeck : MonoBehaviour
         Destroy(terrainCard.gameObject);
         terrainCardsinPlayerHands.Remove(terrainCardDiscarted);
         discartedTerrainCards.Add(terrainCardDiscarted);
+    }
+
+    public void DiscartMissionCard(MissionCard missionCardToDiscart)
+    {
+        var missionHand = missionCardPlace.GetComponentsInChildren<DisplayMissionCard>();
+        var missionCard = missionHand.FirstOrDefault(displayCard => displayCard.Card == missionCardToDiscart);
+        Destroy(missionCard.gameObject);
+        missionCardsinPlayerHands.Remove(missionCardToDiscart);
+        GameManager.instance.missionCardsAvailables.Add(missionCardToDiscart);
     }
 
     public void DiscartTerrainCardByType(TerrainType type)

@@ -9,16 +9,28 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
+    [Header("Players")]
     public PlayerDeck actualPlayer;
     public List<PlayerDeck> playerList;
     public int actualPlayerIndex;
+
+    [Header("Attack/Defense")]
     public bool actionMade = false;
     public WarriorCard attackingCard;
     public WarriorCard defendindCard;
     public Territory contestedTerritory = null;
     public bool attack = false;
+
+    [Header("Positions")]
     public Transform cityInfoPanelPosition;
     public Transform attackButtonPosition;
+
+    [Header("States")]
+    public bool needSelectMissionCard;
+    public int playerAction = 0;
+
+    [Header("Cards Available")]
+    public List<MissionCard> missionCardsAvailables;
 
     private void Awake()
     {
@@ -34,18 +46,69 @@ public class GameManager : MonoBehaviour
         actualPlayer = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerDeck>();
         playerList = GameObject.FindGameObjectsWithTag("Player").Select(PlayerDeck => PlayerDeck.GetComponent<PlayerDeck>()).ToList();
 
+        missionCardsAvailables = new (CardDatabase.MissionCardList);
+
+        FirstRound();
+    }
+
+    void FirstRound()
+    {
         foreach (var player in playerList)
         {
             player.DrawInitialsWarriorsCard();
             player.DrawInitialsTerrainsCard();
+            player.DrawInitialsMissionsCard(missionCardsAvailables);
         }
 
-        PlayerRound();
+        actualPlayerIndex = Random.Range(0, playerList.Count);
+        actualPlayer = playerList[actualPlayerIndex];
+
+        ChangeDisplayMissionToClickable(actualPlayer.missionCardPlace.GetComponentsInChildren<DisplayMissionCard>().ToList());
+
+        needSelectMissionCard = true;
     }
 
-    void Update()
+    private void ChangeDisplayMissionToClickable(List<DisplayMissionCard> displayMissionCards)
     {
-        
+        foreach (var displayMissionCardActual in displayMissionCards)
+        {
+            displayMissionCardActual.isClickable = true;
+        }
+    }
+
+    private PlayerDeck NextPlayer()
+    {
+        return playerList[(actualPlayerIndex + 1) % playerList.Count];
+    }
+
+    public void EndMissionSelection()
+    {
+        Debug.Log("CLICKOU");
+        foreach (var displayMissionCardActual in actualPlayer.missionCardPlace.GetComponentsInChildren<DisplayMissionCard>())
+        {
+            if (!displayMissionCardActual.IsSelected)
+            {
+                actualPlayer.DiscartMissionCard(displayMissionCardActual.Card);
+            }
+
+            displayMissionCardActual.isClickable = false;
+        }
+
+        playerAction++;
+
+        if (playerAction == playerList.Count)
+        {
+            EndFirstRound();
+        } 
+        else
+        {
+            ChangeDisplayMissionToClickable(NextPlayer().missionCardPlace.GetComponentsInChildren<DisplayMissionCard>().ToList());
+        }
+    }
+
+    private void EndFirstRound()
+    {
+        PlayerRound();
     }
 
     private void PlayerRound()
@@ -73,7 +136,6 @@ public class GameManager : MonoBehaviour
     public bool CanDrawCard(PlayerDeck playerdDeck)
     {
         var canDrawCard = !actionMade && playerdDeck == playerList[actualPlayerIndex];
-        actionMade = true;
         return canDrawCard;
     }
 
