@@ -769,6 +769,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3746939421295340297, guid: 90a945cf0e07bdb48a42b7ce51fa8d0a, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: eec8d9d4c3ba60449a0aab924539045a, type: 3}
     - target: {fileID: 8599516149942193828, guid: 90a945cf0e07bdb48a42b7ce51fa8d0a, type: 3}
       propertyPath: m_Name
       value: TerrainHexPrefab

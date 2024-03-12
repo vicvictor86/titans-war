@@ -31,6 +31,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Cards Available")]
     public List<MissionCard> missionCardsAvailables;
+    public Dictionary<TerrainType, TerrainCardDeck> terrainCardsAvailable = new();
 
     private void Awake()
     {
@@ -47,6 +48,11 @@ public class GameManager : MonoBehaviour
         playerList = GameObject.FindGameObjectsWithTag("Player").Select(PlayerDeck => PlayerDeck.GetComponent<PlayerDeck>()).ToList();
 
         missionCardsAvailables = new (CardDatabase.MissionCardList);
+        
+        foreach(var card in CardDatabase.TerrainCardsList)
+        {
+            terrainCardsAvailable.Add(card.Type, new TerrainCardDeck(card, 20));
+        }
 
         FirstRound();
     }
@@ -56,7 +62,7 @@ public class GameManager : MonoBehaviour
         foreach (var player in playerList)
         {
             player.DrawInitialsWarriorsCard();
-            player.DrawInitialsTerrainsCard();
+            player.DrawInitialsTerrainsCard(terrainCardsAvailable);
             player.DrawInitialsMissionsCard(missionCardsAvailables);
         }
 
@@ -83,7 +89,6 @@ public class GameManager : MonoBehaviour
 
     public void EndMissionSelection()
     {
-        Debug.Log("CLICKOU");
         foreach (var displayMissionCardActual in actualPlayer.missionCardPlace.GetComponentsInChildren<DisplayMissionCard>())
         {
             if (!displayMissionCardActual.IsSelected)

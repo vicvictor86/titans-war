@@ -1,8 +1,8 @@
 using Domain;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerDeck : MonoBehaviour
@@ -14,10 +14,14 @@ public class PlayerDeck : MonoBehaviour
     private readonly int warriorsInitialQuantity = 1;
 
     [Header("Terrain Cards")]
-    private List<TerrainCard> availableInDeckTerrainCards = new();
     private List<TerrainCard> terrainCardsinPlayerHands = new();
     private List<TerrainCard> discartedTerrainCards = new();
     private readonly int terrainsInitialQuantity = 1;
+
+    private int riverCardsQuantity = 0;
+    private int mountainCardsQuantity = 0;
+    private int plainsCardsQuantity = 0;
+    private int desertCardsQuantity = 0;
 
     [SerializeField] private string playerSide = "Spartha";
 
@@ -54,7 +58,7 @@ public class PlayerDeck : MonoBehaviour
 
         for (int i = warriorsInitialQuantity; i > 0; i--)
         {
-            int randomCard = Random.Range(0, availableInDeckWarriorCards.Count);
+            int randomCard = UnityEngine.Random.Range(0, availableInDeckWarriorCards.Count);
 
             InstantiateNewWarriorCard(availableInDeckWarriorCards[randomCard]);
 
@@ -65,19 +69,16 @@ public class PlayerDeck : MonoBehaviour
         return warriorCardsinPlayerHands;
     }
 
-    public List<TerrainCard> DrawInitialsTerrainsCard()
+    public List<TerrainCard> DrawInitialsTerrainsCard(Dictionary<TerrainType, TerrainCardDeck> terrainCardsAvailableInDeck)
     {
-        availableInDeckTerrainCards = CardDatabase.TerrainCardsList;
-
         for (int i = terrainsInitialQuantity; i > 0; i--)
         {
-            int randomCard = Random.Range(0, availableInDeckTerrainCards.Count);
+            TerrainType terrainSelected = TerrainCardDeck.SelectRandomTerrainType();
 
-            InstantiateNewTerrainCard(availableInDeckTerrainCards[randomCard]);
-
-            terrainCardsinPlayerHands.Add(availableInDeckTerrainCards[randomCard]);
-            availableInDeckTerrainCards.Remove(availableInDeckTerrainCards[randomCard]);
+            AddTerrainCardToHand(terrainSelected);
         }
+
+        UIManager.instance.UpdateTerrainCards(riverCardsQuantity, mountainCardsQuantity, plainsCardsQuantity, desertCardsQuantity);
 
         return terrainCardsinPlayerHands;
     }
@@ -86,7 +87,7 @@ public class PlayerDeck : MonoBehaviour
     {
         for (int i = missionCardsInitialQuantity; i > 0; i--)
         {
-            int randomCard = Random.Range(0, missionCardsAvailable.Count);
+            int randomCard = UnityEngine.Random.Range(0, missionCardsAvailable.Count);
 
             var cardSelected = missionCardsAvailable[randomCard];
             InstantiateNewMissionCard(cardSelected);
@@ -107,18 +108,8 @@ public class PlayerDeck : MonoBehaviour
         return cardInstance;
     }
 
-    private GameObject InstantiateNewTerrainCard(TerrainCard terrainCard)
-    {
-        var cardInstance = Instantiate(terrainPrefab, new Vector3(0, 0, 0), Quaternion.identity, playerTerrainHandPanelTransform);
-        cardInstance.GetComponent<DisplayTerrainCard>().Card = terrainCard;
-        cardInstance.transform.SetAsFirstSibling();
-
-        return cardInstance;
-    }
-
     private GameObject InstantiateNewMissionCard(MissionCard missionCard)
     {
-        var canvas = GameObject.FindWithTag("Canvas").GetComponent<Canvas>();
         var cardInstance = Instantiate(missionPrefab, missionCardPlace.position, Quaternion.identity, missionCardPlace.transform);
         cardInstance.GetComponent<DisplayMissionCard>().Card = missionCard;
         cardInstance.transform.SetAsFirstSibling();
@@ -153,7 +144,7 @@ public class PlayerDeck : MonoBehaviour
 
     public TerrainCard DrawTerrainCard()
     {
-        if (availableInDeckTerrainCards.Count <= 0)
+        if (GameManager.instance.terrainCardsAvailable.Count <= 0)
         {
             if (discartedTerrainCards.Count > 0)
             {
@@ -166,14 +157,16 @@ public class PlayerDeck : MonoBehaviour
             }
         }
 
-        TerrainCard cardDrawed = availableInDeckTerrainCards[0];
+        TerrainType terrainSelected = TerrainCardDeck.SelectRandomTerrainType();
+        AddTerrainCardToHand(terrainSelected);
 
-        terrainCardsinPlayerHands.Add(cardDrawed);
-        availableInDeckTerrainCards.RemoveAt(0);
+        Debug.Log(terrainSelected);
 
-        var terrainCardInstance = InstantiateNewTerrainCard(cardDrawed);
+        var cardDrawed = GameManager.instance.terrainCardsAvailable[terrainSelected].terrainCard;
 
-        terrainCardInstance.GetComponent<DragCards>().IsDraggable = true;
+        Debug.Log(cardDrawed);
+
+        Debug.Log(GameManager.instance.terrainCardsAvailable[terrainSelected].quantityCard);
 
         return cardDrawed;
     }
@@ -222,7 +215,6 @@ public class PlayerDeck : MonoBehaviour
 
     public void DiscartTerrainCardByType(TerrainType type)
     {
-
         var terrainHand = playerTerrainHandPanelTransform.GetComponentsInChildren<DisplayTerrainCard>();
         var terrainCard = terrainHand.FirstOrDefault(displayCard => displayCard.Card.Type == type);
         DiscartTerrainCard(terrainCard.Card);
@@ -242,7 +234,7 @@ public class PlayerDeck : MonoBehaviour
     { 
         foreach (var item in discartedTerrainCards)
         {
-            availableInDeckTerrainCards.Add(item);
+            //availableInDeckTerrainCards.Add(item);
         }
 
         discartedTerrainCards.Clear();
@@ -299,5 +291,36 @@ public class PlayerDeck : MonoBehaviour
     public List<Territory> GetTerritoriesWithPlayer()
     {
         return territoriesWithPlayer;
+    }
+
+    private void AddTerrainCardToHand(TerrainType terrainType)
+    {
+        GameManager.instance.terrainCardsAvailable[terrainType].quantityCard--;
+        terrainCardsinPlayerHands.Add(GameManager.instance.terrainCardsAvailable[terrainType].terrainCard);
+
+        switch (terrainType)
+        {
+            case TerrainType.RIVER:
+                Debug.Log("Novo river");
+                riverCardsQuantity++;
+                break;
+            case TerrainType.MOUNTAINS:
+                Debug.Log("Novo mountain");
+                mountainCardsQuantity++;
+                break;
+            case TerrainType.PLAINS:
+                Debug.Log("Novo plains");
+                plainsCardsQuantity++;
+                break;
+            case TerrainType.DESERT:
+                Debug.Log("Novo desert");
+                desertCardsQuantity++;
+                break;
+            default:
+                break;
+        }
+
+        UIManager.instance.UpdateTerrainCards(riverCardsQuantity, mountainCardsQuantity, plainsCardsQuantity, desertCardsQuantity);
+
     }
 }
