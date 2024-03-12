@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class TerrainCardDeck
 {
@@ -27,5 +28,14 @@ public class TerrainCardDeck
         TerrainType terrainSelected = (TerrainType) values.GetValue(randomEnumNumber);
 
         return terrainSelected;
+    }
+
+    public static TerrainCard SelectRandomTerrainCard()
+    {
+        TerrainType terrainSelected = SelectRandomTerrainType();
+
+        GameManager.instance.terrainCardsAvailable[terrainSelected].quantityCard--;
+
+        return GameManager.instance.terrainCardsAvailable[terrainSelected].terrainCard;
     }
 }

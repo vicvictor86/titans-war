@@ -560,7 +560,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7719032761308614735, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 231.00098
+      value: 16.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 7761527909835625536, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 123
       objectReference: {fileID: 0}
     - target: {fileID: 7910068477804244293, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
       propertyPath: m_AnchorMax.y
@@ -1373,6 +1377,7 @@ MonoBehaviour:
   mountainCardsQuantityText: {fileID: 1586494799}
   plainsCardsQuantityText: {fileID: 14132459}
   desertCardsQuantityText: {fileID: 594460896}
+  stackedCardsContainer: {fileID: 1535942543}
 --- !u!4 &1079206437
 Transform:
   m_ObjectHideFlags: 0
@@ -1856,6 +1861,11 @@ Transform:
   - {fileID: 511340208}
   m_Father: {fileID: 425394512}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1535942543 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8594864055007354260, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
+  m_PrefabInstance: {fileID: 6493579247718507560}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1586494799 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8432925833375711208, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
@@ -2139,6 +2149,18 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -38.627014
       objectReference: {fileID: 0}
+    - target: {fileID: 3106205921161594296, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
+      propertyPath: m_Name
+      value: PlainsCard
+      objectReference: {fileID: 0}
+    - target: {fileID: 3664480237404458882, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
+      propertyPath: m_Name
+      value: PlainsCard (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4063705529936695482, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
+      propertyPath: m_Name
+      value: PlainsCard (2)
+      objectReference: {fileID: 0}
     - target: {fileID: 5289638972052562614, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -2267,6 +2289,10 @@ PrefabInstance:
       propertyPath: instantiateCard
       value: 
       objectReference: {fileID: 1903643293}
+    - target: {fileID: 7532785803162802437, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
+      propertyPath: m_Name
+      value: PlainsStackedCards
+      objectReference: {fileID: 0}
     - target: {fileID: 7910068477804244293, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

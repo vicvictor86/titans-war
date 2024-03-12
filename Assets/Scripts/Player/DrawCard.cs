@@ -30,36 +30,6 @@ public class DrawCard : MonoBehaviour
         }
     }
 
-    public void AddTerrainCardToHand(TerrainType terrainType, PlayerDeck playerDeck)
-    {
-        GameManager.instance.terrainCardsAvailable[terrainType].quantityCard--;
-        playerDeck.TerrainCardsInPlayerHand.Add(GameManager.instance.terrainCardsAvailable[terrainType].terrainCard);
-
-        switch (terrainType)
-        {
-            case TerrainType.RIVER:
-                Debug.Log("Novo river");
-                playerDeck.RiverCardsQuantity++;
-                break;
-            case TerrainType.MOUNTAINS:
-                Debug.Log("Novo mountain");
-                playerDeck.MountainCardsQuantity++;
-                break;
-            case TerrainType.PLAINS:
-                Debug.Log("Novo plains");
-                playerDeck.PlainsCardsQuantity++;
-                break;
-            case TerrainType.DESERT:
-                Debug.Log("Novo desert");
-                playerDeck.DesertCardsQuantity++;
-                break;
-            default:
-                break;
-        }
-
-        UIManager.instance.UpdateTerrainCards(playerDeck.RiverCardsQuantity, playerDeck.MountainCardsQuantity, playerDeck.PlainsCardsQuantity, playerDeck.DesertCardsQuantity);
-    }
-
     public List<MissionCard> DrawInitialsMissionsCard(List<MissionCard> missionCardsAvailable, PlayerDeck playerDeck)
     {
         for (int i = playerDeck.MissionCardsInitialQuantity; i > 0; i--)
@@ -122,5 +92,35 @@ public class DrawCard : MonoBehaviour
         Debug.Log(GameManager.instance.terrainCardsAvailable[terrainSelected].quantityCard);
 
         return cardDrawed;
+    }
+
+    public void AddTerrainCardToHand(TerrainType terrainType, PlayerDeck playerDeck)
+    {
+        var terrainCard = TerrainCardDeck.SelectRandomTerrainCard();
+        playerDeck.TerrainCardsInPlayerHand.Add(terrainCard);
+
+        switch (terrainType)
+        {
+            case TerrainType.RIVER:
+                Debug.Log("Novo river");
+                playerDeck.RiverCardsQuantity++;
+                break;
+            case TerrainType.MOUNTAINS:
+                Debug.Log("Novo mountain");
+                playerDeck.MountainCardsQuantity++;
+                break;
+            case TerrainType.PLAINS:
+                Debug.Log("Novo plains");
+                playerDeck.PlainsCardsQuantity++;
+                break;
+            case TerrainType.DESERT:
+                Debug.Log("Novo desert");
+                playerDeck.DesertCardsQuantity++;
+                break;
+            default:
+                break;
+        }
+
+        UIManager.instance.UpdateTerrainCards(playerDeck.RiverCardsQuantity, playerDeck.MountainCardsQuantity, playerDeck.PlainsCardsQuantity, playerDeck.DesertCardsQuantity);
     }
 }
