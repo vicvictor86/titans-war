@@ -24,9 +24,7 @@ public class DrawCard : MonoBehaviour
     {
         for (int i = playerDeck.WarriorsInitialQuantity; i > 0; i--)
         {
-            TerrainType terrainSelected = TerrainCardDeck.SelectRandomTerrainType();
-
-            AddTerrainCardToHand(terrainSelected, playerDeck);
+            AddTerrainCardToHand(playerDeck);
         }
     }
 
@@ -81,19 +79,19 @@ public class DrawCard : MonoBehaviour
         }
 
         TerrainType terrainSelected = TerrainCardDeck.SelectRandomTerrainType();
-        AddTerrainCardToHand(terrainSelected, playerDeck);
+        AddTerrainCardToHand(playerDeck);
 
         var cardDrawed = GameManager.instance.terrainCardsAvailable[terrainSelected].terrainCard;
 
         return cardDrawed;
     }
 
-    public void AddTerrainCardToHand(TerrainType terrainType, PlayerDeck playerDeck)
+    public void AddTerrainCardToHand(PlayerDeck playerDeck)
     {
         var terrainCard = TerrainCardDeck.SelectRandomTerrainCard();
         playerDeck.TerrainCardsInPlayerHand.Add(terrainCard);
 
-        switch (terrainType)
+        switch (terrainCard.Type)
         {
             case TerrainType.RIVER:
                 playerDeck.RiverCardsQuantity++;
