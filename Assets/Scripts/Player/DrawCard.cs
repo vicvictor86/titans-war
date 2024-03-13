@@ -83,13 +83,7 @@ public class DrawCard : MonoBehaviour
         TerrainType terrainSelected = TerrainCardDeck.SelectRandomTerrainType();
         AddTerrainCardToHand(terrainSelected, playerDeck);
 
-        Debug.Log(terrainSelected);
-
         var cardDrawed = GameManager.instance.terrainCardsAvailable[terrainSelected].terrainCard;
-
-        Debug.Log(cardDrawed);
-
-        Debug.Log(GameManager.instance.terrainCardsAvailable[terrainSelected].quantityCard);
 
         return cardDrawed;
     }
@@ -102,19 +96,15 @@ public class DrawCard : MonoBehaviour
         switch (terrainType)
         {
             case TerrainType.RIVER:
-                Debug.Log("Novo river");
                 playerDeck.RiverCardsQuantity++;
                 break;
             case TerrainType.MOUNTAINS:
-                Debug.Log("Novo mountain");
                 playerDeck.MountainCardsQuantity++;
                 break;
             case TerrainType.PLAINS:
-                Debug.Log("Novo plains");
                 playerDeck.PlainsCardsQuantity++;
                 break;
             case TerrainType.DESERT:
-                Debug.Log("Novo desert");
                 playerDeck.DesertCardsQuantity++;
                 break;
             default:
