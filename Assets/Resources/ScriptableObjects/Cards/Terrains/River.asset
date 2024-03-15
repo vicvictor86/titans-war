@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2461611c8c1d1046a191d08b26970fa, type: 3}
   m_Name: River
   m_EditorClassIdentifier: 
-  Id: 123
   CardName: River
   CardImage: {fileID: 21300000, guid: 2f50ffe8e148b874db62bca76ce30ed3, type: 3}
   Type: 0

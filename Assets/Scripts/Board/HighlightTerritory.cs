@@ -14,16 +14,6 @@ public class HighlightTerritory : MonoBehaviour, IPointerEnterHandler, IPointerE
         //}
     }
 
-    private void OnMouseOver()
-    {
-        
-    }
-
-    private void OnMouseDown()
-    {
-        
-    }
-
     public void OnPointerExit(PointerEventData eventData)
     {
         //if (eventData.pointerEnter.tag == "Territory")

@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Players")]
     public PlayerDeck actualPlayer;
+    public PlayerDeck NextPlayer => playerList[(actualPlayerIndex + 1) % playerList.Count];
     public List<PlayerDeck> playerList;
     public int actualPlayerIndex;
 
@@ -31,6 +32,8 @@ public class GameManager : MonoBehaviour
 
     [Header("Cards Available")]
     public List<MissionCard> missionCardsAvailables;
+    public Dictionary<TerrainType, TerrainCardDeck> terrainCardsAvailable = new();
+    public List<DisplayMissionCard> missionCardsToChoose = new();
 
     private void Awake()
     {
@@ -47,6 +50,11 @@ public class GameManager : MonoBehaviour
         playerList = GameObject.FindGameObjectsWithTag("Player").Select(PlayerDeck => PlayerDeck.GetComponent<PlayerDeck>()).ToList();
 
         missionCardsAvailables = new (CardDatabase.MissionCardList);
+        
+        foreach(var card in CardDatabase.TerrainCardsList)
+        {
+            terrainCardsAvailable.Add(card.Type, new TerrainCardDeck(card, 20));
+        }
 
         FirstRound();
     }
@@ -63,7 +71,8 @@ public class GameManager : MonoBehaviour
         actualPlayerIndex = Random.Range(0, playerList.Count);
         actualPlayer = playerList[actualPlayerIndex];
 
-        ChangeDisplayMissionToClickable(actualPlayer.missionCardPlace.GetComponentsInChildren<DisplayMissionCard>().ToList());
+        UIManager.instance.OpenMissionCardsToChoosePanel(actualPlayer.MissionCardsInPlayerHand);
+        ChangeDisplayMissionToClickable(missionCardsToChoose);
 
         needSelectMissionCard = true;
     }
@@ -76,19 +85,29 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private PlayerDeck NextPlayer()
-    {
-        return playerList[(actualPlayerIndex + 1) % playerList.Count];
-    }
-
     public void EndMissionSelection()
     {
-        Debug.Log("CLICKOU");
-        foreach (var displayMissionCardActual in actualPlayer.missionCardPlace.GetComponentsInChildren<DisplayMissionCard>())
+        Debug.Log($"Usuário {playerList[(actualPlayerIndex + playerAction) % playerList.Count]}");
+        int missionCardsSelected = 0;
+        foreach (var displayMissionCardActual in missionCardsToChoose)
+        {
+            if (displayMissionCardActual.IsSelected)
+            {
+                missionCardsSelected++;
+            }
+        }
+
+        if (missionCardsSelected == 0)
+        {
+            Debug.LogError("You have to select at least one mission card.");
+            return;
+        }
+
+        foreach (var displayMissionCardActual in missionCardsToChoose)
         {
             if (!displayMissionCardActual.IsSelected)
             {
-                actualPlayer.DiscartMissionCard(displayMissionCardActual.Card);
+                playerList[(actualPlayerIndex + playerAction) % playerList.Count].DiscartMissionCard(displayMissionCardActual.Card);
             }
 
             displayMissionCardActual.isClickable = false;
@@ -102,12 +121,16 @@ public class GameManager : MonoBehaviour
         } 
         else
         {
-            ChangeDisplayMissionToClickable(NextPlayer().missionCardPlace.GetComponentsInChildren<DisplayMissionCard>().ToList());
+            ChangeDisplayMissionToClickable(NextPlayer.missionCardPlace.GetComponentsInChildren<DisplayMissionCard>().ToList());
+
+            UIManager.instance.OpenMissionCardsToChoosePanel(NextPlayer.MissionCardsInPlayerHand);
+            ChangeDisplayMissionToClickable(missionCardsToChoose);
         }
     }
 
     private void EndFirstRound()
     {
+        UIManager.instance.CloseMissionCardsToChoosePanel();
         PlayerRound();
     }
 
