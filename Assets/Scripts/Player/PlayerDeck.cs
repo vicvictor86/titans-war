@@ -14,7 +14,7 @@ public class PlayerDeck : MonoBehaviour
     public int WarriorsInitialQuantity { get; } = 1;
 
     [Header("Terrain Cards")]
-    public int RiverCardsQuantity  = 0;
+    public int RiverCardsQuantity = 0;
     public int MountainCardsQuantity = 0;
     public int PlainsCardsQuantity = 0;
     public int DesertCardsQuantity = 0;
@@ -58,10 +58,20 @@ public class PlayerDeck : MonoBehaviour
 
     public List<WarriorCard> DrawInitialsWarriorsCard()
     {
-        Debug.Log(drawCard);
         drawCard.DrawInitialsWarriorsCard(this);
 
         return WarriorCardsInPlayerHand;
+    }
+
+    public int GetPlayerPoints()
+    {
+        int totalPoints = 0;
+        foreach(var territory in territoriesWithPlayer)
+        {
+            totalPoints += territory.Point;
+        }
+
+        return totalPoints;
     }
 
     public List<TerrainCard> DrawInitialsTerrainsCard()
@@ -130,7 +140,7 @@ public class PlayerDeck : MonoBehaviour
 
     public void DiscartTerrainCard(TerrainCard terrainCardDiscarted)
     {
-        discartCards.DiscartTerrainCard(terrainCardDiscarted, playerTerrainHandPanelTransform,  TerrainCardsInPlayerHand);
+        discartCards.DiscartTerrainCard(terrainCardDiscarted, TerrainCardsInPlayerHand, this);
     }
 
     public void DiscartMissionCard(MissionCard missionCardToDiscart)
@@ -140,7 +150,7 @@ public class PlayerDeck : MonoBehaviour
 
     public void DiscartTerrainCardByType(TerrainType type)
     {
-        discartCards.DiscartTerrainCardByType(type, playerTerrainHandPanelTransform, TerrainCardsInPlayerHand);
+        discartCards.DiscartTerrainCardByType(type, playerTerrainHandPanelTransform, TerrainCardsInPlayerHand, this);
     }
 
     public void ResetWarriorDeck()
@@ -199,6 +209,7 @@ public class PlayerDeck : MonoBehaviour
     {
         territoriesWithPlayer.Add(territory);
         territory.SetOwner(this);
+        UIManager.instance.UpdatePlayerTotalPoints(GetPlayerPoints());
     }
 
     public List<Territory> GetTerritoriesWithPlayer()

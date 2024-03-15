@@ -21,6 +21,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject firstRoundGameObject;
     [SerializeField] private GameObject missionCardsToChoosePanel;
 
+    [Header("Player Status")]
+    [SerializeField] private GameObject playerTotalPoints;
+
     private void Awake()
     {
         if (instance == null)
@@ -117,5 +120,10 @@ public class UIManager : MonoBehaviour
         GameManager.instance.missionCardsToChoose.Clear();
 
         Destroy(firstRoundGameObject.gameObject);
+    }
+
+    public void UpdatePlayerTotalPoints(int playerTotalPoints)
+    {
+        this.playerTotalPoints.GetComponent<TextMeshProUGUI>().text = playerTotalPoints.ToString();
     }
 }
