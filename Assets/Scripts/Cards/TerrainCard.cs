@@ -5,5 +5,4 @@ using Domain;
 public class TerrainCard : Card
 {
     public TerrainType Type;
-    public int Strength;
 }

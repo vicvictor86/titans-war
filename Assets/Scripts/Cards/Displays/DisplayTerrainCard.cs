@@ -7,7 +7,6 @@ using UnityEngine.EventSystems;
 public class DisplayTerrainCard : DisplayCard<TerrainCard>
 {
     public TextMeshProUGUI TerrainTypeText;
-    public TextMeshProUGUI StrengthText;
 
     //private Animator anim;
     //private bool isOverable = true;
@@ -15,7 +14,6 @@ public class DisplayTerrainCard : DisplayCard<TerrainCard>
     protected override void Start()
     {
         base.Start();
-        StrengthText.text = Card.Strength.ToString();
         TerrainTypeText.text = Card.Type.ToString();
         //anim = gameObject.GetComponent<Animator>();
     }
