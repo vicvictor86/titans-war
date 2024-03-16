@@ -39,6 +39,19 @@ public class City : MonoBehaviour
     private int minPoint = 1;
     private int maxPoint = 4;
 
+    [Serializable]
+    private struct CityBenefits 
+    {
+        public int MultiplicativeCoefficient;
+        public int AdditiveCoefficient;
+        public string Description => $"{MultiplicativeCoefficient}X + {AdditiveCoefficient}";
+    };
+
+    [Header("Benefits")]
+    [SerializeField] private CityBenefits cityBenefits;
+
+    public PlayerDeck Owner { get; private set; }
+
     void Start()
     {
         desertQuantityReadOnly = desertQuantity;
@@ -74,6 +87,8 @@ public class City : MonoBehaviour
             var territoryPointText = territory.GetComponentInChildren<TextMeshPro>();
             var territorySprite = territory.GetComponent<SpriteRenderer>();
             var territoryInstance = territory.GetComponent<Territory>();
+
+            territoryInstance.SetCity(this);
 
             ChooseTerritoryPoint(territoryPointText, territoryInstance);
 
@@ -133,6 +148,31 @@ public class City : MonoBehaviour
     public int GetMountainsQuantity()
     {
         return mountainsQuantityReadOnly;
+    }
+
+    public string GetBenefitDescription()
+    {
+        return cityBenefits.Description;
+    }
+
+    public void ValidAndSetOwnership(PlayerDeck player)
+    {
+        int playerTerritoryCount = territoriesGameObject.Select(territory => territory.GetComponent<Territory>())
+            .Where(territory => territory.Owner == player).Count();
+        if (playerTerritoryCount >= 7)
+        {
+            Owner = player;
+        }
+    }
+
+    public int GetPointsForPlayer(PlayerDeck player)
+    {
+        var basePoints = territoriesGameObject.Select(territory => territory.GetComponent<Territory>())
+            .Where(territory => territory.Owner == player).Sum(territoty => territoty.Point);
+
+        return player == Owner ? 
+            cityBenefits.MultiplicativeCoefficient * basePoints + cityBenefits.AdditiveCoefficient
+            : basePoints;
     }
 
     private void ChooseTerritoryPoint(TextMeshPro territoryPointText, Territory territoryInstance)

@@ -19,10 +19,10 @@ public class DiscartCard : MonoBehaviour
 
     public void DiscartTerrainCard(TerrainCard terrainCardDiscarted, Transform playerTerrainHandPanelTransform, List<TerrainCard> terrainCardsinPlayerHands)
     {
-        var terrainHand = playerTerrainHandPanelTransform.GetComponentsInChildren<DisplayTerrainCard>();
-        var terrainCard = terrainHand.FirstOrDefault(displayCard => displayCard.Card == terrainCardDiscarted);
+        //var terrainHand = playerTerrainHandPanelTransform.GetComponentsInChildren<DisplayTerrainCard>();
+        //var terrainCard = terrainHand.FirstOrDefault(displayCard => displayCard.Card == terrainCardDiscarted);
 
-        Destroy(terrainCard.gameObject);
+        //Destroy(terrainCard.gameObject);
 
         terrainCardsinPlayerHands.Remove(terrainCardDiscarted);
     }

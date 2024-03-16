@@ -11,6 +11,7 @@ TagManager:
   - Canvas
   - CityInfo
   - AttackButton
+  - TerritoryInfo
   layers:
   - Default
   - TransparentFX

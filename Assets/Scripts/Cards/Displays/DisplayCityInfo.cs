@@ -10,6 +10,7 @@ public class DisplayCityInfo : MonoBehaviour
     public TextMeshProUGUI PlainsQuantityText;
     public TextMeshProUGUI MountainsQuantityText;
     public TextMeshProUGUI AdvantageText;
+    public TextMeshProUGUI Player;
 
     protected void Start()
     {
@@ -18,7 +19,9 @@ public class DisplayCityInfo : MonoBehaviour
         DesertQuantityText.text = City.GetDesertQuantity().ToString();
         PlainsQuantityText.text = City.GetPlainsQuantity().ToString();
         MountainsQuantityText.text = City.GetMountainsQuantity().ToString();
-        AdvantageText.text = "PlaceHolder";
+        AdvantageText.text = City.GetBenefitDescription();
+        //Deve ser trocado para nome do jogador ou coisa do tipo
+        Player.text = (GameManager.instance.playerList.IndexOf(City.Owner) + 1).ToString();
     }
 
 }

@@ -13,9 +13,9 @@ public class DrawWarriorCardOnClick : MonoBehaviour, IPointerClickHandler
         bool canDrawCard = GameManager.instance.CanDrawCard(playerDeck);
         if (clickWithLeftButton && canDrawCard && playerDeck != null)
         {
-            var drawedCard = playerDeck.DrawWarriorCard();
+            var drawnCard = playerDeck.DrawWarriorCard();
 
-            if(drawedCard is not null)
+            if(drawnCard != null)
             {
                 GameManager.instance.actionMade = true;
             }
