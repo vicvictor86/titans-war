@@ -1,4 +1,5 @@
 using Domain;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -6,11 +7,20 @@ public class Territory : MonoBehaviour, IPointerClickHandler
 {
     public TerrainType Type;
     public int Point;
-    private PlayerDeck owner;
+    public PlayerDeck Owner { get; private set; }
+    public City City { get; private set; }
+
+    [Header("Prefabs")]
+    public GameObject territoryInfoPrefab;
 
     public void SetOwner(PlayerDeck newOwner)
     {
-        owner = newOwner;
+        Owner = newOwner;
+    }
+
+    public void SetCity(City city)
+    {
+        City = city;
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -19,7 +29,7 @@ public class Territory : MonoBehaviour, IPointerClickHandler
         {
             var city = transform.parent.GetComponent<City>();
             var cityInfoPrefab = city.cityInfoPrefab;
-            GameManager.instance.InstantiateCityInfo(city, Type, this);
+            GameManager.instance.InstantiateCityAndTerritoryInfo(city, Type, this);
         }
     }
 }

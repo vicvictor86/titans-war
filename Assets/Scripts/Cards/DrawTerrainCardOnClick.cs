@@ -7,7 +7,7 @@ public class DrawTerrainCardOnClick : MonoBehaviour, IPointerClickHandler
 {
     public void OnPointerClick(PointerEventData eventData)
     {
-        var playerDeck = GameManager.instance.actualPlayer;
+        var playerDeck = GameManager.instance.ActualPlayer;
         bool clickWithLeftButton = eventData.button == PointerEventData.InputButton.Left;
         bool canDrawCard = GameManager.instance.CanDrawCard(playerDeck);
         if (clickWithLeftButton && canDrawCard && playerDeck != null)

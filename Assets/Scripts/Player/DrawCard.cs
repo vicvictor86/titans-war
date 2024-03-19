@@ -12,7 +12,7 @@ public class DrawCard : MonoBehaviour
         for (int i = playerDeck.WarriorsInitialQuantity; i > 0; i--)
         {
             int randomCard = Random.Range(0, playerDeck.WarriorCardsAvailableInDeck.Count);
-
+            Debug.Log(randomCard);
             playerDeck.InstantiateNewWarriorCard(playerDeck.WarriorCardsAvailableInDeck[randomCard]);
 
             playerDeck.WarriorCardsInPlayerHand.Add(playerDeck.WarriorCardsAvailableInDeck[randomCard]);

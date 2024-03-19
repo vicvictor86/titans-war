@@ -9,9 +9,10 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
-    [Header("Players")]
-    public PlayerDeck actualPlayer;
+    
+    public PlayerDeck ActualPlayer => playerList[actualPlayerIndex];
     public PlayerDeck NextPlayer => playerList[(actualPlayerIndex + 1) % playerList.Count];
+    [Header("Players")]
     public List<PlayerDeck> playerList;
     public int actualPlayerIndex;
 
@@ -24,6 +25,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Positions")]
     public Transform cityInfoPanelPosition;
+    public Transform territoryInfoPanelPosition;
     public Transform attackButtonPosition;
 
     [Header("States")]
@@ -35,6 +37,7 @@ public class GameManager : MonoBehaviour
     public Dictionary<TerrainType, TerrainCardDeck> terrainCardsAvailable = new();
     public List<DisplayMissionCard> missionCardsToChoose = new();
 
+
     private void Awake()
     {
         if (instance == null)
@@ -45,8 +48,6 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        actualPlayerIndex = 0;
-        actualPlayer = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerDeck>();
         playerList = GameObject.FindGameObjectsWithTag("Player").Select(PlayerDeck => PlayerDeck.GetComponent<PlayerDeck>()).ToList();
 
         missionCardsAvailables = new (CardDatabase.MissionCardList);
@@ -69,9 +70,8 @@ public class GameManager : MonoBehaviour
         }
 
         actualPlayerIndex = Random.Range(0, playerList.Count);
-        actualPlayer = playerList[actualPlayerIndex];
 
-        UIManager.instance.OpenMissionCardsToChoosePanel(actualPlayer.MissionCardsInPlayerHand);
+        UIManager.instance.OpenMissionCardsToChoosePanel(ActualPlayer.MissionCardsInPlayerHand);
         ChangeDisplayMissionToClickable(missionCardsToChoose);
 
         needSelectMissionCard = true;
@@ -136,15 +136,13 @@ public class GameManager : MonoBehaviour
 
     private void PlayerRound()
     {
-        actualPlayer = playerList[actualPlayerIndex];
         actionMade = false;
-        actualPlayer.Round();
+        ActualPlayer.Round();
     }
 
     private void PlayerEndRound()
     {
-        actualPlayer = playerList[actualPlayerIndex];
-        actualPlayer.EndRound();
+        ActualPlayer.EndRound();
     }
 
     public void EndTurn()
@@ -168,7 +166,7 @@ public class GameManager : MonoBehaviour
         contestedTerritory = territory;
         attack = true;
         Debug.Log("Pode escolher a carta");
-        actualPlayer.StartAttackDefenseRound();
+        ActualPlayer.StartAttackDefenseRound();
     }
 
     public void SetAttackDefenseCard(WarriorCard card)
@@ -178,7 +176,7 @@ public class GameManager : MonoBehaviour
             Debug.Log("Setou a carta de ataque");
             attackingCard = card;
             attack = false;
-            actualPlayer.EndAttackDefenseRound();
+            ActualPlayer.EndAttackDefenseRound();
             Debug.Log("Defesa pode escolher a carta");
             playerList[(actualPlayerIndex + 1) % playerList.Count].StartAttackDefenseRound();
         }
@@ -198,7 +196,7 @@ public class GameManager : MonoBehaviour
         if (attackValue > defenseValue)
         {
             Debug.Log("Ataque venceu");
-            actualPlayer.AddTerritory(contestedTerritory);
+            ActualPlayer.AddTerritory(contestedTerritory);
         }
         else if (defenseValue > attackValue)
         {
@@ -215,25 +213,33 @@ public class GameManager : MonoBehaviour
         else {
             Debug.Log("Empate");
         }
-        actualPlayer.DiscartWarriorCard(attackingCard);
+        ActualPlayer.DiscartWarriorCard(attackingCard);
         playerList[(actualPlayerIndex + 1) % playerList.Count].DiscartWarriorCard(defendindCard);
-        actualPlayer.DiscartTerrainCardByType(contestedTerritory.Type);
+        ActualPlayer.DiscartTerrainCardByType(contestedTerritory.Type);
+        Destroy(GameObject.FindWithTag("AttackButton"));
         attackingCard = null;
         defendindCard = null;
         contestedTerritory = null;
     }
 
-    public void InstantiateCityInfo(City city, TerrainType terrainType, Territory territory)
+    public void InstantiateCityAndTerritoryInfo(City city, TerrainType terrainType, Territory territory)
     {
         Destroy(GameObject.FindWithTag("CityInfo"));
+        Destroy(GameObject.FindWithTag("TerritoryInfo"));
         Destroy(GameObject.FindWithTag("AttackButton"));
         var canvas = GameObject.FindWithTag("Canvas").GetComponent<Canvas>();
-        var infoInstance = Instantiate(city.cityInfoPrefab, cityInfoPanelPosition.position, Quaternion.identity, canvas.transform);
-        infoInstance.GetComponent<DisplayCityInfo>().City = city;
-        if (actualPlayer.ListTerrainTypesDisponibleToAttack().Contains(terrainType) && !actionMade)
+        var cityInfoInstance = Instantiate(city.cityInfoPrefab, cityInfoPanelPosition.position, Quaternion.identity, canvas.transform);
+        cityInfoInstance.GetComponent<DisplayCityInfo>().City = city;
+        var territoryInfoInstace = Instantiate(territory.territoryInfoPrefab, territoryInfoPanelPosition.position, Quaternion.identity, canvas.transform);
+        territoryInfoInstace.GetComponent<DisplayTerritoryInfo>().Territory = territory;
+        if (ActualPlayer.ListTerrainTypesDisponibleToAttack().Contains(terrainType) &&
+            !actionMade &&
+            ActualPlayer.WarriorCardsInPlayerHand.Any() &&
+            territory.Owner != ActualPlayer)
         {
             var attackButton = Instantiate(city.attackButton, attackButtonPosition.position, Quaternion.identity, canvas.transform);
             attackButton.GetComponent<AttackButton>().territory = territory;
         };
     }
+
 }

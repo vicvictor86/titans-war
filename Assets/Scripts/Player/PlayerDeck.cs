@@ -11,7 +11,7 @@ public class PlayerDeck : MonoBehaviour
     public List<WarriorCard> DiscartedWarriorCards = new();
     public List<WarriorCard> WarriorCardsAvailableInDeck { get; set; } = new();
     public List<WarriorCard> WarriorCardsInPlayerHand { get; private set; } = new();
-    public int WarriorsInitialQuantity { get; } = 1;
+    public int WarriorsInitialQuantity { get; } = 12;
 
     [Header("Terrain Cards")]
     public int RiverCardsQuantity  = 0;
@@ -19,7 +19,7 @@ public class PlayerDeck : MonoBehaviour
     public int PlainsCardsQuantity = 0;
     public int DesertCardsQuantity = 0;
     public List<TerrainCard> TerrainCardsInPlayerHand { get; set; } = new();
-    public int terrainsInitialQuantity { get; } = 1;
+    public int terrainsInitialQuantity { get; } = 30;
 
 
     [SerializeField] public string PlayerSide { get; } = "Spartha";
@@ -141,6 +141,26 @@ public class PlayerDeck : MonoBehaviour
     public void DiscartTerrainCardByType(TerrainType type)
     {
         discartCards.DiscartTerrainCardByType(type, playerTerrainHandPanelTransform, TerrainCardsInPlayerHand);
+        RemoveTerrainCard(type);
+        UIManager.instance.UpdateTerrainCards(RiverCardsQuantity, MountainCardsQuantity, PlainsCardsQuantity, DesertCardsQuantity);
+    }
+
+    public void RemoveTerrainCard(TerrainType type)
+    {
+        switch (type){
+            case TerrainType.RIVER:
+                RiverCardsQuantity--;
+                break;
+            case TerrainType.PLAINS:
+                PlainsCardsQuantity--; 
+                break;
+            case TerrainType.DESERT:
+                DesertCardsQuantity--;
+                break;
+            case TerrainType.MOUNTAINS:
+                MountainCardsQuantity--;
+                break;
+        }
     }
 
     public void ResetWarriorDeck()
@@ -199,11 +219,18 @@ public class PlayerDeck : MonoBehaviour
     {
         territoriesWithPlayer.Add(territory);
         territory.SetOwner(this);
+        territory.City.ValidAndSetOwnership(this);
     }
 
     public List<Territory> GetTerritoriesWithPlayer()
     {
         return territoriesWithPlayer;
     }
-    
+
+    public int GetPoints()
+    {
+        var cities = GameObject.FindGameObjectsWithTag("City").Select(gameObject => gameObject.GetComponent<City>());
+        return cities.Sum(city => city.GetPointsForPlayer(this));
+    }
+
 }
