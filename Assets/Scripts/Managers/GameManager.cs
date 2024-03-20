@@ -121,8 +121,6 @@ public class GameManager : MonoBehaviour
         } 
         else
         {
-            ChangeDisplayMissionToClickable(NextPlayer.missionCardPlace.GetComponentsInChildren<DisplayMissionCard>().ToList());
-
             UIManager.instance.OpenMissionCardsToChoosePanel(NextPlayer.MissionCardsInPlayerHand);
             ChangeDisplayMissionToClickable(missionCardsToChoose);
         }

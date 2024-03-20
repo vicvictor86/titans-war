@@ -35,7 +35,7 @@ public class DrawCard : MonoBehaviour
             int randomCard = Random.Range(0, missionCardsAvailable.Count);
 
             var cardSelected = missionCardsAvailable[randomCard];
-            playerDeck.InstantiateNewMissionCard(cardSelected);
+            //playerDeck.InstantiateNewMissionCard(cardSelected);
 
             playerDeck.MissionCardsInPlayerHand.Add(cardSelected);
             missionCardsAvailable.Remove(missionCardsAvailable[randomCard]);
@@ -108,7 +108,5 @@ public class DrawCard : MonoBehaviour
             default:
                 break;
         }
-
-        UIManager.instance.UpdateTerrainCards(playerDeck.RiverCardsQuantity, playerDeck.MountainCardsQuantity, playerDeck.PlainsCardsQuantity, playerDeck.DesertCardsQuantity);
     }
 }

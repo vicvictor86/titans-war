@@ -68,8 +68,6 @@ public class PlayerDeck : MonoBehaviour
     {
         drawCard.DrawInitialsTerrainsCard(this);
 
-        UIManager.instance.UpdateTerrainCards(RiverCardsQuantity, MountainCardsQuantity, PlainsCardsQuantity, DesertCardsQuantity);
-
         return TerrainCardsInPlayerHand;
     }
 
@@ -142,7 +140,6 @@ public class PlayerDeck : MonoBehaviour
     {
         discartCards.DiscartTerrainCardByType(type, playerTerrainHandPanelTransform, TerrainCardsInPlayerHand);
         RemoveTerrainCard(type);
-        UIManager.instance.UpdateTerrainCards(RiverCardsQuantity, MountainCardsQuantity, PlainsCardsQuantity, DesertCardsQuantity);
     }
 
     public void RemoveTerrainCard(TerrainType type)

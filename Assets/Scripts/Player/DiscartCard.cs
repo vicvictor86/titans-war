@@ -29,11 +29,6 @@ public class DiscartCard : MonoBehaviour
 
     public void DiscartMissionCard(MissionCard missionCardToDiscart, Transform missionCardPlace, List<MissionCard> missionCardsinPlayerHands)
     {
-        var missionHand = missionCardPlace.GetComponentsInChildren<DisplayMissionCard>();
-        var missionCard = missionHand.FirstOrDefault(displayCard => displayCard.Card == missionCardToDiscart);
-
-        Destroy(missionCard.gameObject);
-
         missionCardsinPlayerHands.Remove(missionCardToDiscart);
         GameManager.instance.missionCardsAvailables.Add(missionCardToDiscart);
     }

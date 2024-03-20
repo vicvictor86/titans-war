@@ -8,81 +8,20 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager instance;
 
-    [Header("Cards Quantity")]
-    [SerializeField] private TextMeshProUGUI riverCardsQuantityText;
-    [SerializeField] private TextMeshProUGUI mountainCardsQuantityText;
-    [SerializeField] private TextMeshProUGUI plainsCardsQuantityText;
-    [SerializeField] private TextMeshProUGUI desertCardsQuantityText;
-
-    [Header("Stacked Cards")]
-    [SerializeField] private GameObject stackedCardsContainer;
-
     [Header("Mission Cards")]
     [SerializeField] private GameObject firstRoundGameObject;
     [SerializeField] private GameObject missionCardsToChoosePanel;
+    [SerializeField] private GameObject playerMissionCards;
+    [SerializeField] private GameObject playerMissionCardsContent;
+
+    [Header("Prefabs")]
+    [SerializeField] private GameObject missionCardPrefab;
 
     private void Awake()
     {
         if (instance == null)
         {
             instance = this;
-        }
-    }
-
-    public void UpdateTerrainCards(int riverCardsQuantity, int mountainsCardsQuantity, int plainsCardsQuantity, int desertCardsQuantity)
-    {
-        riverCardsQuantityText.text = riverCardsQuantity.ToString();
-        mountainCardsQuantityText.text = mountainsCardsQuantity.ToString();
-        plainsCardsQuantityText.text = plainsCardsQuantity.ToString();
-        desertCardsQuantityText.text = desertCardsQuantity.ToString();
-
-        foreach(Transform stackedCardContainerChild in stackedCardsContainer.transform)
-        {
-            int terrainTypeQuantity = 0;
-            if (stackedCardContainerChild.gameObject.name.Contains("River"))
-            {
-                terrainTypeQuantity = riverCardsQuantity;
-            }
-            else if (stackedCardContainerChild.gameObject.name.Contains("Mountain"))
-            {
-                terrainTypeQuantity = mountainsCardsQuantity;
-            }
-            else if (stackedCardContainerChild.gameObject.name.Contains("Plains"))
-            {
-                terrainTypeQuantity = plainsCardsQuantity;
-            }
-            else if (stackedCardContainerChild.gameObject.name.Contains("Desert"))
-            {
-                terrainTypeQuantity = desertCardsQuantity;
-            }
-
-            int stackedCardQuantity = stackedCardContainerChild.transform.childCount;
-            int actualStackedCard = 1;
-            foreach (Transform stackedCard in stackedCardContainerChild.transform)
-            {
-                bool isLastStackedCardChild = actualStackedCard == stackedCardQuantity;
-                if (isLastStackedCardChild)
-                {
-                    bool needToActivate = terrainTypeQuantity >= 1;
-                    stackedCard.gameObject.SetActive(needToActivate);
-                } 
-
-                bool isBeforeLastStackedCardChild = actualStackedCard == stackedCardQuantity - 1;
-                if (isBeforeLastStackedCardChild)
-                {
-                    bool needToActivate = terrainTypeQuantity > 10;
-                    stackedCard.gameObject.SetActive(needToActivate);
-                }
-
-                bool isAntpenultStackedCardChild = actualStackedCard == stackedCardQuantity - 2;
-                if (isAntpenultStackedCardChild)
-                {
-                    bool needToActivate = terrainTypeQuantity > 15;
-                    stackedCard.gameObject.SetActive(needToActivate);
-                }
-
-                actualStackedCard++;
-            }
         }
     }
 
@@ -103,7 +42,6 @@ public class UIManager : MonoBehaviour
             childDisplayMissionCard.Points.text = missionCardInPlayerHandSelected.Points.ToString();
             childDisplayMissionCard.NameText.text = missionCardInPlayerHandSelected.Description;
             childDisplayMissionCard.CardImage.sprite = missionCardInPlayerHandSelected.CardImage;
-            childDisplayMissionCard.isClickable = true;
             childDisplayMissionCard.IsSelected = false;
 
             missionCardInPlayerHandToSelectIndex++;
@@ -117,5 +55,15 @@ public class UIManager : MonoBehaviour
         GameManager.instance.missionCardsToChoose.Clear();
 
         Destroy(firstRoundGameObject.gameObject);
+    }
+
+    public void ShowMissionCardsScroller(List<MissionCard> missionCards)
+    {
+        playerMissionCards.SetActive(true);
+        foreach(var missionCard in missionCards)
+        {
+            var cardInstance = Instantiate(missionCardPrefab, playerMissionCardsContent.transform);
+            cardInstance.GetComponent<DisplayMissionCard>().Card = missionCard;
+        }
     }
 }
