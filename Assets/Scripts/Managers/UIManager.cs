@@ -13,8 +13,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject missionCardsToChoosePanel;
     [SerializeField] private GameObject playerMissionCards;
     [SerializeField] private GameObject playerMissionCardsContent;
+    public bool isMouseOverMissionCardsScroller = false;
 
-    private List<GameObject> missionCardsInScroller = new();
+    private List<MissionCard> missionCardsInScroller = new();
     private bool missionCardScrollerIsOpen = false;
 
     [Header("Prefabs")]
@@ -35,14 +36,14 @@ public class UIManager : MonoBehaviour
             var missionCardsInPlayerHand = GameManager.instance.ActualPlayer.MissionCardsInPlayerHand;
             if (missionCardsInScroller.Count != missionCardsInPlayerHand.Count)
             {
-                DisplayMissionCard newMissionCard = null;
+                MissionCard newMissionCard = null;
                 foreach(var missionCardsInScrollerActual in missionCardsInScroller)
                 {
-                    foreach(var missionCard in missionCardsInPlayerHand)
+                    foreach(var missionCardInPlayerHandActualIteration in missionCardsInPlayerHand)
                     {
-                        if (missionCardsInScrollerActual.GetComponent<DisplayMissionCard>().Card.Description != missionCard.Description)
+                        if (missionCardsInScrollerActual.Description != missionCardInPlayerHandActualIteration.Description)
                         {
-                            newMissionCard = missionCardsInScrollerActual.GetComponent<DisplayMissionCard>();
+                            newMissionCard = missionCardInPlayerHandActualIteration;
                         }
                     }
                 }
@@ -50,8 +51,8 @@ public class UIManager : MonoBehaviour
                 if (newMissionCard)
                 {
                     var cardInstance = Instantiate(missionCardPrefab, playerMissionCardsContent.transform);
-                    cardInstance.GetComponent<DisplayMissionCard>().Card = newMissionCard.Card;
-                    missionCardsInScroller.Add(cardInstance);
+                    cardInstance.GetComponent<DisplayMissionCard>().Card = newMissionCard;
+                    missionCardsInScroller.Add(newMissionCard);
                 }
             }
         }
@@ -98,7 +99,7 @@ public class UIManager : MonoBehaviour
             {
                 var cardInstance = Instantiate(missionCardPrefab, playerMissionCardsContent.transform);
                 cardInstance.GetComponent<DisplayMissionCard>().Card = missionCard;
-                missionCardsInScroller.Add(cardInstance);
+                missionCardsInScroller.Add(missionCard);
             }
         }
         else 

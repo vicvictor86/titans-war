@@ -34,6 +34,11 @@ public class CameraControl : MonoBehaviour
 
     void Update()
     {
+        if (UIManager.instance.isMouseOverMissionCardsScroller)
+        {
+            return;
+        }
+
         if (Input.GetKey(KeyCode.Mouse1))
         {
             CalculateMovement();

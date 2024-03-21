@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -22,6 +23,7 @@ public class GameManager : MonoBehaviour
     public WarriorCard defendindCard;
     public Territory contestedTerritory = null;
     public bool attack = false;
+    [SerializeField] private Button endTurnButton;
 
     [Header("Positions")]
     public Transform cityInfoPanelPosition;
@@ -51,8 +53,8 @@ public class GameManager : MonoBehaviour
         playerList = GameObject.FindGameObjectsWithTag("Player").Select(PlayerDeck => PlayerDeck.GetComponent<PlayerDeck>()).ToList();
 
         missionCardsAvailables = new (CardDatabase.MissionCardList);
-        
-        foreach(var card in CardDatabase.TerrainCardsList)
+
+        foreach (var card in CardDatabase.TerrainCardsList)
         {
             terrainCardsAvailable.Add(card.Type, new TerrainCardDeck(card, 20));
         }
@@ -160,6 +162,8 @@ public class GameManager : MonoBehaviour
 
     public void AttackRound(Territory territory)
     {
+        endTurnButton.interactable = false;
+
         actionMade = true;
         contestedTerritory = territory;
         attack = true;
@@ -218,6 +222,8 @@ public class GameManager : MonoBehaviour
         attackingCard = null;
         defendindCard = null;
         contestedTerritory = null;
+
+        endTurnButton.interactable = true;
     }
 
     public void InstantiateCityAndTerritoryInfo(City city, TerrainType terrainType, Territory territory)

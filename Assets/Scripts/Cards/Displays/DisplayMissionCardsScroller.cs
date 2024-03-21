@@ -13,16 +13,4 @@ public class DisplayMissionCardsScroller : MonoBehaviour
     {
         UIManager.instance.HandleClickMissionCardsScroller(player.MissionCardsInPlayerHand);
     }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }
