@@ -14,6 +14,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject playerMissionCards;
     [SerializeField] private GameObject playerMissionCardsContent;
 
+    private List<GameObject> missionCardsInScroller = new();
+    private bool missionCardScrollerIsOpen = false;
+
     [Header("Prefabs")]
     [SerializeField] private GameObject missionCardPrefab;
 
@@ -22,6 +25,35 @@ public class UIManager : MonoBehaviour
         if (instance == null)
         {
             instance = this;
+        }
+    }
+
+    private void Update()
+    {
+        if (missionCardScrollerIsOpen)
+        {
+            var missionCardsInPlayerHand = GameManager.instance.ActualPlayer.MissionCardsInPlayerHand;
+            if (missionCardsInScroller.Count != missionCardsInPlayerHand.Count)
+            {
+                DisplayMissionCard newMissionCard = null;
+                foreach(var missionCardsInScrollerActual in missionCardsInScroller)
+                {
+                    foreach(var missionCard in missionCardsInPlayerHand)
+                    {
+                        if (missionCardsInScrollerActual.GetComponent<DisplayMissionCard>().Card.Description != missionCard.Description)
+                        {
+                            newMissionCard = missionCardsInScrollerActual.GetComponent<DisplayMissionCard>();
+                        }
+                    }
+                }
+
+                if (newMissionCard)
+                {
+                    var cardInstance = Instantiate(missionCardPrefab, playerMissionCardsContent.transform);
+                    cardInstance.GetComponent<DisplayMissionCard>().Card = newMissionCard.Card;
+                    missionCardsInScroller.Add(cardInstance);
+                }
+            }
         }
     }
 
@@ -57,13 +89,27 @@ public class UIManager : MonoBehaviour
         Destroy(firstRoundGameObject.gameObject);
     }
 
-    public void ShowMissionCardsScroller(List<MissionCard> missionCards)
+    public void HandleClickMissionCardsScroller(List<MissionCard> missionCards)
     {
-        playerMissionCards.SetActive(true);
-        foreach(var missionCard in missionCards)
+        if (!missionCardScrollerIsOpen)
         {
-            var cardInstance = Instantiate(missionCardPrefab, playerMissionCardsContent.transform);
-            cardInstance.GetComponent<DisplayMissionCard>().Card = missionCard;
+            playerMissionCards.SetActive(true);
+            foreach (var missionCard in missionCards)
+            {
+                var cardInstance = Instantiate(missionCardPrefab, playerMissionCardsContent.transform);
+                cardInstance.GetComponent<DisplayMissionCard>().Card = missionCard;
+                missionCardsInScroller.Add(cardInstance);
+            }
         }
+        else 
+        { 
+            playerMissionCards.SetActive(false);
+            foreach (Transform missionCardContent in playerMissionCardsContent.transform)
+            {
+                Destroy(missionCardContent.gameObject);
+                missionCardsInScroller.Clear();
+            }
+        }
+        missionCardScrollerIsOpen = !missionCardScrollerIsOpen;
     }
 }
