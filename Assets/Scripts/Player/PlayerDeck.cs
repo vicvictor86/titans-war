@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -52,6 +53,9 @@ public class PlayerDeck : MonoBehaviour
         turnIcon.sprite = null;
         turnIcon.color = new Color(0, 0, 0, 0);
     }
+
+    [Header("Text")]
+    public TextMeshProUGUI FinalPoints;
 
     private void Update()
     {

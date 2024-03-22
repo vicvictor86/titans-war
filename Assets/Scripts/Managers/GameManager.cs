@@ -1,7 +1,9 @@
+using Assets.Scripts.Cards.Missions;
 using Domain;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -43,6 +45,13 @@ public class GameManager : MonoBehaviour
     const string attackTurn = "attackTurn";
     const string looser = "looser";
     const string winner = "winner";
+    [Header("UI")]
+    public TextMeshProUGUI EndGameText;
+
+    [Header("Prefab")]
+    public GameObject EndGameImage;
+
+    private MissionStrategyFactory MissionStrategyFactory = new MissionStrategyFactory();
 
     private void Awake()
     {
@@ -254,6 +263,10 @@ public class GameManager : MonoBehaviour
 
         UIManager.instance.HideCards();
         endTurnButton.interactable = true;
+        if (ValidEndGame())
+        {
+            EndGame();
+        }
     }
 
     public void InstantiateCityAndTerritoryInfo(City city, TerrainType terrainType, Territory territory)
@@ -275,5 +288,38 @@ public class GameManager : MonoBehaviour
             attackButton.GetComponent<AttackButton>().territory = territory;
         };
     }
+
+    private bool ValidEndGame()
+    {
+        return GameObject.FindGameObjectsWithTag("City").Select(gameObject => gameObject.GetComponent<City>()).All(city => city.Owner != null);
+    }
+
+    private void EndGame() {
+        var canvas = GameObject.FindWithTag("Canvas").GetComponent<Canvas>();
+        Instantiate(EndGameImage, canvas.transform);
+        EndGameText.text = $"Player {GetWinner()} venceu";
+        EndGameText.gameObject.SetActive(true);
+    }
+
+    private int GetWinner()
+    {
+        List<(int index, int points)> playerPoints = new();
+
+        playerList.Select((player, index) => new { player, index })
+            .ToList().ForEach(indexedPlayer =>
+            {
+                var finalPoints = indexedPlayer.player.GetPoints()
+                + indexedPlayer.player.MissionCardsInPlayerHand.Where(mission => MissionStrategyFactory.GetMissionCardStrategy(mission.MissionType).IsComplete(indexedPlayer.player)).Sum(mission => mission.Points)
+                - indexedPlayer.player.MissionCardsInPlayerHand.Where(mission => !MissionStrategyFactory.GetMissionCardStrategy(mission.MissionType).IsComplete(indexedPlayer.player)).Sum(mission => mission.Points);
+
+                indexedPlayer.player.FinalPoints.gameObject.SetActive(true);
+                indexedPlayer.player.FinalPoints.text = finalPoints.ToString();
+
+                playerPoints.Add(new(indexedPlayer.index + 1, finalPoints));
+            });
+
+        return playerPoints.OrderByDescending(player => player.points).FirstOrDefault().index;
+    }
+
 
 }
