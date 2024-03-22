@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerDeck : MonoBehaviour
 {
@@ -38,10 +39,19 @@ public class PlayerDeck : MonoBehaviour
 
     private List<Territory> territoriesWithPlayer = new();
 
+    [Header("UI")]
+    [SerializeField] public Image turnIcon;
+
     [Header("Related Scripts")]
     [SerializeField] private DiscartCard discartCards;
     [SerializeField] private DrawCard drawCard;
     [SerializeField] private InstantiateCard instantiateCard;
+
+    private void Start()
+    {
+        turnIcon.sprite = null;
+        turnIcon.color = new Color(0, 0, 0, 0);
+    }
 
     private void Update()
     {

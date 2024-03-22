@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -7,6 +8,10 @@ using UnityEngine;
 public class UIManager : MonoBehaviour
 {
     public static UIManager instance;
+
+    [Header("Icons")]
+    [SerializeField] private GameObject turnIcon;
+    [SerializeField] private Dictionary<string, Sprite> iconsAvailable; 
 
     [Header("Mission Cards")]
     [SerializeField] private GameObject firstRoundGameObject;
@@ -21,12 +26,23 @@ public class UIManager : MonoBehaviour
     [Header("Prefabs")]
     [SerializeField] private GameObject missionCardPrefab;
 
+    [Header("References")]
+    [SerializeField] private GameObject battlefieldGameObject;
+
+    [Header("Related Scripts")]
+    [SerializeField] private BattlefieldUI battlefieldUI;
+
     private void Awake()
     {
         if (instance == null)
         {
             instance = this;
         }
+    }
+
+    private void Start()
+    {
+        iconsAvailable = Resources.LoadAll<Sprite>("Sprites/UI/Round").ToDictionary(sprite => sprite.name, sprite => sprite);
     }
 
     private void Update()
@@ -112,5 +128,32 @@ public class UIManager : MonoBehaviour
             }
         }
         missionCardScrollerIsOpen = !missionCardScrollerIsOpen;
+    }
+
+    public void SetPlayerTurnIcon(PlayerDeck actualPlayer, string iconName, float alpha)
+    {
+        actualPlayer.turnIcon.color = new Color(1f, 1f, 1f, alpha);
+        actualPlayer.turnIcon.sprite = iconsAvailable[iconName];
+    }
+
+    public void ShowBattlefield()
+    {
+        battlefieldGameObject.SetActive(true);
+    }
+
+    public void ShowAttackWarriorCard(WarriorCard warriorCard)
+    {
+        battlefieldUI.ShowAttackWarriorCard(warriorCard);
+    }
+
+    public void ShowDefenseWarriorCard(WarriorCard warriorCard)
+    {
+        battlefieldUI.ShowDefenseWarriorCard(warriorCard);
+    }
+
+    public void HideCards()
+    {
+        battlefieldGameObject.SetActive(false);
+        battlefieldUI.HideCards();
     }
 }
