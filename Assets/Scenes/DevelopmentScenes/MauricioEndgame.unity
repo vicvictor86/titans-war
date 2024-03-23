@@ -627,6 +627,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1874129779}
     - target: {fileID: 6703254021995995401, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
+      propertyPath: turnIcon
+      value: 
+      objectReference: {fileID: 2030753271}
+    - target: {fileID: 6703254021995995401, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
       propertyPath: playerSide
       value: Persa
       objectReference: {fileID: 0}
@@ -1594,6 +1598,7 @@ MonoBehaviour:
   defendindCard: {fileID: 0}
   contestedTerritory: {fileID: 0}
   attack: 0
+  endTurnButton: {fileID: 0}
   cityInfoPanelPosition: {fileID: 1310055305}
   territoryInfoPanelPosition: {fileID: 680382539}
   attackButtonPosition: {fileID: 1092246492}
@@ -1950,11 +1955,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a828f87485850c4283c77abe9c6598d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  turnIcon: {fileID: 0}
   firstRoundGameObject: {fileID: 632054096}
   missionCardsToChoosePanel: {fileID: 237229665}
   playerMissionCards: {fileID: 1143371546}
   playerMissionCardsContent: {fileID: 456723681}
+  isMouseOverMissionCardsScroller: 0
   missionCardPrefab: {fileID: 1246180340114724520, guid: 449c5af2c8bd9a545aeabe311e955e65, type: 3}
+  battlefieldGameObject: {fileID: 0}
+  battlefieldUI: {fileID: 0}
 --- !u!4 &1079206437
 Transform:
   m_ObjectHideFlags: 0
@@ -3268,6 +3277,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 449c5af2c8bd9a545aeabe311e955e65, type: 3}
+--- !u!114 &1859582129 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7425743983486987047, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
+  m_PrefabInstance: {fileID: 6493579247718507560}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1874129777 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8839504218941381859, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
@@ -3354,6 +3374,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: da20097f982acd042a9f3b29c07dfd46, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2030753271 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7425743983486987047, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
+  m_PrefabInstance: {fileID: 94262565}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!224 &2038130622 stripped
@@ -3618,6 +3649,10 @@ PrefabInstance:
       propertyPath: drawCard
       value: 
       objectReference: {fileID: 1903643294}
+    - target: {fileID: 6703254021995995401, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
+      propertyPath: turnIcon
+      value: 
+      objectReference: {fileID: 1859582129}
     - target: {fileID: 6703254021995995401, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
       propertyPath: FinalPoints
       value: 
