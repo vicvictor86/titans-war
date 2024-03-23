@@ -24,6 +24,9 @@ public class GameManager : MonoBehaviour
     public WarriorCard defendindCard;
     public Territory contestedTerritory = null;
     public bool attack = false;
+    private int extraPower = 0;
+    [SerializeField] private TextMeshProUGUI endAttackTurnText;
+
     [SerializeField] private Button endTurnButton;
 
     [Header("Positions")]
@@ -39,6 +42,7 @@ public class GameManager : MonoBehaviour
     public List<MissionCard> missionCardsAvailables;
     public Dictionary<TerrainType, TerrainCardDeck> terrainCardsAvailable = new();
     public List<DisplayMissionCard> missionCardsToChoose = new();
+    public List<PowerCard> powerCardsAvailable = new();
 
     const string playerTurn = "playerTurn";
     const string defenseTurn = "defenseTurn";
@@ -66,6 +70,7 @@ public class GameManager : MonoBehaviour
         playerList = GameObject.FindGameObjectsWithTag("Player").Select(PlayerDeck => PlayerDeck.GetComponent<PlayerDeck>()).ToList();
 
         missionCardsAvailables = new (CardDatabase.MissionCardList);
+        powerCardsAvailable = new (CardDatabase.PowerCardsList);
 
         foreach (var card in CardDatabase.TerrainCardsList)
         {
@@ -189,6 +194,19 @@ public class GameManager : MonoBehaviour
         ActualPlayer.StartAttackDefenseRound();
     }
 
+    public void SetExtraPower(int extraPowerSelected)
+    {
+        extraPower = extraPowerSelected == extraPower ? 0 : extraPowerSelected;
+
+        endAttackTurnText.text = extraPower == 0 ? "Atacar sem poder extra" : $"Atacar com poder extra de {extraPower}";
+    }
+
+    public void EndAttackTurnWithExtraPowerCard()
+    {
+        UIManager.instance.CloseExtraPowerCardPanel();
+        EndAttackTurn();
+    }
+
     public void SetAttackDefenseCard(WarriorCard card)
     {
         if (attack)
@@ -199,14 +217,15 @@ public class GameManager : MonoBehaviour
             attack = false;
 
             UIManager.instance.ShowAttackWarriorCard(attackingCard);
-            ActualPlayer.EndAttackDefenseRound();
 
-            Debug.Log("Defesa pode escolher a carta");
-            
-            UIManager.instance.SetPlayerTurnIcon(ActualPlayer, attackTurn, 0f);
-            UIManager.instance.SetPlayerTurnIcon(NextPlayer, defenseTurn, 1f);
-
-            NextPlayer.StartAttackDefenseRound();
+            if(ActualPlayer.PowerCardsInPlayerHand.Count > 0)
+            {
+                UIManager.instance.ShowExtraPowerCardPanel();
+            } 
+            else
+            {
+                EndAttackTurn();
+            }
         }
         else
         {
@@ -220,12 +239,25 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void EndAttackTurn()
+    {
+        ActualPlayer.EndAttackDefenseRound();
+
+        Debug.Log("Defesa pode escolher a carta");
+
+        UIManager.instance.SetPlayerTurnIcon(ActualPlayer, attackTurn, 0f);
+        UIManager.instance.SetPlayerTurnIcon(NextPlayer, defenseTurn, 1f);
+
+        NextPlayer.StartAttackDefenseRound();
+    }
+
     public IEnumerator CalculateWinner()
     {
         yield return new WaitForSeconds(2f);
 
-        var attackValue = attackingCard.GetPowerValue(contestedTerritory.Type);
+        var attackValue = attackingCard.GetPowerValue(contestedTerritory.Type) + extraPower;
         var defenseValue = defendindCard.GetPowerValue(contestedTerritory.Type);
+
         if (attackValue > defenseValue)
         {
             Debug.Log("Ataque venceu");
@@ -240,7 +272,8 @@ public class GameManager : MonoBehaviour
             UIManager.instance.SetPlayerTurnIcon(NextPlayer, winner, 1f);
             if (NextPlayer.GetTerritoriesWithPlayer().Contains(contestedTerritory))
             {
-                //Adicionar carta de poder
+                int randomIndexPowerCard = Random.Range(0, powerCardsAvailable.Count);
+                ActualPlayer.AddNewPowerCard(powerCardsAvailable[randomIndexPowerCard]);
             }
             else
             {
@@ -260,6 +293,7 @@ public class GameManager : MonoBehaviour
         attackingCard = null;
         defendindCard = null;
         contestedTerritory = null;
+        extraPower = 0;
 
         UIManager.instance.HideCards();
         endTurnButton.interactable = true;

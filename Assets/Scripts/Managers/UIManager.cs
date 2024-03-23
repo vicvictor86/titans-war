@@ -28,6 +28,7 @@ public class UIManager : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private GameObject battlefieldGameObject;
+    [SerializeField] private GameObject chooseExtraPowerCardPanel;
 
     [Header("Related Scripts")]
     [SerializeField] private BattlefieldUI battlefieldUI;
@@ -155,5 +156,15 @@ public class UIManager : MonoBehaviour
     {
         battlefieldGameObject.SetActive(false);
         battlefieldUI.HideCards();
+    }
+
+    public void ShowExtraPowerCardPanel()
+    {
+        chooseExtraPowerCardPanel.SetActive(true);
+    }
+
+    public void CloseExtraPowerCardPanel()
+    {
+        chooseExtraPowerCardPanel.SetActive(false);
     }
 }

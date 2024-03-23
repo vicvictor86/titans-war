@@ -11,11 +11,13 @@ public class CardDatabase : MonoBehaviour
     public static List<TerrainCard> TerrainCardsList = new();
     public static List<MissionCard> MissionCardList = new();
 
+    public static List<PowerCard> PowerCardsList = new();
     private void Awake()
     {
         SparthaCardList = Resources.LoadAll<WarriorCard>("ScriptableObjects/Cards/Warriors/Spartha").ToList();
         PersaCardList = Resources.LoadAll<WarriorCard>("ScriptableObjects/Cards/Warriors/Persa").ToList();
         TerrainCardsList = Resources.LoadAll<TerrainCard>("ScriptableObjects/Cards/Terrains/").ToList();
         MissionCardList = Resources.LoadAll<MissionCard>("ScriptableObjects/Cards/Missions/").ToList();
+        PowerCardsList = Resources.LoadAll<PowerCard>("ScriptableObjects/Cards/ExtraPoints/").ToList();
     }
 }
