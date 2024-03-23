@@ -1,4 +1,5 @@
 ﻿using Domain;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -66,8 +67,9 @@ namespace Assets.Scripts.Cards.Missions
 
         private static bool ValidTerritoryTypeMission(PlayerDeck player, TerrainType terrainType)
         {
-            return !GetAllTerritoryByTerrainType(terrainType)
-                .Any(territory => territory.Owner != player);
+            var allTerrain = GetAllTerritoryByTerrainType(terrainType);
+
+            return allTerrain.Where(territory => territory.Owner == player).Count() >= (allTerrain.Count() / 2) + 1;
         }
 
         private static City GetCityByName(string cityName)
