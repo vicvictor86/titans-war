@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -8,18 +9,28 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager instance;
 
-    [Header("Cards Quantity")]
-    [SerializeField] private TextMeshProUGUI riverCardsQuantityText;
-    [SerializeField] private TextMeshProUGUI mountainCardsQuantityText;
-    [SerializeField] private TextMeshProUGUI plainsCardsQuantityText;
-    [SerializeField] private TextMeshProUGUI desertCardsQuantityText;
-
-    [Header("Stacked Cards")]
-    [SerializeField] private GameObject stackedCardsContainer;
+    [Header("Icons")]
+    [SerializeField] private GameObject turnIcon;
+    [SerializeField] private Dictionary<string, Sprite> iconsAvailable; 
 
     [Header("Mission Cards")]
     [SerializeField] private GameObject firstRoundGameObject;
     [SerializeField] private GameObject missionCardsToChoosePanel;
+    [SerializeField] private GameObject playerMissionCards;
+    [SerializeField] private GameObject playerMissionCardsContent;
+    public bool isMouseOverMissionCardsScroller = false;
+
+    private List<MissionCard> missionCardsInScroller = new();
+    private bool missionCardScrollerIsOpen = false;
+
+    [Header("Prefabs")]
+    [SerializeField] private GameObject missionCardPrefab;
+
+    [Header("References")]
+    [SerializeField] private GameObject battlefieldGameObject;
+
+    [Header("Related Scripts")]
+    [SerializeField] private BattlefieldUI battlefieldUI;
 
     private void Awake()
     {
@@ -29,59 +40,36 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void UpdateTerrainCards(int riverCardsQuantity, int mountainsCardsQuantity, int plainsCardsQuantity, int desertCardsQuantity)
+    private void Start()
     {
-        riverCardsQuantityText.text = riverCardsQuantity.ToString();
-        mountainCardsQuantityText.text = mountainsCardsQuantity.ToString();
-        plainsCardsQuantityText.text = plainsCardsQuantity.ToString();
-        desertCardsQuantityText.text = desertCardsQuantity.ToString();
+        iconsAvailable = Resources.LoadAll<Sprite>("Sprites/UI/Round").ToDictionary(sprite => sprite.name, sprite => sprite);
+    }
 
-        foreach(Transform stackedCardContainerChild in stackedCardsContainer.transform)
+    private void Update()
+    {
+        if (missionCardScrollerIsOpen)
         {
-            int terrainTypeQuantity = 0;
-            if (stackedCardContainerChild.gameObject.name.Contains("River"))
+            var missionCardsInPlayerHand = GameManager.instance.ActualPlayer.MissionCardsInPlayerHand;
+            if (missionCardsInScroller.Count != missionCardsInPlayerHand.Count)
             {
-                terrainTypeQuantity = riverCardsQuantity;
-            }
-            else if (stackedCardContainerChild.gameObject.name.Contains("Mountain"))
-            {
-                terrainTypeQuantity = mountainsCardsQuantity;
-            }
-            else if (stackedCardContainerChild.gameObject.name.Contains("Plains"))
-            {
-                terrainTypeQuantity = plainsCardsQuantity;
-            }
-            else if (stackedCardContainerChild.gameObject.name.Contains("Desert"))
-            {
-                terrainTypeQuantity = desertCardsQuantity;
-            }
-
-            int stackedCardQuantity = stackedCardContainerChild.transform.childCount;
-            int actualStackedCard = 1;
-            foreach (Transform stackedCard in stackedCardContainerChild.transform)
-            {
-                bool isLastStackedCardChild = actualStackedCard == stackedCardQuantity;
-                if (isLastStackedCardChild)
+                MissionCard newMissionCard = null;
+                foreach(var missionCardsInScrollerActual in missionCardsInScroller)
                 {
-                    bool needToActivate = terrainTypeQuantity >= 1;
-                    stackedCard.gameObject.SetActive(needToActivate);
-                } 
-
-                bool isBeforeLastStackedCardChild = actualStackedCard == stackedCardQuantity - 1;
-                if (isBeforeLastStackedCardChild)
-                {
-                    bool needToActivate = terrainTypeQuantity > 10;
-                    stackedCard.gameObject.SetActive(needToActivate);
+                    foreach(var missionCardInPlayerHandActualIteration in missionCardsInPlayerHand)
+                    {
+                        if (missionCardsInScrollerActual.Description != missionCardInPlayerHandActualIteration.Description)
+                        {
+                            newMissionCard = missionCardInPlayerHandActualIteration;
+                        }
+                    }
                 }
 
-                bool isAntpenultStackedCardChild = actualStackedCard == stackedCardQuantity - 2;
-                if (isAntpenultStackedCardChild)
+                if (newMissionCard)
                 {
-                    bool needToActivate = terrainTypeQuantity > 15;
-                    stackedCard.gameObject.SetActive(needToActivate);
+                    var cardInstance = Instantiate(missionCardPrefab, playerMissionCardsContent.transform);
+                    cardInstance.GetComponent<DisplayMissionCard>().Card = newMissionCard;
+                    missionCardsInScroller.Add(newMissionCard);
                 }
-
-                actualStackedCard++;
             }
         }
     }
@@ -103,7 +91,6 @@ public class UIManager : MonoBehaviour
             childDisplayMissionCard.Points.text = missionCardInPlayerHandSelected.Points.ToString();
             childDisplayMissionCard.NameText.text = missionCardInPlayerHandSelected.Description;
             childDisplayMissionCard.CardImage.sprite = missionCardInPlayerHandSelected.CardImage;
-            childDisplayMissionCard.isClickable = true;
             childDisplayMissionCard.IsSelected = false;
 
             missionCardInPlayerHandToSelectIndex++;
@@ -117,5 +104,56 @@ public class UIManager : MonoBehaviour
         GameManager.instance.missionCardsToChoose.Clear();
 
         Destroy(firstRoundGameObject.gameObject);
+    }
+
+    public void HandleClickMissionCardsScroller(List<MissionCard> missionCards)
+    {
+        if (!missionCardScrollerIsOpen)
+        {
+            playerMissionCards.SetActive(true);
+            foreach (var missionCard in missionCards)
+            {
+                var cardInstance = Instantiate(missionCardPrefab, playerMissionCardsContent.transform);
+                cardInstance.GetComponent<DisplayMissionCard>().Card = missionCard;
+                missionCardsInScroller.Add(missionCard);
+            }
+        }
+        else 
+        { 
+            playerMissionCards.SetActive(false);
+            foreach (Transform missionCardContent in playerMissionCardsContent.transform)
+            {
+                Destroy(missionCardContent.gameObject);
+                missionCardsInScroller.Clear();
+            }
+        }
+        missionCardScrollerIsOpen = !missionCardScrollerIsOpen;
+    }
+
+    public void SetPlayerTurnIcon(PlayerDeck actualPlayer, string iconName, float alpha)
+    {
+        actualPlayer.turnIcon.color = new Color(1f, 1f, 1f, alpha);
+        actualPlayer.turnIcon.sprite = iconsAvailable[iconName];
+    }
+
+    public void ShowBattlefield()
+    {
+        battlefieldGameObject.SetActive(true);
+    }
+
+    public void ShowAttackWarriorCard(WarriorCard warriorCard)
+    {
+        battlefieldUI.ShowAttackWarriorCard(warriorCard);
+    }
+
+    public void ShowDefenseWarriorCard(WarriorCard warriorCard)
+    {
+        battlefieldUI.ShowDefenseWarriorCard(warriorCard);
+    }
+
+    public void HideCards()
+    {
+        battlefieldGameObject.SetActive(false);
+        battlefieldUI.HideCards();
     }
 }

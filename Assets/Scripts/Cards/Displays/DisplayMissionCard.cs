@@ -21,10 +21,8 @@ public class DisplayMissionCard : DisplayCard<MissionCard>, IPointerClickHandler
     {
         if (!isClickable)
         {
-
             return;
         }
-        Debug.Log("aaaaaaaaaaaaaaaaaa");
 
         if (PointerEventData.InputButton.Left == eventData.button)
         {

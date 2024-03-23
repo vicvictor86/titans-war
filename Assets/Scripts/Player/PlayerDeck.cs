@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerDeck : MonoBehaviour
 {
@@ -38,10 +39,19 @@ public class PlayerDeck : MonoBehaviour
 
     private List<Territory> territoriesWithPlayer = new();
 
+    [Header("UI")]
+    [SerializeField] public Image turnIcon;
+
     [Header("Related Scripts")]
     [SerializeField] private DiscartCard discartCards;
     [SerializeField] private DrawCard drawCard;
     [SerializeField] private InstantiateCard instantiateCard;
+
+    private void Start()
+    {
+        turnIcon.sprite = null;
+        turnIcon.color = new Color(0, 0, 0, 0);
+    }
 
     private void Update()
     {
@@ -67,8 +77,6 @@ public class PlayerDeck : MonoBehaviour
     public List<TerrainCard> DrawInitialsTerrainsCard()
     {
         drawCard.DrawInitialsTerrainsCard(this);
-
-        UIManager.instance.UpdateTerrainCards(RiverCardsQuantity, MountainCardsQuantity, PlainsCardsQuantity, DesertCardsQuantity);
 
         return TerrainCardsInPlayerHand;
     }
@@ -142,7 +150,6 @@ public class PlayerDeck : MonoBehaviour
     {
         discartCards.DiscartTerrainCardByType(type, playerTerrainHandPanelTransform, TerrainCardsInPlayerHand);
         RemoveTerrainCard(type);
-        UIManager.instance.UpdateTerrainCards(RiverCardsQuantity, MountainCardsQuantity, PlainsCardsQuantity, DesertCardsQuantity);
     }
 
     public void RemoveTerrainCard(TerrainType type)

@@ -12,6 +12,7 @@ TagManager:
   - CityInfo
   - AttackButton
   - TerritoryInfo
+  - EndTurnButton
   layers:
   - Default
   - TransparentFX
