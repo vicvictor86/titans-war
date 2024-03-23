@@ -37,6 +37,8 @@ public class GameManager : MonoBehaviour
     [Header("States")]
     public bool needSelectMissionCard;
     public int playerAction = 0;
+    public bool candEndTurn = false;
+    public bool isOnBattle = false;
 
     [Header("Cards Available")]
     public List<MissionCard> missionCardsAvailables;
@@ -183,7 +185,10 @@ public class GameManager : MonoBehaviour
     public void AttackRound(Territory territory)
     {
         endTurnButton.interactable = false;
-        
+        isOnBattle = true;
+        UIManager.instance.SetBattlefieldBackgroundColor(territory.Type);
+
+
         UIManager.instance.SetPlayerTurnIcon(ActualPlayer, attackTurn, 1f);
         UIManager.instance.ShowBattlefield();
 
@@ -297,6 +302,7 @@ public class GameManager : MonoBehaviour
 
         UIManager.instance.HideCards();
         endTurnButton.interactable = true;
+        isOnBattle = false;
         if (ValidEndGame())
         {
             EndGame();
