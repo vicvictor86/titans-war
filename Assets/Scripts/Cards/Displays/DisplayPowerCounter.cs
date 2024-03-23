@@ -27,10 +27,10 @@ public class DisplayPowerCounter : MonoBehaviour
 
     public void UpdatePowerCounter()
     {
-        power1CardsQuantityText.text = player.power1CardsQuantity.ToString();
-        power2CardsQuantityText.text = player.power2CardsQuantity.ToString();
-        power3CardsQuantityText.text = player.power3CardsQuantity.ToString();
-        power4CardsQuantityText.text = player.power4CardsQuantity.ToString();
-        power5CardsQuantityText.text = player.power5CardsQuantity.ToString();
+        power1CardsQuantityText.text = player.PowerCards[1].ToString();
+        power2CardsQuantityText.text = player.PowerCards[2].ToString();
+        power3CardsQuantityText.text = player.PowerCards[3].ToString();
+        power4CardsQuantityText.text = player.PowerCards[4].ToString();
+        power5CardsQuantityText.text = player.PowerCards[5].ToString();
     }
 }

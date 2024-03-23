@@ -21,7 +21,7 @@ public class DrawCard : MonoBehaviour
 
     public void DrawInitialsTerrainsCard(PlayerDeck playerDeck)
     {
-        for (int i = playerDeck.WarriorsInitialQuantity; i > 0; i--)
+        for (int i = playerDeck.terrainsInitialQuantity; i > 0; i--)
         {
             AddTerrainCardToHand(playerDeck);
         }

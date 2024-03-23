@@ -209,6 +209,8 @@ public class GameManager : MonoBehaviour
     public void EndAttackTurnWithExtraPowerCard()
     {
         UIManager.instance.CloseExtraPowerCardPanel();
+        ActualPlayer.RemovePowerCard(extraPower);        
+        
         EndAttackTurn();
     }
 
@@ -278,7 +280,7 @@ public class GameManager : MonoBehaviour
             if (NextPlayer.GetTerritoriesWithPlayer().Contains(contestedTerritory))
             {
                 int randomIndexPowerCard = Random.Range(0, powerCardsAvailable.Count);
-                ActualPlayer.AddNewPowerCard(powerCardsAvailable[randomIndexPowerCard]);
+                NextPlayer.AddNewPowerCard(powerCardsAvailable[randomIndexPowerCard]);
             }
             else
             {

@@ -34,11 +34,7 @@ public class PlayerDeck : MonoBehaviour
 
     [Header("Power Cards")]
     public List<PowerCard> PowerCardsInPlayerHand = new();
-    public int power1CardsQuantity = 0;
-    public int power2CardsQuantity = 0;
-    public int power3CardsQuantity = 0;
-    public int power4CardsQuantity = 0;
-    public int power5CardsQuantity = 0;
+    public Dictionary<int, int> PowerCards = new() { { 1, 0 }, { 2, 0 }, { 3, 0 }, { 4, 0 }, { 5, 0 } };
 
     [Header("Prefabs")]
     [SerializeField] private GameObject warriorPrefab;
@@ -255,24 +251,14 @@ public class PlayerDeck : MonoBehaviour
     public void AddNewPowerCard(PowerCard powerCard)
     {
         PowerCardsInPlayerHand.Add(powerCard);
-        Debug.Log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaao" + powerCard.ExtraPoints);
-        switch (powerCard.ExtraPoints)
-        {
-            case 1:
-                power1CardsQuantity++;
-                break;
-            case 2:
-                power2CardsQuantity++;
-                break;
-            case 3:
-                power3CardsQuantity++;
-                break;
-            case 4:
-                power4CardsQuantity++;
-                break;
-            case 5:
-                power5CardsQuantity++;
-                break;
-        }
+        PowerCards[powerCard.ExtraPoints]++;
+    }
+
+    public void RemovePowerCard(int extraPoints)
+    {
+        if (extraPoints == 0) return;
+
+        PowerCardsInPlayerHand.Remove(PowerCardsInPlayerHand.First(powerCard => powerCard.ExtraPoints == extraPoints));
+        PowerCards[extraPoints]--;
     }
 }
