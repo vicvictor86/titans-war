@@ -1,9 +1,11 @@
+using Domain;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
@@ -28,6 +30,9 @@ public class UIManager : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private GameObject battlefieldGameObject;
+    [SerializeField] private Image battlefieldBackground;
+    [SerializeField] private GameObject chooseExtraPowerCardPanel;
+    [SerializeField] private Animator panelGlowAnimator;
 
     [Header("Related Scripts")]
     [SerializeField] private BattlefieldUI battlefieldUI;
@@ -72,6 +77,8 @@ public class UIManager : MonoBehaviour
                 }
             }
         }
+    
+        panelGlowAnimator.SetBool("CandEndTurn", GameManager.instance.actionMade && !GameManager.instance.isOnBattle);
     }
 
     public void OpenMissionCardsToChoosePanel(List<MissionCard> missionCardsInPlayerHand)
@@ -155,5 +162,20 @@ public class UIManager : MonoBehaviour
     {
         battlefieldGameObject.SetActive(false);
         battlefieldUI.HideCards();
+    }
+
+    public void ShowExtraPowerCardPanel()
+    {
+        chooseExtraPowerCardPanel.SetActive(true);
+    }
+
+    public void CloseExtraPowerCardPanel()
+    {
+        chooseExtraPowerCardPanel.SetActive(false);
+    }
+
+    public void SetBattlefieldBackgroundColor(TerrainType terrainType)
+    {
+        battlefieldBackground.color = TerrainColorConstants.colors[terrainType];
     }
 }

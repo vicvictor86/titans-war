@@ -32,6 +32,10 @@ public class PlayerDeck : MonoBehaviour
     [SerializeField] public Transform missionCardPlace;
     [SerializeField] private GameObject missionPrefab;
 
+    [Header("Power Cards")]
+    public List<PowerCard> PowerCardsInPlayerHand = new();
+    public Dictionary<int, int> PowerCards = new() { { 1, 0 }, { 2, 0 }, { 3, 0 }, { 4, 0 }, { 5, 0 } };
+
     [Header("Prefabs")]
     [SerializeField] private GameObject warriorPrefab;
     [SerializeField] private GameObject terrainPrefab;
@@ -244,4 +248,17 @@ public class PlayerDeck : MonoBehaviour
         return cities.Sum(city => city.GetPointsForPlayer(this));
     }
 
+    public void AddNewPowerCard(PowerCard powerCard)
+    {
+        PowerCardsInPlayerHand.Add(powerCard);
+        PowerCards[powerCard.ExtraPoints]++;
+    }
+
+    public void RemovePowerCard(int extraPoints)
+    {
+        if (extraPoints == 0) return;
+
+        PowerCardsInPlayerHand.Remove(PowerCardsInPlayerHand.First(powerCard => powerCard.ExtraPoints == extraPoints));
+        PowerCards[extraPoints]--;
+    }
 }
