@@ -3,32 +3,63 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class HighlightTerritory : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class HighlightTerritory : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
+    private Color previousColor;
+    private Color highlightColor = Color.red;
+    public bool wasClicked = false;
+
+    private void Start()
+    {
+        previousColor = GetComponent<SpriteRenderer>().color;
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (eventData.button.Equals(PointerEventData.InputButton.Left))
+        {
+            wasClicked = !wasClicked;
+        }
+
+        if (wasClicked)
+        {
+            GameManager.instance.RemoveHighlightOfAllTerritories(gameObject);
+            var spriteRender = eventData.pointerEnter.GetComponent<SpriteRenderer>();
+            previousColor = spriteRender.color != highlightColor ? spriteRender.color : previousColor;
+            spriteRender.color = Color.green;
+        }
+        else
+        {
+            RemoveHighlight(eventData.pointerEnter);
+        }
+    }
+
     public void OnPointerEnter(PointerEventData eventData)
     {
-        
-        //if (eventData.pointerEnter.tag == "Territory")
-        //{
-        //    eventData.pointerEnter.GetComponent<MeshRenderer>().material.color = Color.red;
-        //}
+        if (eventData.pointerEnter.tag == "Territory" && !wasClicked)
+        {
+            var spriteRender = eventData.pointerEnter.GetComponent<SpriteRenderer>();
+            previousColor = spriteRender.color != highlightColor ? spriteRender.color : previousColor;
+            spriteRender.color = Color.red;
+        }
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        //if (eventData.pointerEnter.tag == "Territory")
-        //{
-        //    eventData.pointerEnter.GetComponent<MeshRenderer>().material.color = Color.white;
-        //}
+        if (eventData.pointerEnter.tag == "Territory" && !wasClicked)
+        {
+            RemoveHighlight(eventData.pointerEnter);
+        }
     }
 
-    void Start()
+    public void RemoveHighlight(GameObject gameObjectInstance)
     {
-        
+        gameObjectInstance.gameObject.GetComponent<SpriteRenderer>().color = previousColor;
     }
 
-    void Update()
+    public void RemoveHighlight(HighlightTerritory highlightScriptComponent)
     {
-        
+        highlightScriptComponent.wasClicked = false;
+        highlightScriptComponent.gameObject.GetComponent<SpriteRenderer>().color = previousColor;
     }
 }

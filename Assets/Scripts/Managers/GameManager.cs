@@ -51,11 +51,15 @@ public class GameManager : MonoBehaviour
     const string attackTurn = "attackTurn";
     const string looser = "looser";
     const string winner = "winner";
+
     [Header("UI")]
     public TextMeshProUGUI EndGameText;
 
     [Header("Prefab")]
     public GameObject EndGameImage;
+
+    [Header("References")]
+    private List<HighlightTerritory> allTerritoriesHighlightScript;
 
     private MissionStrategyFactory MissionStrategyFactory = new MissionStrategyFactory();
 
@@ -69,6 +73,11 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        allTerritoriesHighlightScript = GameObject
+            .FindGameObjectsWithTag("Territory")
+            .Select(territory => territory.GetComponent<HighlightTerritory>())
+            .ToList();
+
         playerList = GameObject.FindGameObjectsWithTag("Player").Select(PlayerDeck => PlayerDeck.GetComponent<PlayerDeck>()).ToList();
 
         missionCardsAvailables = new (CardDatabase.MissionCardList);
@@ -88,13 +97,13 @@ public class GameManager : MonoBehaviour
         {
             player.DrawInitialsWarriorsCard();
             player.DrawInitialsTerrainsCard();
-            player.DrawInitialsMissionsCard(missionCardsAvailables);
+            //player.DrawInitialsMissionsCard(missionCardsAvailables);
         }
 
         actualPlayerIndex = Random.Range(0, playerList.Count);
 
-        UIManager.instance.OpenMissionCardsToChoosePanel(ActualPlayer.MissionCardsInPlayerHand);
-        ChangeDisplayMissionToClickable(missionCardsToChoose);
+        //UIManager.instance.OpenMissionCardsToChoosePanel(ActualPlayer.MissionCardsInPlayerHand);
+        //ChangeDisplayMissionToClickable(missionCardsToChoose);
 
         needSelectMissionCard = true;
     }
@@ -260,7 +269,7 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator CalculateWinner()
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(5f);
 
         var attackValue = attackingCard.GetPowerValue(contestedTerritory.Type) + extraPower;
         var defenseValue = defendindCard.GetPowerValue(contestedTerritory.Type);
@@ -363,5 +372,13 @@ public class GameManager : MonoBehaviour
         return playerPoints.OrderByDescending(player => player.points).FirstOrDefault().index;
     }
 
-
+    public void RemoveHighlightOfAllTerritories(GameObject highlightClicked)
+    {
+        allTerritoriesHighlightScript.ForEach(territory => {
+            if (territory.gameObject.GetInstanceID() != highlightClicked.GetInstanceID())
+            {
+                territory.RemoveHighlight(territory);
+            }
+        });
+    }
 }
