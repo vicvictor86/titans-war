@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ConquerPlains
   m_EditorClassIdentifier: 
   CardName: Conquer Plains
-  CardImage: {fileID: 21300000, guid: eae9a9ebdab3f0c429a5851c9aad79ac, type: 3}
+  CardImage: {fileID: 21300000, guid: 0b89dafa4f316144fbccd5682481c1c1, type: 3}
   Description: Conquer Plains
   Points: 70
   MissionType: 3

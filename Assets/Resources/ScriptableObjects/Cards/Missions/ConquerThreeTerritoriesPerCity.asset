@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7cb1362fc23c31941902d78a87b75945, type: 3}
-  m_Name: ConquerMountains
+  m_Name: ConquerThreeTerritoriesPerCity
   m_EditorClassIdentifier: 
-  CardName: Conquer Mountains
-  CardImage: {fileID: 21300000, guid: 65a3739b6691946488770323b5cf8b2f, type: 3}
-  Description: Conquer Mountains
-  Points: 70
-  MissionType: 4
+  CardName: ConquerThreeTerritoriesPerCity
+  CardImage: {fileID: 21300000, guid: 00bc97e93b7ad7645a9178bc36cd25bf, type: 3}
+  Description: Dominar 3 territorios em todas as cidades
+  Points: 60
+  MissionType: 12

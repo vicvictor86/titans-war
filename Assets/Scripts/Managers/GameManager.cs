@@ -97,13 +97,13 @@ public class GameManager : MonoBehaviour
         {
             player.DrawInitialsWarriorsCard();
             player.DrawInitialsTerrainsCard();
-            //player.DrawInitialsMissionsCard(missionCardsAvailables);
+            player.DrawInitialsMissionsCard(missionCardsAvailables);
         }
 
         actualPlayerIndex = Random.Range(0, playerList.Count);
 
-        //UIManager.instance.OpenMissionCardsToChoosePanel(ActualPlayer.MissionCardsInPlayerHand);
-        //ChangeDisplayMissionToClickable(missionCardsToChoose);
+        UIManager.instance.OpenMissionCardsToChoosePanel(ActualPlayer.MissionCardsInPlayerHand);
+        ChangeDisplayMissionToClickable(missionCardsToChoose);
 
         needSelectMissionCard = true;
     }
