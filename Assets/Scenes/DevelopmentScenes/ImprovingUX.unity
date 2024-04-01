@@ -3228,7 +3228,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 793080499535706399, guid: 37be519d6a896c3488ec7a4eafd447f8, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2480813102130496696, guid: 37be519d6a896c3488ec7a4eafd447f8, type: 3}
       propertyPath: cityBenefits.AdditiveCoefficient
@@ -5329,7 +5329,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 793080499535706399, guid: 37be519d6a896c3488ec7a4eafd447f8, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3131407577730394622, guid: 37be519d6a896c3488ec7a4eafd447f8, type: 3}
       propertyPath: m_DynamicOccludee
