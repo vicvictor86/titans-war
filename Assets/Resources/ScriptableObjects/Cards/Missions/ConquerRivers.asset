@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ConquerRivers
   m_EditorClassIdentifier: 
   CardName: Conquer Rivers
-  CardImage: {fileID: 21300000, guid: eae9a9ebdab3f0c429a5851c9aad79ac, type: 3}
+  CardImage: {fileID: 21300000, guid: a17c070643328e442b13896b21a05d1f, type: 3}
   Description: Dominar rio
   Points: 70
   MissionType: 1

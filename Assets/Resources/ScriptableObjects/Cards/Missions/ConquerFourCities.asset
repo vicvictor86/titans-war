@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7cb1362fc23c31941902d78a87b75945, type: 3}
-  m_Name: ConquerTerrain 4
+  m_Name: ConquerFourCities
   m_EditorClassIdentifier: 
-  CardName: Conquer Espartha
-  CardImage: {fileID: 21300000, guid: def6731c18016f74d878ca783c50fa78, type: 3}
-  Description: Domine Esparta
-  Points: 70
-  MissionType: 9
+  CardName: ConquerFourCities
+  CardImage: {fileID: 21300000, guid: db251fd1af08115468f31c0ed921b216, type: 3}
+  Description: Dominar 4 cidades
+  Points: 60
+  MissionType: 11

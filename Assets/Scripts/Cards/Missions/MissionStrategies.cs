@@ -8,53 +8,63 @@ namespace Assets.Scripts.Cards.Missions
 {
     public static class MissionCardStrategies
     {
-        public class ConquestRiver : MissionCardStrategy
+        public class ConquestTerritory : MissionCardStrategy
         {
+            public TerrainType TerrainType { get; set; }
+            public ConquestTerritory(TerrainType type)
+            {
+                TerrainType = type;
+            }
+
             public bool IsComplete(PlayerDeck player)
             {
-                return ValidTerritoryTypeMission(player, TerrainType.RIVER);
+                return ValidTerritoryTypeMission(player, TerrainType);
             }
         }
 
-        public class ConquestMountains : MissionCardStrategy
+        public class ConquestCity : MissionCardStrategy
         {
-            public bool IsComplete(PlayerDeck player)
-            {
-                return ValidTerritoryTypeMission(player, TerrainType.MOUNTAINS);
-            }
-        }
+            public string CityName { get; set; }
 
-        public class ConquestPlains : MissionCardStrategy
-        {
-            public bool IsComplete(PlayerDeck player)
+            public ConquestCity(string cityName)
             {
-                return ValidTerritoryTypeMission(player, TerrainType.PLAINS);
+                CityName = cityName;
             }
-        }
 
-        public class ConquestDesert : MissionCardStrategy
-        {
             public bool IsComplete(PlayerDeck player)
             {
-                return ValidTerritoryTypeMission(player, TerrainType.DESERT);
-            }
-        }
-
-        public class ConquestEspartha : MissionCardStrategy
-        {
-            public bool IsComplete(PlayerDeck player)
-            {
-                return GetCityByName("Espartha")
+                return GetCityByName(CityName)
                     .Owner == player;
             }
         }
 
-        public class Salamina : MissionCardStrategy
+        public class ConquestNumberOfCities : MissionCardStrategy
         {
+            public int NumberOfCities { get;}
+
+            public ConquestNumberOfCities(int numberOfCities)
+            {
+                NumberOfCities = numberOfCities;
+            }
+
             public bool IsComplete(PlayerDeck player)
             {
-                return GetCityByName("Salamina")
-                    .Owner == player;
+                return ValidNumberOfCities(player, NumberOfCities);
+            }
+        }
+
+        public class ConquestNumberOfTerritoriesPerCity : MissionCardStrategy
+        {
+            public int NumberOfTerritoriesPerCity { get; set; }
+
+            public ConquestNumberOfTerritoriesPerCity(int numberOfTerritoriesPerCity)
+            {
+                NumberOfTerritoriesPerCity = numberOfTerritoriesPerCity;
+            }
+
+            public bool IsComplete(PlayerDeck player)
+            {
+                return ValidNumberOfTerritoriesPerCity(player, NumberOfTerritoriesPerCity);
             }
         }
 
@@ -83,6 +93,19 @@ namespace Assets.Scripts.Cards.Missions
         {
             return GameObject.FindGameObjectsWithTag("City")
                 .Select(gameObject => gameObject.GetComponent<City>());
+        }
+
+        private static bool ValidNumberOfCities(PlayerDeck player, int numberOfCities)
+        {
+            return GetAllCities().Where(city => city.Owner == player).Count() >= numberOfCities;
+        }
+
+        private static bool ValidNumberOfTerritoriesPerCity(PlayerDeck player, int number)
+        {
+            return GameObject.FindGameObjectsWithTag("Territory")
+                    .Select(gameObject => gameObject.GetComponent<Territory>())
+                    .GroupBy(territory => territory.City)
+                    .All(group => group.Where(territory => territory.Owner == player).Count() >= number);
         }
 
     }

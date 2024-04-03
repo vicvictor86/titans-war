@@ -10,14 +10,16 @@ public class CityBorder : MonoBehaviour
         Bounds spriteBounders = spriteRenderer.bounds;
         Vector3 center = spriteBounders.center;
         Vector3 extents = spriteBounders.extents;
+        float horizontalSize = 0.5f;
+        float verticalSize = 0.4329883f;
         List<Vector3> edges = new();
 
-        var rightEdge = new Vector3(center.x + extents.x, center.y);
-        var bottomRightEdge = new Vector3(center.x + (extents.x / 2), center.y - (extents.y - 0.25f));
-        var bottomLeftEdge = new Vector3(center.x - (extents.x / 2), center.y - (extents.y - 0.25f));
-        var leftEdge = new Vector3(center.x - extents.x, center.y);
-        var topLeftEdge = new Vector3(center.x - (extents.x / 2), center.y + (extents.y - 0.25f));
-        var topRightEdge = new Vector3(center.x + (extents.x / 2), center.y + (extents.y - 0.25f));
+        var rightEdge = new Vector3(center.x + horizontalSize, center.y);
+        var bottomRightEdge = new Vector3(center.x + (horizontalSize / 2), center.y - verticalSize);
+        var bottomLeftEdge = new Vector3(center.x - (horizontalSize / 2), center.y - verticalSize);
+        var leftEdge = new Vector3(center.x - horizontalSize, center.y);
+        var topLeftEdge = new Vector3(center.x - (horizontalSize / 2), center.y + verticalSize);
+        var topRightEdge = new Vector3(center.x + (horizontalSize / 2), center.y + verticalSize);
 
         edges.Add(rightEdge);
         edges.Add(bottomRightEdge);
