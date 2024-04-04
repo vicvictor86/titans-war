@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 public class HighlightTerritory : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     private Color previousColor;
-    private Color highlightColor = Color.red;
+    private Color highlightColor = new Color(0.9f, 0, 0.7f, 1f);
     public bool wasClicked = false;
 
     private void Start()
@@ -36,11 +36,11 @@ public class HighlightTerritory : MonoBehaviour, IPointerEnterHandler, IPointerE
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (eventData.pointerEnter.tag == "Territory" && !wasClicked)
+        if (eventData.pointerEnter.CompareTag("Territory") && !wasClicked)
         {
             var spriteRender = eventData.pointerEnter.GetComponent<SpriteRenderer>();
             previousColor = spriteRender.color != highlightColor ? spriteRender.color : previousColor;
-            spriteRender.color = Color.red;
+            spriteRender.color = highlightColor;
         }
     }
 
@@ -57,9 +57,15 @@ public class HighlightTerritory : MonoBehaviour, IPointerEnterHandler, IPointerE
         gameObjectInstance.gameObject.GetComponent<SpriteRenderer>().color = previousColor;
     }
 
-    public void RemoveHighlight(HighlightTerritory highlightScriptComponent)
+    public void RemoveHighlight()
     {
-        highlightScriptComponent.wasClicked = false;
-        highlightScriptComponent.gameObject.GetComponent<SpriteRenderer>().color = previousColor;
+        wasClicked = false;
+        gameObject.GetComponent<SpriteRenderer>().color = previousColor;
+    }
+
+    public void SetColorAndPreviousColor(Color color)
+    {
+        gameObject.GetComponent<SpriteRenderer>().color = color;
+        previousColor = color;
     }
 }

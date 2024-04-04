@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7fb11018e7a9c0041a27e0e861c036d1, type: 3}
+  m_Name: Mardonius III
+  m_EditorClassIdentifier: 
+  CardName: Mardonius III
+  CardImage: {fileID: 21300000, guid: e71f5a3156087c84ead07dcf4b14abbb, type: 3}
+  WaterForce: 2
+  DesertForce: 2
+  MountainsForce: 5
+  PlainsForce: 2
+  Nationality: Persa
