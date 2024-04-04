@@ -51,6 +51,7 @@ public class GameManager : MonoBehaviour
     const string attackTurn = "attackTurn";
     const string looser = "looser";
     const string winner = "winner";
+    const string draw = "draw";
 
     [Header("UI")]
     public TextMeshProUGUI EndGameText;
@@ -297,6 +298,8 @@ public class GameManager : MonoBehaviour
             }
         }
         else {
+            UIManager.instance.SetPlayerTurnIcon(ActualPlayer, draw, 1f);
+            UIManager.instance.SetPlayerTurnIcon(NextPlayer, draw, 1f);
             Debug.Log("Empate");
         }
         ActualPlayer.DiscartWarriorCard(attackingCard);
@@ -375,7 +378,9 @@ public class GameManager : MonoBehaviour
     public void RemoveHighlightOfAllTerritories(GameObject highlightClicked)
     {
         allTerritoriesHighlightScript.ForEach(territory => {
-            if (territory.gameObject.GetInstanceID() != highlightClicked.GetInstanceID())
+            var isTheClickedTerritory = territory.gameObject.GetInstanceID() == highlightClicked.GetInstanceID();
+            var isATerritoryWithOwner = territory.gameObject.GetComponent<Territory>().Owner != null;
+            if (!isTheClickedTerritory && !isATerritoryWithOwner)
             {
                 territory.RemoveHighlight(territory);
             }

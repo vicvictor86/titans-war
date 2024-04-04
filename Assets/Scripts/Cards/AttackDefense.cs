@@ -13,8 +13,8 @@ public class AttackDefense : MonoBehaviour, IPointerClickHandler
         bool clickWithLeftButton = eventData.button == PointerEventData.InputButton.Left;
         if (isClickable && clickWithLeftButton)
         {
-            Debug.Log("Escolheu a carta");
-            GameManager.instance.SetAttackDefenseCard(GetComponent<DisplayWarriorCard>().Card);
+            var displayWarriorCard = GetComponent<DisplayWarriorCard>();
+            GameManager.instance.SetAttackDefenseCard(displayWarriorCard.Card);
         }
     }
 }

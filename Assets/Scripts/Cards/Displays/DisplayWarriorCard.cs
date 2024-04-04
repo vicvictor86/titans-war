@@ -27,6 +27,18 @@ public class DisplayWarriorCard : DisplayCard<WarriorCard>, IPointerEnterHandler
         anim = gameObject.GetComponent<Animator>();
     }
 
+    public void UpdateInfos()
+    {
+        base.Start();
+        TypeText.text = Card.Nationality;
+        TotalForceText.text = Card.TotalForce.ToString();
+        WaterForceText.text = Card.WaterForce.ToString();
+        DesertForceText.text = Card.DesertForce.ToString();
+        MountainsForceText.text = Card.MountainsForce.ToString();
+        PlainsForceText.text = Card.PlainsForce.ToString();
+        anim = gameObject.GetComponent<Animator>();
+    }
+
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (!isOverable) {
