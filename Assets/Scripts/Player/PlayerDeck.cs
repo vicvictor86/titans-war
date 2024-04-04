@@ -9,6 +9,9 @@ using UnityEngine.UI;
 
 public class PlayerDeck : MonoBehaviour
 {
+    [Header("Player Status")]
+    [SerializeField] public string PlayerSide;
+
     [Header("Warrior Cards")]
     public List<WarriorCard> DiscartedWarriorCards = new();
     public List<WarriorCard> WarriorCardsAvailableInDeck { get; set; } = new();
@@ -22,9 +25,7 @@ public class PlayerDeck : MonoBehaviour
     public int DesertCardsQuantity = 0;
     public List<TerrainCard> TerrainCardsInPlayerHand { get; set; } = new();
     public int terrainsInitialQuantity { get; } = 30;
-
-
-    [SerializeField] public string PlayerSide { get; } = "Spartha";
+    
 
     [Header("Mission Cards")]
     public List<MissionCard> MissionCardsInPlayerHand = new();

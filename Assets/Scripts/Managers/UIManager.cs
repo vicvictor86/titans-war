@@ -91,7 +91,8 @@ public class UIManager : MonoBehaviour
         foreach (Transform missionCard in missionCardsToChoosePanel.transform)
         {
             var missionCardInPlayerHandSelected = missionCardsInPlayerHand[missionCardInPlayerHandToSelectIndex];
-            var childDisplayMissionCard = missionCard.GetComponent<DisplayMissionCard>();
+            var childDisplayMissionCard = missionCard.GetComponentInChildren<DisplayMissionCard>();
+            childDisplayMissionCard.selectedBorder.SetActive(false);
 
             childDisplayMissionCard.Card = missionCardInPlayerHandSelected;
             childDisplayMissionCard.DescriptionText.text = missionCardInPlayerHandSelected.Description;

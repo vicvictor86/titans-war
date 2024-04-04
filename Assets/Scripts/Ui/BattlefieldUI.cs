@@ -20,12 +20,14 @@ public class BattlefieldUI : MonoBehaviour
     {
         attackWarriorCard.SetActive(true);
         attackDisplayWarriorCard.Card = warriorCard;
+        attackDisplayWarriorCard.UpdateInfos();
     }
 
     public void ShowDefenseWarriorCard(WarriorCard warriorCard)
     {
         defenseWarriorCard.SetActive(true);
         defenseDisplayWarriorCard.Card = warriorCard;
+        defenseDisplayWarriorCard.UpdateInfos();
     }
 
     public void HideCards()

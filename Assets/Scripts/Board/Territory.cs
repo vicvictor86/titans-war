@@ -22,7 +22,7 @@ public class Territory : MonoBehaviour, IPointerClickHandler
         }
         else
         {
-            GetComponent<SpriteRenderer>().color = new Color(1, 0, 0, 0.5f);
+            GetComponent<SpriteRenderer>().color = new Color(0, 0.397f, 0.936f, 0.8f);
         }
     }
 

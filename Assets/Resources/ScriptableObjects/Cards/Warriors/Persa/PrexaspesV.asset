@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7fb11018e7a9c0041a27e0e861c036d1, type: 3}
+  m_Name: PrexaspesV
+  m_EditorClassIdentifier: 
+  CardName: Prexaspes V
+  CardImage: {fileID: 21300000, guid: deb8622dfe929d443a74f8cc4d279ef6, type: 3}
+  WaterForce: 5
+  DesertForce: 5
+  MountainsForce: 5
+  PlainsForce: 3
+  Nationality: Persa
