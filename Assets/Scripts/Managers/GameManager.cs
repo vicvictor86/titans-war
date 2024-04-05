@@ -379,10 +379,9 @@ public class GameManager : MonoBehaviour
     {
         allTerritoriesHighlightScript.ForEach(territory => {
             var isTheClickedTerritory = territory.gameObject.GetInstanceID() == highlightClicked.GetInstanceID();
-            var isATerritoryWithOwner = territory.gameObject.GetComponent<Territory>().Owner != null;
-            if (!isTheClickedTerritory && !isATerritoryWithOwner)
+            if (!isTheClickedTerritory)
             {
-                territory.RemoveHighlight(territory);
+                territory.RemoveHighlight();
             }
         });
     }
