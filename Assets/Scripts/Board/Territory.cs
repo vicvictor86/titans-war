@@ -19,11 +19,11 @@ public class Territory : MonoBehaviour, IPointerClickHandler
         var highLightTerritory = GetComponent<HighlightTerritory>();
         if (Owner.PlayerSide == "Spartha")
         {
-            highLightTerritory.SetColorAndPreviousColor(new Color(1, 0, 0, 0.5f));
+            highLightTerritory.SetDominated(new Color(1, 0, 0, 1f));
         }
         else
         {
-            highLightTerritory.SetColorAndPreviousColor(new Color(0, 0, 1, 0.5f));
+            highLightTerritory.SetDominated(new Color(0, 0, 1, 1f));
         }
         
         highLightTerritory.wasClicked = false;

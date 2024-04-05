@@ -17,7 +17,7 @@ public class DrawTerrainCardOnClick : MonoBehaviour, IPointerClickHandler
 
             if (drawedCard is not null)
             {
-                GameManager.instance.actionMade = true;
+                GameManager.instance.EndTurn();
             }
         }
     }

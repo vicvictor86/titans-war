@@ -17,7 +17,7 @@ public class DrawMissionCardsOnClick : MonoBehaviour, IPointerClickHandler
 
             GameManager.instance.ActualPlayer.MissionCardsInPlayerHand.Add(missionCardSelected);
             GameManager.instance.missionCardsAvailables.Remove(missionCardSelected);
-            GameManager.instance.actionMade = true;
+            GameManager.instance.EndTurn();
         }
     }
 }

@@ -63,9 +63,10 @@ public class HighlightTerritory : MonoBehaviour, IPointerEnterHandler, IPointerE
         gameObject.GetComponent<SpriteRenderer>().color = previousColor;
     }
 
-    public void SetColorAndPreviousColor(Color color)
+    public void SetDominated(Color color)
     {
-        gameObject.GetComponent<SpriteRenderer>().color = color;
+        var spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
+        spriteRenderer.color = color;
         previousColor = color;
     }
 }

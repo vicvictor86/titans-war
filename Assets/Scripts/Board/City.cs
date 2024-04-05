@@ -30,7 +30,6 @@ public class City : MonoBehaviour
 
     [Header("Prefabs")]
     [SerializeField] public GameObject cityInfoPrefab;
-    [SerializeField] public GameObject attackButton;
 
     [SerializeField] private int totalTerrainTypesQuantity => desertQuantity + riverQuantity + plainsQuantity + mountainsQuantity;
 
