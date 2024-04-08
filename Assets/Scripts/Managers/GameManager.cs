@@ -58,11 +58,15 @@ public class GameManager : MonoBehaviour
 
     [Header("Prefab")]
     public GameObject EndGameImage;
+    public GameObject AttackButton;
+    public GameObject CancelAttackButton;
+    public GameObject TimerView;
 
     [Header("References")]
     private List<HighlightTerritory> allTerritoriesHighlightScript;
 
     private MissionStrategyFactory MissionStrategyFactory = new MissionStrategyFactory();
+    private readonly int roundTime = 30;
 
     private void Awake()
     {
@@ -167,6 +171,9 @@ public class GameManager : MonoBehaviour
     private void PlayerRound()
     {
         actionMade = false;
+        var timer = TimerView.GetComponent<Timer>();
+        timer.TimeLeft = roundTime;
+        timer.TimerOn = true;
         UIManager.instance.SetPlayerTurnIcon(ActualPlayer, playerTurn, 1f);
         UIManager.instance.SetPlayerTurnIcon(NextPlayer, playerTurn, 0f);
         ActualPlayer.Round();
@@ -194,19 +201,40 @@ public class GameManager : MonoBehaviour
 
     public void AttackRound(Territory territory)
     {
+        var canvas = GameObject.FindWithTag("Canvas").GetComponent<Canvas>();
+
         endTurnButton.interactable = false;
         isOnBattle = true;
-        UIManager.instance.SetBattlefieldBackgroundColor(territory.Type);
 
-
+        UIManager.instance.SetBattleFieldData(territory);
         UIManager.instance.SetPlayerTurnIcon(ActualPlayer, attackTurn, 1f);
         UIManager.instance.ShowBattlefield();
+        Destroy(GameObject.FindWithTag("AttackButton"));
+        Instantiate(CancelAttackButton, attackButtonPosition.position, Quaternion.identity, canvas.transform);
 
         actionMade = true;
         contestedTerritory = territory;
         attack = true;
         Debug.Log("Pode escolher a carta");
         ActualPlayer.StartAttackDefenseRound();
+    }
+
+    public void CancelAttackRound()
+    {
+        var canvas = GameObject.FindWithTag("Canvas").GetComponent<Canvas>();
+
+        endTurnButton.interactable = true;
+        isOnBattle = false;
+
+        UIManager.instance.HideCards();
+        UIManager.instance.SetPlayerTurnIcon(ActualPlayer, playerTurn, 1f);
+        Destroy(GameObject.FindWithTag("CancelAttackButton"));
+        var attackButton = Instantiate(AttackButton, attackButtonPosition.position, Quaternion.identity, canvas.transform);
+        attackButton.GetComponent<AttackButton>().territory = contestedTerritory;
+
+        actionMade = false;
+        contestedTerritory = null;
+        attack = false;
     }
 
     public void SetExtraPower(int extraPowerSelected)
@@ -229,7 +257,9 @@ public class GameManager : MonoBehaviour
         if (attack)
         {
             Debug.Log("Setou a carta de ataque");
-            
+            Destroy(GameObject.FindWithTag("CancelAttackButton"));
+            TimerView.GetComponent<Timer>().TimerOn = false;
+
             attackingCard = card;
             attack = false;
 
@@ -287,15 +317,8 @@ public class GameManager : MonoBehaviour
             Debug.Log("Defesa Venceu");
             UIManager.instance.SetPlayerTurnIcon(ActualPlayer, looser, 1f);
             UIManager.instance.SetPlayerTurnIcon(NextPlayer, winner, 1f);
-            if (NextPlayer.GetTerritoriesWithPlayer().Contains(contestedTerritory))
-            {
-                int randomIndexPowerCard = Random.Range(0, powerCardsAvailable.Count);
-                NextPlayer.AddNewPowerCard(powerCardsAvailable[randomIndexPowerCard]);
-            }
-            else
-            {
-                NextPlayer.AddTerritory(contestedTerritory);
-            }
+            int randomIndexPowerCard = Random.Range(0, powerCardsAvailable.Count);
+            NextPlayer.AddNewPowerCard(powerCardsAvailable[randomIndexPowerCard]);
         }
         else {
             UIManager.instance.SetPlayerTurnIcon(ActualPlayer, draw, 1f);
@@ -306,9 +329,7 @@ public class GameManager : MonoBehaviour
         NextPlayer.DiscartWarriorCard(defendindCard);
         
         ActualPlayer.DiscartTerrainCardByType(contestedTerritory.Type);
-        
-        Destroy(GameObject.FindWithTag("AttackButton"));
-        
+
         attackingCard = null;
         defendindCard = null;
         contestedTerritory = null;
@@ -336,9 +357,9 @@ public class GameManager : MonoBehaviour
         if (ActualPlayer.ListTerrainTypesDisponibleToAttack().Contains(terrainType) &&
             !actionMade &&
             ActualPlayer.WarriorCardsInPlayerHand.Any() &&
-            territory.Owner != ActualPlayer)
+            territory.Owner == null)
         {
-            var attackButton = Instantiate(city.attackButton, attackButtonPosition.position, Quaternion.identity, canvas.transform);
+            var attackButton = Instantiate(AttackButton, attackButtonPosition.position, Quaternion.identity, canvas.transform);
             attackButton.GetComponent<AttackButton>().territory = territory;
         };
     }

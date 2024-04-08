@@ -17,7 +17,7 @@ public class DrawWarriorCardOnClick : MonoBehaviour, IPointerClickHandler
 
             if(drawnCard != null)
             {
-                GameManager.instance.actionMade = true;
+                GameManager.instance.EndTurn();
             }
         }
     }

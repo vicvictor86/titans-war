@@ -9,7 +9,7 @@ public class DisplayTerritoryInfo : MonoBehaviour
     protected void Start()
     {
         //Deve ser trocado para nome do jogador ou coisa do tipo
-        Player.text = (GameManager.instance.playerList.IndexOf(Territory.Owner) + 1).ToString();
+        Player.text = Territory.Owner?.PlayerSide ?? "Livre";
     }
 
 }
