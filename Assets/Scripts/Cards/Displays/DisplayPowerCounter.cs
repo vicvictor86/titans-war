@@ -22,7 +22,7 @@ public class DisplayPowerCounter : MonoBehaviour
 
     private void Update()
     {
-        UpdatePowerCounter();
+        //UpdatePowerCounter();
     }
 
     public void UpdatePowerCounter()

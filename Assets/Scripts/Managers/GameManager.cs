@@ -7,6 +7,7 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using Photon.Pun;
 
 public class GameManager : MonoBehaviour
 {
@@ -17,6 +18,7 @@ public class GameManager : MonoBehaviour
     [Header("Players")]
     public List<PlayerDeck> playerList;
     public int actualPlayerIndex;
+    public GameObject playerSet;
 
     [Header("Attack/Defense")]
     public bool actionMade = false;
@@ -69,6 +71,8 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        SpawnPlayer();
+
         playerList = GameObject.FindGameObjectsWithTag("Player").Select(PlayerDeck => PlayerDeck.GetComponent<PlayerDeck>()).ToList();
 
         missionCardsAvailables = new (CardDatabase.MissionCardList);
@@ -81,6 +85,15 @@ public class GameManager : MonoBehaviour
 
         FirstRound();
     }
+
+    void SpawnPlayer()
+    {
+        var playerObject = PhotonNetwork.Instantiate("playerSet", new Vector2(playerSet.transform.position.x, playerSet.transform.position.y), Quaternion.identity);
+
+        playerObject.transform.SetParent(playerSet.transform);
+        playerObject.transform.localScale = new Vector3(1, 1, 1);
+    }
+
 
     void FirstRound()
     {
@@ -362,6 +375,4 @@ public class GameManager : MonoBehaviour
 
         return playerPoints.OrderByDescending(player => player.points).FirstOrDefault().index;
     }
-
-
 }
