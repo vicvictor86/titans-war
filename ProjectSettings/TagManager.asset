@@ -13,6 +13,8 @@ TagManager:
   - AttackButton
   - TerritoryInfo
   - EndTurnButton
+  - Highlight
+  - CancelAttackButton
   layers:
   - Default
   - TransparentFX

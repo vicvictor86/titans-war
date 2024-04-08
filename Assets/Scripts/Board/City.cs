@@ -30,7 +30,6 @@ public class City : MonoBehaviour
 
     [Header("Prefabs")]
     [SerializeField] public GameObject cityInfoPrefab;
-    [SerializeField] public GameObject attackButton;
 
     [SerializeField] private int totalTerrainTypesQuantity => desertQuantity + riverQuantity + plainsQuantity + mountainsQuantity;
 
@@ -81,7 +80,7 @@ public class City : MonoBehaviour
             territoriesGameObject.Add(child.gameObject);
         }
 
-        List<Vector3> allCitiesEdges = new();
+        List<Vector3> allCitiesVertices = new();
         foreach (var territory in territoriesGameObject)
         {
             var territoryPointText = territory.GetComponentInChildren<TextMeshPro>();
@@ -94,35 +93,29 @@ public class City : MonoBehaviour
 
             ChooseTerritoryType(typesAvailable, spritesByName, territorySprite, territoryInstance);
 
-            allCitiesEdges.AddRange(CityBorder.CalculateEdges(territorySprite));
+            allCitiesVertices.AddRange(CityBorder.CalculateEdges(territorySprite));
         }
 
         var territoryLineRenderer = gameObject.GetComponent<LineRenderer>();
 
         List<Vector3> cityBorderVertexes = new();
-        foreach (var cityEdge in allCitiesEdges)
+        foreach (var cityVertex in allCitiesVertices)
         {
             int matchQuantity = 0;
-            foreach(var cityToCompare in allCitiesEdges)
+            foreach(var cityVertexToCompare in allCitiesVertices)
             {
-                if (cityEdge == cityToCompare)
-                {
-                    continue;
-                }
-
-                var distance = Vector3.Distance(cityEdge, cityToCompare);       
-                
-                if (distance < 0.1f)
+                var distance = Vector3.Distance(cityVertex, cityVertexToCompare);
+                if (distance < 0.25f)
                 {
                     matchQuantity++;
                 }
             }
 
-            if (matchQuantity < 2)
+            if (matchQuantity < 3)
             {
-                if (!cityBorderVertexes.Any(edge => Vector3.Distance(edge, cityEdge) < 0.1f))
+                if (!cityBorderVertexes.Any(edge => Vector3.Distance(edge, cityVertex) < 0.25f))
                 {
-                    cityBorderVertexes.Add(cityEdge);
+                    cityBorderVertexes.Add(cityVertex);
                 }
             }
         }

@@ -1,11 +1,13 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class DisplayMissionCard : DisplayCard<MissionCard>, IPointerClickHandler
 {
     public TextMeshProUGUI DescriptionText;
     public TextMeshProUGUI Points;
+    public GameObject selectedBorder = null;
 
     public bool isClickable;
     public bool IsSelected = false;
@@ -28,6 +30,11 @@ public class DisplayMissionCard : DisplayCard<MissionCard>, IPointerClickHandler
         {
             Debug.Log("Selecionado");
             IsSelected = !IsSelected;
+
+            if (selectedBorder != null)
+            {
+                selectedBorder.SetActive(IsSelected);
+            }
         }
     }
 }

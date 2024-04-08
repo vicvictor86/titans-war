@@ -16,8 +16,7 @@ public class DisplayPowerCounter : MonoBehaviour
 
     private void Start()
     {
-        int randomIndexPowerCard = Random.Range(0, CardDatabase.PowerCardsList.Count);
-        player.AddNewPowerCard(CardDatabase.PowerCardsList[randomIndexPowerCard]);
+        
     }
 
     private void Update()

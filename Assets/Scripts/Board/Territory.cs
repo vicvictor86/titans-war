@@ -16,6 +16,17 @@ public class Territory : MonoBehaviour, IPointerClickHandler
     public void SetOwner(PlayerDeck newOwner)
     {
         Owner = newOwner;
+        var highLightTerritory = GetComponent<HighlightTerritory>();
+        if (Owner.PlayerSide == "Spartha")
+        {
+            highLightTerritory.SetDominated(new Color(1, 0, 0, 1f));
+        }
+        else
+        {
+            highLightTerritory.SetDominated(new Color(0, 0, 1, 1f));
+        }
+        
+        highLightTerritory.wasClicked = false;
     }
 
     public void SetCity(City city)

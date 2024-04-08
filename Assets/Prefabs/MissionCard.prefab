@@ -157,6 +157,7 @@ MonoBehaviour:
   CardImage: {fileID: 3456338007442900916}
   DescriptionText: {fileID: 3185542237394336763}
   Points: {fileID: 5767517087621131511}
+  selectedBorder: {fileID: 0}
   isClickable: 0
   IsSelected: 0
 --- !u!225 &3505216000236554364
@@ -222,7 +223,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1207474141487195143
 RectTransform:
   m_ObjectHideFlags: 0
@@ -431,7 +432,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7140653833083770793
 RectTransform:
   m_ObjectHideFlags: 0

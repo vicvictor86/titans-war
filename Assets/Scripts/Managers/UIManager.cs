@@ -30,12 +30,23 @@ public class UIManager : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private GameObject battlefieldGameObject;
+    [SerializeField] private TextMeshProUGUI battlefieldCityText;
+    [SerializeField] private TextMeshProUGUI battlefieldTerrainText;
+    [SerializeField] private TextMeshProUGUI battlefieldPointText;
     [SerializeField] private Image battlefieldBackground;
     [SerializeField] private GameObject chooseExtraPowerCardPanel;
     [SerializeField] private Animator panelGlowAnimator;
 
+    [Header("Images")]
+    [SerializeField] private Sprite DesertImage;
+    [SerializeField] private Sprite MountainsImage;
+    [SerializeField] private Sprite RiverImage;
+    [SerializeField] private Sprite PlainsImage;
+
     [Header("Related Scripts")]
     [SerializeField] private BattlefieldUI battlefieldUI;
+
+    private Dictionary<TerrainType, (string terrainDescription, Sprite terrainImage)> terrainInfo;
 
     private void Awake()
     {
@@ -48,6 +59,13 @@ public class UIManager : MonoBehaviour
     private void Start()
     {
         iconsAvailable = Resources.LoadAll<Sprite>("Sprites/UI/Round").ToDictionary(sprite => sprite.name, sprite => sprite);
+        terrainInfo = new() 
+        { 
+            { TerrainType.MOUNTAINS, ("Montanhas", MountainsImage) },
+            { TerrainType.RIVER, ("Rio", RiverImage) },
+            { TerrainType.DESERT, ("Deserto", DesertImage) },
+            { TerrainType.PLAINS, ("Planície", PlainsImage) },
+        };
     }
 
     private void Update()
@@ -91,7 +109,8 @@ public class UIManager : MonoBehaviour
         foreach (Transform missionCard in missionCardsToChoosePanel.transform)
         {
             var missionCardInPlayerHandSelected = missionCardsInPlayerHand[missionCardInPlayerHandToSelectIndex];
-            var childDisplayMissionCard = missionCard.GetComponent<DisplayMissionCard>();
+            var childDisplayMissionCard = missionCard.GetComponentInChildren<DisplayMissionCard>();
+            childDisplayMissionCard.selectedBorder.SetActive(false);
 
             childDisplayMissionCard.Card = missionCardInPlayerHandSelected;
             childDisplayMissionCard.DescriptionText.text = missionCardInPlayerHandSelected.Description;
@@ -177,5 +196,14 @@ public class UIManager : MonoBehaviour
     public void SetBattlefieldBackgroundColor(TerrainType terrainType)
     {
         battlefieldBackground.color = TerrainColorConstants.colors[terrainType];
+    }
+
+    public void SetBattleFieldData(Territory territory)
+    {
+        battlefieldCityText.text = territory.City.name;
+        battlefieldPointText.text = territory.Point.ToString();
+        battlefieldTerrainText.text = terrainInfo[territory.Type].terrainDescription;
+
+        battlefieldBackground.sprite = terrainInfo[territory.Type].terrainImage;
     }
 }
