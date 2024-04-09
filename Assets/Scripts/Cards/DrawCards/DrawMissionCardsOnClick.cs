@@ -12,6 +12,12 @@ public class DrawMissionCardsOnClick : MonoBehaviour, IPointerClickHandler
         if (clickWithLeftButton && canDrawCard && playerDeck != null && playerDeck.WarriorCardsInPlayerHand.Any())
         {
             var missionCardsAvailable = GameManager.instance.missionCardsAvailables;
+
+            if(missionCardsAvailable.Count <= 0)
+            {
+                return;
+            }
+
             var randomIndex = Random.Range(0, missionCardsAvailable.Count);
             var missionCardSelected = missionCardsAvailable[randomIndex];
 
