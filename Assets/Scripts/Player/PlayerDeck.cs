@@ -18,11 +18,20 @@ public class PlayerDeck : MonoBehaviour
     public List<WarriorCard> WarriorCardsInPlayerHand { get; private set; } = new();
     public int WarriorsInitialQuantity { get; } = 3;
 
-    [Header("Terrain Cards")]
-    public int RiverCardsQuantity  = 0;
-    public int MountainCardsQuantity = 0;
-    public int PlainsCardsQuantity = 0;
-    public int DesertCardsQuantity = 0;
+    public Dictionary<TerrainType, int> TerrainCardsQuantity = new() {
+        { TerrainType.PLAINS, 0 },
+        { TerrainType.RIVER, 0},
+        { TerrainType.MOUNTAINS, 0 },
+        { TerrainType.DESERT, 0 },
+        { TerrainType.JOKER, 0 },
+    };
+
+    
+    //public int RiverCardsQuantity  = 0;
+    //public int MountainCardsQuantity = 0;
+    //public int PlainsCardsQuantity = 0;
+    //public int DesertCardsQuantity = 0;
+    //public int JokerTerrainQuantity = 0;
     public List<TerrainCard> TerrainCardsInPlayerHand { get; set; } = new();
     public int terrainsInitialQuantity { get; } = 3;
     
@@ -163,20 +172,7 @@ public class PlayerDeck : MonoBehaviour
 
     public void RemoveTerrainCard(TerrainType type)
     {
-        switch (type){
-            case TerrainType.RIVER:
-                RiverCardsQuantity--;
-                break;
-            case TerrainType.PLAINS:
-                PlainsCardsQuantity--; 
-                break;
-            case TerrainType.DESERT:
-                DesertCardsQuantity--;
-                break;
-            case TerrainType.MOUNTAINS:
-                MountainCardsQuantity--;
-                break;
-        }
+        TerrainCardsQuantity[type]--;
     }
 
     public void ResetWarriorDeck()

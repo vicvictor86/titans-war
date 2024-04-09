@@ -67,6 +67,8 @@ public class City : MonoBehaviour
 
         territorySprites = Resources.LoadAll<Sprite>("Sprites/HexTerrains").ToList();
         List<TerrainType> typesAvailable = Enum.GetValues(typeof(TerrainType)).Cast<TerrainType>().ToList();
+        typesAvailable.RemoveAll(terrainType => terrainType == TerrainType.JOKER);
+
         Dictionary<TerrainType, Sprite> spritesByName = new()
         {
             { TerrainType.DESERT, territorySprites[0] },
