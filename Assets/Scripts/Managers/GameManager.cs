@@ -360,6 +360,7 @@ public class GameManager : MonoBehaviour
             || ActualPlayer.ListTerrainTypesDisponibleToAttack().Contains(TerrainType.JOKER)) &&
             !actionMade &&
             ActualPlayer.WarriorCardsInPlayerHand.Any() &&
+            NextPlayer.WarriorCardsInPlayerHand.Any() &&
             territory.Owner == null)
         {
             var attackButton = Instantiate(AttackButton, attackButtonPosition.position, Quaternion.identity, canvas.transform);
