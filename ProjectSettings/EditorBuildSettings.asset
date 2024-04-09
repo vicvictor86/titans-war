@@ -5,7 +5,10 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/DevelopmentScenes/ImprovingUX.unity
     guid: bfb4d9f26a511104b90dc540a9549ab9
+  - enabled: 1
+    path: Assets/Scenes/DevelopmentScenes/AdjustReviews.unity
+    guid: b41f845e2ed00ad4b8a61bc724e536d7
   m_configObjects: {}

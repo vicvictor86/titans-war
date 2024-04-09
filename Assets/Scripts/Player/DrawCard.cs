@@ -1,6 +1,7 @@
 using Domain;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class DrawCard : MonoBehaviour
@@ -23,7 +24,7 @@ public class DrawCard : MonoBehaviour
     {
         for (int i = playerDeck.terrainsInitialQuantity; i > 0; i--)
         {
-            AddTerrainCardToHand(playerDeck);
+            AddRandomTerrainCardToHand(playerDeck);
         }
     }
 
@@ -71,41 +72,36 @@ public class DrawCard : MonoBehaviour
 
     public TerrainCard DrawTerrainCard(PlayerDeck playerDeck)
     {
-        if (GameManager.instance.terrainCardsAvailable.Count <= 0)
+        Debug.Log($"{GameManager.instance.terrainCardsAvailable.Sum(keyValue => keyValue.Value.quantityCard)}");
+        if (GameManager.instance.terrainCardsAvailable.All(keyValue => keyValue.Value.quantityCard <= 0))
         {
             Debug.Log("No more cards available in deck");
             return null;
         }
 
-        TerrainType terrainSelected = TerrainCardDeck.SelectRandomTerrainType();
-        AddTerrainCardToHand(playerDeck);
+        var terrainsAvailable = GameManager.instance.terrainCardsAvailable
+            .Where(keyValue => keyValue.Value.quantityCard > 0).Select(keyValue => keyValue.Value).ToList();
 
-        var cardDrawed = GameManager.instance.terrainCardsAvailable[terrainSelected].terrainCard;
+        var randomTerrainIndex = Random.Range(0, terrainsAvailable.Count());
+
+        var cardDrawed = terrainsAvailable[randomTerrainIndex].terrainCard;
+
+        AddTerrainCardToHand(playerDeck, cardDrawed);
+
+        GameManager.instance.terrainCardsAvailable[cardDrawed.Type].quantityCard--;
 
         return cardDrawed;
     }
 
-    public void AddTerrainCardToHand(PlayerDeck playerDeck)
+    public void AddRandomTerrainCardToHand(PlayerDeck playerDeck)
     {
         var terrainCard = TerrainCardDeck.SelectRandomTerrainCard();
-        playerDeck.TerrainCardsInPlayerHand.Add(terrainCard);
+        AddTerrainCardToHand(playerDeck, terrainCard);
+    }
 
-        switch (terrainCard.Type)
-        {
-            case TerrainType.RIVER:
-                playerDeck.RiverCardsQuantity++;
-                break;
-            case TerrainType.MOUNTAINS:
-                playerDeck.MountainCardsQuantity++;
-                break;
-            case TerrainType.PLAINS:
-                playerDeck.PlainsCardsQuantity++;
-                break;
-            case TerrainType.DESERT:
-                playerDeck.DesertCardsQuantity++;
-                break;
-            default:
-                break;
-        }
+    public void AddTerrainCardToHand(PlayerDeck playerDeck, TerrainCard terrainCard)
+    { 
+        playerDeck.TerrainCardsInPlayerHand.Add(terrainCard);
+        playerDeck.TerrainCardsQuantity[terrainCard.Type]++;
     }
 }

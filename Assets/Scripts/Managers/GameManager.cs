@@ -90,7 +90,7 @@ public class GameManager : MonoBehaviour
 
         foreach (var card in CardDatabase.TerrainCardsList)
         {
-            terrainCardsAvailable.Add(card.Type, new TerrainCardDeck(card, 20));
+            terrainCardsAvailable.Add(card.Type, new TerrainCardDeck(card, 15));
         }
 
         FirstRound();
@@ -328,7 +328,9 @@ public class GameManager : MonoBehaviour
         ActualPlayer.DiscartWarriorCard(attackingCard);
         NextPlayer.DiscartWarriorCard(defendindCard);
         
-        ActualPlayer.DiscartTerrainCardByType(contestedTerritory.Type);
+        ActualPlayer.DiscartTerrainCardByType(ActualPlayer.TerrainCardsQuantity[contestedTerritory.Type] > 0 ?
+            contestedTerritory.Type :
+            TerrainType.JOKER);
 
         attackingCard = null;
         defendindCard = null;
@@ -354,7 +356,8 @@ public class GameManager : MonoBehaviour
         cityInfoInstance.GetComponent<DisplayCityInfo>().City = city;
         var territoryInfoInstace = Instantiate(territory.territoryInfoPrefab, territoryInfoPanelPosition.position, Quaternion.identity, canvas.transform);
         territoryInfoInstace.GetComponent<DisplayTerritoryInfo>().Territory = territory;
-        if (ActualPlayer.ListTerrainTypesDisponibleToAttack().Contains(terrainType) &&
+        if ((ActualPlayer.ListTerrainTypesDisponibleToAttack().Contains(terrainType)
+            || ActualPlayer.ListTerrainTypesDisponibleToAttack().Contains(TerrainType.JOKER)) &&
             !actionMade &&
             ActualPlayer.WarriorCardsInPlayerHand.Any() &&
             territory.Owner == null)
