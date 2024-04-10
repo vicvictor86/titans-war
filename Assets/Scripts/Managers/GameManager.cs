@@ -3,6 +3,7 @@ using Domain;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -105,7 +106,7 @@ public class GameManager : MonoBehaviour
             player.DrawInitialsMissionsCard(missionCardsAvailables);
         }
 
-        actualPlayerIndex = Random.Range(0, playerList.Count);
+        actualPlayerIndex = 0;
 
         UIManager.instance.OpenMissionCardsToChoosePanel(ActualPlayer.MissionCardsInPlayerHand);
         ChangeDisplayMissionToClickable(missionCardsToChoose);
@@ -132,7 +133,6 @@ public class GameManager : MonoBehaviour
                 missionCardsSelected++;
             }
         }
-
         if (missionCardsSelected == 0)
         {
             Debug.LogError("You have to select at least one mission card.");
@@ -147,6 +147,15 @@ public class GameManager : MonoBehaviour
             }
 
             displayMissionCardActual.isClickable = false;
+        }
+
+        // VAMO LA PRECISA APAGAR POR FAVOR FAZ ESSE FAVOR 
+        if (playerAction == playerList.IndexOf(playerList.FirstOrDefault(player => player.PlayerSide == "Spartha")))
+        {
+            foreach (var missionCard in playerList.FirstOrDefault(player => player.PlayerSide == "Spartha").MissionCardsInPlayerHand)
+            {
+                UIManager.instance.UpdateMissionCardsScroller(missionCard);
+            }
         }
 
         playerAction++;
@@ -311,6 +320,13 @@ public class GameManager : MonoBehaviour
             UIManager.instance.SetPlayerTurnIcon(ActualPlayer, winner, 1f);
             UIManager.instance.SetPlayerTurnIcon(NextPlayer, looser, 1f);
             ActualPlayer.AddTerritory(contestedTerritory);
+
+            UIManager.instance.playerMissionCardsContent.GetComponentsInChildren<DisplayMissionCard>()
+                .Where(displayMissionCard => MissionStrategyFactory
+                .GetMissionCardStrategy(displayMissionCard.Card.MissionType)
+                .IsComplete(ActualPlayer))
+                .ToList()
+                .ForEach(displayMissionCard => displayMissionCard.GetComponentInChildren<Image>().color = new Color(0.5f, 0.5f, 0.5f, 0.5f));
         }
         else if (defenseValue > attackValue)
         {

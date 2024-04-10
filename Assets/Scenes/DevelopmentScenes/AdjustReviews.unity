@@ -1939,8 +1939,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -219.38501, y: 439.4039}
-  m_SizeDelta: {x: 438.77, y: 24}
+  m_AnchoredPosition: {x: -219.38501, y: 204.47488}
+  m_SizeDelta: {x: 438.77, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &456723683
 MonoBehaviour:
@@ -3819,6 +3819,7 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1143371547}
   - {fileID: 262419966}
   - {fileID: 1062104134}
   - {fileID: 962454380}
@@ -3828,7 +3829,6 @@ RectTransform:
   - {fileID: 1092246492}
   - {fileID: 632054097}
   - {fileID: 680382539}
-  - {fileID: 1143371547}
   - {fileID: 1641350488}
   - {fileID: 1033860201}
   - {fileID: 1091127723}
@@ -3850,6 +3850,7 @@ GameObject:
   - component: {fileID: 1033860201}
   - component: {fileID: 1033860203}
   - component: {fileID: 1033860202}
+  - component: {fileID: 1033860204}
   m_Layer: 5
   m_Name: ChooseExtraPowerCardPanel
   m_TagString: Untagged
@@ -3916,6 +3917,24 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1033860200}
   m_CullTransparentMesh: 1
+--- !u!114 &1033860204
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1033860200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d17ffb409d04fdb4f86c7b87aebf8d8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Player: {fileID: 0}
+  power1CardsQuantityText: {fileID: 185893439}
+  power2CardsQuantityText: {fileID: 237326911}
+  power3CardsQuantityText: {fileID: 2116624856}
+  power4CardsQuantityText: {fileID: 1404545359}
+  power5CardsQuantityText: {fileID: 1210007582}
 --- !u!1001 &1045817546
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5154,7 +5173,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1143371547
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5172,8 +5191,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 770.6, y: -5.283}
-  m_SizeDelta: {x: 438.79, y: 878.82}
+  m_AnchoredPosition: {x: -814, y: -352.39}
+  m_SizeDelta: {x: 325.1498, y: 408.9615}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1143371548
 MonoBehaviour:
@@ -5421,8 +5440,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.0000014305, y: 17.3}
-  m_SizeDelta: {x: 47.92339, y: 13.7028}
+  m_AnchoredPosition: {x: -0.0000014305, y: 18.6}
+  m_SizeDelta: {x: 52.10711, y: 13.7028}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1187927971
 MonoBehaviour:
@@ -5444,7 +5463,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Cidade
+  m_text: "Term\xF3pilas"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -5476,10 +5495,10 @@ MonoBehaviour:
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_fontSizeMax: 18
   m_fontStyle: 1
   m_HorizontalAlignment: 2
-  m_VerticalAlignment: 256
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -7547,7 +7566,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 1
   m_HorizontalAlignment: 2
-  m_VerticalAlignment: 256
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -7954,7 +7973,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 1
   m_HorizontalAlignment: 2
-  m_VerticalAlignment: 256
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -8978,6 +8997,7 @@ PrefabInstance:
     - {fileID: 1103619439803822100, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
     m_RemovedGameObjects:
     - {fileID: 8100918960035777793, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
+    - {fileID: 48678640446043996, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 1734780741866224470, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
       insertIndex: -1

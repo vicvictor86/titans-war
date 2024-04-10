@@ -39,7 +39,6 @@ public class PlayerDeck : MonoBehaviour
     [Header("Mission Cards")]
     public List<MissionCard> MissionCardsInPlayerHand = new();
     public int MissionCardsInitialQuantity { get; private set; } = 3;
-    [SerializeField] public Transform missionCardPlace;
     [SerializeField] private GameObject missionPrefab;
 
     [Header("Power Cards")]
@@ -113,13 +112,6 @@ public class PlayerDeck : MonoBehaviour
         return cardInstance;
     }
 
-    public GameObject InstantiateNewMissionCard(MissionCard missionCard)
-    {
-        var cardInstance = instantiateCard.InstantiateNewMissionCard(missionCard, missionPrefab, missionCardPlace);
-
-        return cardInstance;
-    }
-
     public WarriorCard DrawWarriorCard()
     {
         var cardDrawed = drawCard.DrawWarriorCard(this);
@@ -161,7 +153,7 @@ public class PlayerDeck : MonoBehaviour
 
     public void DiscartMissionCard(MissionCard missionCardToDiscart)
     {
-        discartCards.DiscartMissionCard(missionCardToDiscart, missionCardPlace, MissionCardsInPlayerHand);
+        discartCards.DiscartMissionCard(missionCardToDiscart, MissionCardsInPlayerHand);
     }
 
     public void DiscartTerrainCardByType(TerrainType type)
