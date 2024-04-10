@@ -27,7 +27,7 @@ public class DiscartCard : MonoBehaviour
         terrainCardsinPlayerHands.Remove(terrainCardDiscarted);
     }
 
-    public void DiscartMissionCard(MissionCard missionCardToDiscart, Transform missionCardPlace, List<MissionCard> missionCardsinPlayerHands)
+    public void DiscartMissionCard(MissionCard missionCardToDiscart, List<MissionCard> missionCardsinPlayerHands)
     {
         missionCardsinPlayerHands.Remove(missionCardToDiscart);
         GameManager.instance.missionCardsAvailables.Add(missionCardToDiscart);

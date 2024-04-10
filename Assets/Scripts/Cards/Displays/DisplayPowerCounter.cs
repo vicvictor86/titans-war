@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class DisplayPowerCounter : MonoBehaviour
 {
-    [SerializeField] private PlayerDeck player;
+    [SerializeField] public PlayerDeck Player;
 
     [Header("Terrain Cards")]
     [SerializeField] private TextMeshProUGUI power1CardsQuantityText;
@@ -14,22 +14,12 @@ public class DisplayPowerCounter : MonoBehaviour
     [SerializeField] private TextMeshProUGUI power4CardsQuantityText;
     [SerializeField] private TextMeshProUGUI power5CardsQuantityText;
 
-    private void Start()
-    {
-        
-    }
-
-    private void Update()
-    {
-        UpdatePowerCounter();
-    }
-
     public void UpdatePowerCounter()
     {
-        power1CardsQuantityText.text = player.PowerCards[1].ToString();
-        power2CardsQuantityText.text = player.PowerCards[2].ToString();
-        power3CardsQuantityText.text = player.PowerCards[3].ToString();
-        power4CardsQuantityText.text = player.PowerCards[4].ToString();
-        power5CardsQuantityText.text = player.PowerCards[5].ToString();
+        power1CardsQuantityText.text = Player.PowerCards[1].ToString();
+        power2CardsQuantityText.text = Player.PowerCards[2].ToString();
+        power3CardsQuantityText.text = Player.PowerCards[3].ToString();
+        power4CardsQuantityText.text = Player.PowerCards[4].ToString();
+        power5CardsQuantityText.text = Player.PowerCards[5].ToString();
     }
 }
