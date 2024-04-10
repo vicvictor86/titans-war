@@ -202,7 +202,7 @@ public class PlayerDeck : MonoBehaviour
         return WarriorCardsInPlayerHand;
     }
 
-    public void StartAttackDefenseRound() {
+    public void SetAttackDefenseCardsClickable() {
         var playerCards = playerWarriorHandPanelTransform.GetComponentsInChildren<AttackDefense>();
         foreach (var card in playerCards)
         {
@@ -210,7 +210,7 @@ public class PlayerDeck : MonoBehaviour
         }
     }
 
-    public void EndAttackDefenseRound()
+    public void SetAttackDefenseCardsNotClickable()
     {
         var playerCards = playerWarriorHandPanelTransform.GetComponentsInChildren<AttackDefense>();
         foreach (var card in playerCards)
