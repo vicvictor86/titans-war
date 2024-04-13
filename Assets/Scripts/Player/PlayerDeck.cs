@@ -18,11 +18,20 @@ public class PlayerDeck : MonoBehaviour
     public List<WarriorCard> WarriorCardsInPlayerHand { get; private set; } = new();
     public int WarriorsInitialQuantity { get; } = 3;
 
-    [Header("Terrain Cards")]
-    public int RiverCardsQuantity  = 0;
-    public int MountainCardsQuantity = 0;
-    public int PlainsCardsQuantity = 0;
-    public int DesertCardsQuantity = 0;
+    public Dictionary<TerrainType, int> TerrainCardsQuantity = new() {
+        { TerrainType.PLAINS, 0 },
+        { TerrainType.RIVER, 0},
+        { TerrainType.MOUNTAINS, 0 },
+        { TerrainType.DESERT, 0 },
+        { TerrainType.JOKER, 0 },
+    };
+
+    
+    //public int RiverCardsQuantity  = 0;
+    //public int MountainCardsQuantity = 0;
+    //public int PlainsCardsQuantity = 0;
+    //public int DesertCardsQuantity = 0;
+    //public int JokerTerrainQuantity = 0;
     public List<TerrainCard> TerrainCardsInPlayerHand { get; set; } = new();
     public int terrainsInitialQuantity { get; } = 3;
     
@@ -30,7 +39,6 @@ public class PlayerDeck : MonoBehaviour
     [Header("Mission Cards")]
     public List<MissionCard> MissionCardsInPlayerHand = new();
     public int MissionCardsInitialQuantity { get; private set; } = 3;
-    [SerializeField] public Transform missionCardPlace;
     [SerializeField] private GameObject missionPrefab;
     public bool isAlreadySelectedMissionCard = false;
 
@@ -105,13 +113,6 @@ public class PlayerDeck : MonoBehaviour
         return cardInstance;
     }
 
-    public GameObject InstantiateNewMissionCard(MissionCard missionCard)
-    {
-        var cardInstance = instantiateCard.InstantiateNewMissionCard(missionCard, missionPrefab, missionCardPlace);
-
-        return cardInstance;
-    }
-
     public WarriorCard DrawWarriorCard()
     {
         var cardDrawed = drawCard.DrawWarriorCard(this);
@@ -153,7 +154,7 @@ public class PlayerDeck : MonoBehaviour
 
     public void DiscartMissionCard(MissionCard missionCardToDiscart)
     {
-        discartCards.DiscartMissionCard(missionCardToDiscart, missionCardPlace, MissionCardsInPlayerHand);
+        discartCards.DiscartMissionCard(missionCardToDiscart, MissionCardsInPlayerHand);
     }
 
     public void DiscartTerrainCardByType(TerrainType type)
@@ -164,20 +165,7 @@ public class PlayerDeck : MonoBehaviour
 
     public void RemoveTerrainCard(TerrainType type)
     {
-        switch (type){
-            case TerrainType.RIVER:
-                RiverCardsQuantity--;
-                break;
-            case TerrainType.PLAINS:
-                PlainsCardsQuantity--; 
-                break;
-            case TerrainType.DESERT:
-                DesertCardsQuantity--;
-                break;
-            case TerrainType.MOUNTAINS:
-                MountainCardsQuantity--;
-                break;
-        }
+        TerrainCardsQuantity[type]--;
     }
 
     public void ResetWarriorDeck()
@@ -205,7 +193,7 @@ public class PlayerDeck : MonoBehaviour
         return WarriorCardsInPlayerHand;
     }
 
-    public void StartAttackDefenseRound() {
+    public void SetAttackDefenseCardsClickable() {
         var playerCards = playerWarriorHandPanelTransform.GetComponentsInChildren<AttackDefense>();
 
         foreach (var card in playerCards)
@@ -214,7 +202,7 @@ public class PlayerDeck : MonoBehaviour
         }
     }
 
-    public void EndAttackDefenseRound()
+    public void SetAttackDefenseCardsNotClickable()
     {
         var playerCards = playerWarriorHandPanelTransform.GetComponentsInChildren<AttackDefense>();
         foreach (var card in playerCards)

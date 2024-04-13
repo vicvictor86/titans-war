@@ -22,7 +22,7 @@ public class UIManager : MonoBehaviourPun
     [SerializeField] private GameObject firstRoundGameObject;
     [SerializeField] private GameObject missionCardsToChoosePanel;
     [SerializeField] private GameObject playerMissionCards;
-    [SerializeField] private GameObject playerMissionCardsContent;
+    [SerializeField] public GameObject playerMissionCardsContent;
     public bool isMouseOverMissionCardsScroller = false;
 
     private List<MissionCard> missionCardsInScroller = new();
@@ -81,6 +81,13 @@ public class UIManager : MonoBehaviourPun
         {
             waitingScreen.SetActive(false);
         }
+    }
+
+    public void UpdateMissionCardsScroller(MissionCard missionCard)
+    {
+        var cardInstance = Instantiate(missionCardPrefab, playerMissionCardsContent.transform);
+        cardInstance.GetComponent<DisplayMissionCard>().Card = missionCard;
+        missionCardsInScroller.Add(missionCard);
     }
 
     private void Update()
@@ -147,30 +154,6 @@ public class UIManager : MonoBehaviourPun
         Destroy(firstRoundGameObject.gameObject);
     }
 
-    public void HandleClickMissionCardsScroller(List<MissionCard> missionCards)
-    {
-        if (!missionCardScrollerIsOpen)
-        {
-            playerMissionCards.SetActive(true);
-            foreach (var missionCard in missionCards)
-            {
-                var cardInstance = Instantiate(missionCardPrefab, playerMissionCardsContent.transform);
-                cardInstance.GetComponent<DisplayMissionCard>().Card = missionCard;
-                missionCardsInScroller.Add(missionCard);
-            }
-        }
-        else 
-        { 
-            playerMissionCards.SetActive(false);
-            foreach (Transform missionCardContent in playerMissionCardsContent.transform)
-            {
-                Destroy(missionCardContent.gameObject);
-                missionCardsInScroller.Clear();
-            }
-        }
-        missionCardScrollerIsOpen = !missionCardScrollerIsOpen;
-    }
-
     public void SetPlayerTurnIcon(PlayerDeck actualPlayer, string iconName, float alpha)
     {
         actualPlayer.turnIcon.color = new Color(1f, 1f, 1f, alpha);
@@ -201,6 +184,12 @@ public class UIManager : MonoBehaviourPun
     public void ShowExtraPowerCardPanel()
     {
         chooseExtraPowerCardPanel.SetActive(true);
+        chooseExtraPowerCardPanel.GetComponentsInChildren<DisplayPowerCard>()
+            .ToList()
+            .ForEach(card => card.Player = GameManager.instance.ActualPlayer);
+        var displayPowerCounter = chooseExtraPowerCardPanel.GetComponentInChildren<DisplayPowerCounter>();
+        displayPowerCounter.Player = GameManager.instance.ActualPlayer;
+        displayPowerCounter.UpdatePowerCounter();
     }
 
     public void CloseExtraPowerCardPanel()

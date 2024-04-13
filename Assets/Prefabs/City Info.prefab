@@ -360,10 +360,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 22
+  m_fontSize: 19.45
   m_fontSizeBase: 22
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
@@ -631,10 +631,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   City: {fileID: 0}
   CityNameText: {fileID: 1063379853313537038}
-  RiverQuantityText: {fileID: 0}
-  DesertQuantityText: {fileID: 0}
-  PlainsQuantityText: {fileID: 0}
-  MountainsQuantityText: {fileID: 0}
   AdvantageText: {fileID: 792608454997633800}
   Player: {fileID: 2649886935497862141}
 --- !u!1 &5919038234335562738

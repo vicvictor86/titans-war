@@ -1,3 +1,4 @@
+using Domain;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -12,6 +13,7 @@ public class DisplayTerrainCounter : MonoBehaviour
     [SerializeField] private TextMeshProUGUI mountainCardsQuantityText;
     [SerializeField] private TextMeshProUGUI plainsCardsQuantityText;
     [SerializeField] private TextMeshProUGUI desertCardsQuantityText;
+    [SerializeField] private TextMeshProUGUI jokerCardsQuantityText;
 
     [Header("Stacked Cards")]
     [SerializeField] private GameObject stackedCardsContainer;
@@ -23,29 +25,34 @@ public class DisplayTerrainCounter : MonoBehaviour
 
     public void UpdateTerrainCards()
     {
-        riverCardsQuantityText.text = player.RiverCardsQuantity.ToString();
-        mountainCardsQuantityText.text = player.MountainCardsQuantity.ToString();
-        plainsCardsQuantityText.text = player.PlainsCardsQuantity.ToString();
-        desertCardsQuantityText.text = player.DesertCardsQuantity.ToString();
+        riverCardsQuantityText.text = player.TerrainCardsQuantity[TerrainType.RIVER].ToString();
+        mountainCardsQuantityText.text = player.TerrainCardsQuantity[TerrainType.MOUNTAINS].ToString();
+        plainsCardsQuantityText.text = player.TerrainCardsQuantity[TerrainType.PLAINS].ToString();
+        desertCardsQuantityText.text = player.TerrainCardsQuantity[TerrainType.DESERT].ToString();
+        jokerCardsQuantityText.text = player.TerrainCardsQuantity[TerrainType.JOKER].ToString();
 
         foreach (Transform stackedCardContainerChild in stackedCardsContainer.transform)
         {
             int terrainTypeQuantity = 0;
             if (stackedCardContainerChild.gameObject.name.Contains("River"))
             {
-                terrainTypeQuantity = player.RiverCardsQuantity;
+                terrainTypeQuantity = player.TerrainCardsQuantity[TerrainType.RIVER];
             }
             else if (stackedCardContainerChild.gameObject.name.Contains("Mountain"))
             {
-                terrainTypeQuantity = player.MountainCardsQuantity;
+                terrainTypeQuantity = player.TerrainCardsQuantity[TerrainType.MOUNTAINS];
             }
             else if (stackedCardContainerChild.gameObject.name.Contains("Plains"))
             {
-                terrainTypeQuantity = player.PlainsCardsQuantity;
+                terrainTypeQuantity = player.TerrainCardsQuantity[TerrainType.PLAINS];
             }
             else if (stackedCardContainerChild.gameObject.name.Contains("Desert"))
             {
-                terrainTypeQuantity = player.DesertCardsQuantity;
+                terrainTypeQuantity = player.TerrainCardsQuantity[TerrainType.DESERT];
+            }
+            else if (stackedCardContainerChild.gameObject.name.Contains("Joker"))
+            {
+                terrainTypeQuantity = player.TerrainCardsQuantity[TerrainType.JOKER];
             }
 
             int stackedCardQuantity = stackedCardContainerChild.transform.childCount;

@@ -16,7 +16,11 @@ public class DisplayPowerCard : DisplayCard<PowerCard>, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (eventData.button == PointerEventData.InputButton.Left)
+        Debug.Log(Card);
+        Debug.Log(Player);
+        var hasPowerCard = Player.PowerCards[Card.ExtraPoints] > 0;
+
+        if (eventData.button == PointerEventData.InputButton.Left & hasPowerCard)
         {
             GameManager.instance.SetExtraPower(Card.ExtraPoints);
         }

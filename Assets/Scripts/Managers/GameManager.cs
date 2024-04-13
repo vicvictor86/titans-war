@@ -3,6 +3,7 @@ using Domain;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -95,7 +96,7 @@ public class GameManager : MonoBehaviourPun
 
         foreach (var card in CardDatabase.TerrainCardsList)
         {
-            terrainCardsAvailable.Add(card.Type, new TerrainCardDeck(card, 20));
+            terrainCardsAvailable.Add(card.Type, new TerrainCardDeck(card, 15));
         }
 
         FirstRound();
@@ -173,7 +174,6 @@ public class GameManager : MonoBehaviourPun
                 missionCardsSelected++;
             }
         }
-
         if (missionCardsSelected == 0)
         {
             Debug.LogError("You have to select at least one mission card.");
@@ -190,7 +190,20 @@ public class GameManager : MonoBehaviourPun
             displayMissionCardActual.isClickable = false;
         }
 
+<<<<<<< HEAD
         playerList[PhotonNetwork.LocalPlayer.ActorNumber - 1].isAlreadySelectedMissionCard = true;
+=======
+        // VAMO LA PRECISA APAGAR POR FAVOR FAZ ESSE FAVOR 
+        if (playerAction == playerList.IndexOf(playerList.FirstOrDefault(player => player.PlayerSide == "Spartha")))
+        {
+            foreach (var missionCard in playerList.FirstOrDefault(player => player.PlayerSide == "Spartha").MissionCardsInPlayerHand)
+            {
+                UIManager.instance.UpdateMissionCardsScroller(missionCard);
+            }
+        }
+
+        playerAction++;
+>>>>>>> origin/main
 
         UIManager.instance.CloseMissionCardsToChoosePanel();
         UIManager.instance.waitingScreen.GetComponentInChildren<TMP_Text>().text = "Esperando o outro jogador escolher";
@@ -286,7 +299,7 @@ public class GameManager : MonoBehaviourPun
         contestedTerritory = territory;
         attack = true;
         Debug.Log("Pode escolher a carta");
-        ActualPlayer.StartAttackDefenseRound();
+        ActualPlayer.SetAttackDefenseCardsClickable();
     }
 
     public void CancelAttackRound()
@@ -334,8 +347,9 @@ public class GameManager : MonoBehaviourPun
             attack = false;
 
             UIManager.instance.ShowAttackWarriorCard(attackingCard);
+            ActualPlayer.SetAttackDefenseCardsNotClickable();
 
-            if(ActualPlayer.PowerCardsInPlayerHand.Count > 0)
+            if (ActualPlayer.PowerCardsInPlayerHand.Count > 0)
             {
                 UIManager.instance.ShowExtraPowerCardPanel();
             } 
@@ -351,21 +365,19 @@ public class GameManager : MonoBehaviourPun
 
             UIManager.instance.ShowDefenseWarriorCard(defendindCard);
 
-            NextPlayer.EndAttackDefenseRound();
+            NextPlayer.SetAttackDefenseCardsNotClickable();
             StartCoroutine(CalculateWinner());
         }
     }
 
     public void EndAttackTurn()
     {
-        ActualPlayer.EndAttackDefenseRound();
-
         Debug.Log("Defesa pode escolher a carta");
 
         UIManager.instance.SetPlayerTurnIcon(ActualPlayer, attackTurn, 0f);
         UIManager.instance.SetPlayerTurnIcon(NextPlayer, defenseTurn, 1f);
 
-        NextPlayer.StartAttackDefenseRound();
+        NextPlayer.SetAttackDefenseCardsClickable();
     }
 
     public IEnumerator CalculateWinner()
@@ -381,6 +393,13 @@ public class GameManager : MonoBehaviourPun
             UIManager.instance.SetPlayerTurnIcon(ActualPlayer, winner, 1f);
             UIManager.instance.SetPlayerTurnIcon(NextPlayer, looser, 1f);
             ActualPlayer.AddTerritory(contestedTerritory);
+
+            UIManager.instance.playerMissionCardsContent.GetComponentsInChildren<DisplayMissionCard>()
+                .Where(displayMissionCard => MissionStrategyFactory
+                .GetMissionCardStrategy(displayMissionCard.Card.MissionType)
+                .IsComplete(ActualPlayer))
+                .ToList()
+                .ForEach(displayMissionCard => displayMissionCard.GetComponentInChildren<Image>().color = new Color(0.5f, 0.5f, 0.5f, 0.5f));
         }
         else if (defenseValue > attackValue)
         {
@@ -398,7 +417,9 @@ public class GameManager : MonoBehaviourPun
         ActualPlayer.DiscartWarriorCard(attackingCard);
         NextPlayer.DiscartWarriorCard(defendindCard);
         
-        ActualPlayer.DiscartTerrainCardByType(contestedTerritory.Type);
+        ActualPlayer.DiscartTerrainCardByType(ActualPlayer.TerrainCardsQuantity[contestedTerritory.Type] > 0 ?
+            contestedTerritory.Type :
+            TerrainType.JOKER);
 
         attackingCard = null;
         defendindCard = null;
@@ -424,9 +445,11 @@ public class GameManager : MonoBehaviourPun
         cityInfoInstance.GetComponent<DisplayCityInfo>().City = city;
         var territoryInfoInstace = Instantiate(territory.territoryInfoPrefab, territoryInfoPanelPosition.position, Quaternion.identity, canvas.transform);
         territoryInfoInstace.GetComponent<DisplayTerritoryInfo>().Territory = territory;
-        if (ActualPlayer.ListTerrainTypesDisponibleToAttack().Contains(terrainType) &&
+        if ((ActualPlayer.ListTerrainTypesDisponibleToAttack().Contains(terrainType)
+            || ActualPlayer.ListTerrainTypesDisponibleToAttack().Contains(TerrainType.JOKER)) &&
             !actionMade &&
             ActualPlayer.WarriorCardsInPlayerHand.Any() &&
+            NextPlayer.WarriorCardsInPlayerHand.Any() &&
             territory.Owner == null)
         {
             var attackButton = Instantiate(AttackButton, attackButtonPosition.position, Quaternion.identity, canvas.transform);

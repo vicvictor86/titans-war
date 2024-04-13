@@ -5,6 +5,7 @@ namespace Domain
         RIVER,
         PLAINS,
         DESERT,
-        MOUNTAINS
+        MOUNTAINS,
+        JOKER
     }
 }
