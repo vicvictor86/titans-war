@@ -6,10 +6,13 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using Photon.Pun;
+using Photon.Realtime;
 
-public class UIManager : MonoBehaviour
+public class UIManager : MonoBehaviourPun
 {
     public static UIManager instance;
+    public GameObject waitingScreen;
 
     [Header("Icons")]
     [SerializeField] private GameObject turnIcon;
@@ -66,6 +69,18 @@ public class UIManager : MonoBehaviour
             { TerrainType.DESERT, ("Deserto", DesertImage) },
             { TerrainType.PLAINS, ("Planície", PlainsImage) },
         };
+
+        waitingScreen.SetActive(true);
+        photonView.RPC(nameof(StartGame), RpcTarget.AllBuffered);
+    }
+
+    [PunRPC]
+    public void StartGame()
+    {
+        if (PhotonNetwork.CurrentRoom.PlayerCount == 2)
+        {
+            waitingScreen.SetActive(false);
+        }
     }
 
     private void Update()

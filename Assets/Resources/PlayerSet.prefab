@@ -723,6 +723,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da20097f982acd042a9f3b29c07dfd46, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PlayerSide: 
   DiscartedWarriorCards: []
   RiverCardsQuantity: 0
   MountainCardsQuantity: 0
@@ -731,6 +732,7 @@ MonoBehaviour:
   MissionCardsInPlayerHand: []
   missionCardPlace: {fileID: 0}
   missionPrefab: {fileID: 1246180340114724520, guid: 449c5af2c8bd9a545aeabe311e955e65, type: 3}
+  isAlreadySelectedMissionCard: 0
   PowerCardsInPlayerHand: []
   warriorPrefab: {fileID: 1246180340114724520, guid: 4ad30a70aa8c58e47b77d2bf2447d4fd, type: 3}
   terrainPrefab: {fileID: 1246180340114724520, guid: 1f17909f45989a44d8d8eb9844ea4623, type: 3}

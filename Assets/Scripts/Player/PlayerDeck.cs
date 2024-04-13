@@ -32,6 +32,7 @@ public class PlayerDeck : MonoBehaviour
     public int MissionCardsInitialQuantity { get; private set; } = 3;
     [SerializeField] public Transform missionCardPlace;
     [SerializeField] private GameObject missionPrefab;
+    public bool isAlreadySelectedMissionCard = false;
 
     [Header("Power Cards")]
     public List<PowerCard> PowerCardsInPlayerHand = new();
@@ -189,16 +190,6 @@ public class PlayerDeck : MonoBehaviour
         DiscartedWarriorCards.Clear();
     }
 
-    public void Round()
-    {
-        
-    }
-
-    public void EndRound()
-    {
-        
-    }
-
     public List<TerrainCard> ListTerrainCardsInHand()
     {
         return  TerrainCardsInPlayerHand;
@@ -216,6 +207,7 @@ public class PlayerDeck : MonoBehaviour
 
     public void StartAttackDefenseRound() {
         var playerCards = playerWarriorHandPanelTransform.GetComponentsInChildren<AttackDefense>();
+
         foreach (var card in playerCards)
         {
             card.isClickable = true;

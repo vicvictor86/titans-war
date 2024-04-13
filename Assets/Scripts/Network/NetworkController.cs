@@ -48,6 +48,7 @@ public class NetworkController : MonoBehaviourPunCallbacks
     {
         Debug.Log("Conectado ao servidor do Photon.");
         PhotonNetwork.JoinLobby(TypedLobby.Default);
+
         loginScreen.SetActive(false);
         connectedScreen.SetActive(true);
     }

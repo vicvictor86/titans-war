@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
 
-public class GameManager : MonoBehaviour
+public class GameManager : MonoBehaviourPun
 {
     public static GameManager instance;
 
@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
     public List<PlayerDeck> playerList;
     public int actualPlayerIndex;
     public GameObject playerSet;
+    public GameObject opponentSet;
 
     [Header("Attack/Defense")]
     public bool actionMade = false;
@@ -102,13 +103,35 @@ public class GameManager : MonoBehaviour
 
     void SpawnPlayer()
     {
-        var playerObject = PhotonNetwork.Instantiate("playerSet", new Vector2(playerSet.transform.position.x, playerSet.transform.position.y), Quaternion.identity);
+        if(photonView.IsMine)
+        {
+            var playerInstance = PhotonNetwork.Instantiate("PlayerSet", new Vector2(playerSet.transform.position.x, playerSet.transform.position.y), Quaternion.identity);
+            playerInstance.transform.SetParent(playerSet.transform);
+            playerInstance.transform.localScale = new Vector3(1, 1, 1);
 
-        playerObject.transform.SetParent(playerSet.transform);
-        playerObject.transform.localScale = new Vector3(1, 1, 1);
+            playerSet.transform.SetAsFirstSibling();
+        } else
+        {
+            var playerInstance = PhotonNetwork.Instantiate("PlayerSet", new Vector2(opponentSet.transform.position.x, opponentSet.transform.position.y), Quaternion.identity);
+            playerInstance.transform.SetParent(opponentSet.transform);
+            playerInstance.transform.localScale = new Vector3(1, 1, 1);
+
+            opponentSet.transform.SetAsFirstSibling();
+        }
     }
 
+    public bool IsMyTurn()
+    {
+        return actualPlayerIndex == PhotonNetwork.LocalPlayer.ActorNumber - 1;
+    }
 
+    [PunRPC]
+    private void SyncTurn(int nextPlayer)
+    {
+        actualPlayerIndex = nextPlayer;
+    }
+
+    [PunRPC]
     void FirstRound()
     {
         foreach (var player in playerList)
@@ -119,6 +142,7 @@ public class GameManager : MonoBehaviour
         }
 
         actualPlayerIndex = Random.Range(0, playerList.Count);
+        photonView.RPC(nameof(SyncTurn), RpcTarget.AllBuffered, actualPlayerIndex);
 
         UIManager.instance.OpenMissionCardsToChoosePanel(ActualPlayer.MissionCardsInPlayerHand);
         ChangeDisplayMissionToClickable(missionCardsToChoose);
@@ -126,6 +150,7 @@ public class GameManager : MonoBehaviour
         needSelectMissionCard = true;
     }
 
+    [PunRPC]
     private void ChangeDisplayMissionToClickable(List<DisplayMissionCard> displayMissionCards)
     {
         foreach (var displayMissionCardActual in displayMissionCards)
@@ -134,10 +159,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    [PunRPC]
     public void EndMissionSelection()
     {
-        Debug.Log($"Usu�rio {playerList[(actualPlayerIndex + playerAction) % playerList.Count]}");
+        Debug.Log($"Usuário {playerList[(actualPlayerIndex + playerAction) % playerList.Count]}");
+        
         int missionCardsSelected = 0;
+
         foreach (var displayMissionCardActual in missionCardsToChoose)
         {
             if (displayMissionCardActual.IsSelected)
@@ -162,48 +190,77 @@ public class GameManager : MonoBehaviour
             displayMissionCardActual.isClickable = false;
         }
 
-        playerAction++;
+        playerList[PhotonNetwork.LocalPlayer.ActorNumber - 1].isAlreadySelectedMissionCard = true;
 
-        if (playerAction == playerList.Count)
+        UIManager.instance.CloseMissionCardsToChoosePanel();
+        UIManager.instance.waitingScreen.GetComponentInChildren<TMP_Text>().text = "Esperando o outro jogador escolher";
+        UIManager.instance.waitingScreen.SetActive(true);
+
+        photonView.RPC(nameof(SyncMissionCardSelection), RpcTarget.All, PhotonNetwork.LocalPlayer.ActorNumber, true);
+    }
+
+    [PunRPC]
+    public void SyncMissionCardSelection(int actorNumber, bool isAlreadySelected)
+    {
+        playerList[actorNumber - 1].isAlreadySelectedMissionCard = isAlreadySelected;
+
+        if (AllPlayersSelectedMissionCard())
         {
-            EndFirstRound();
-        } 
-        else
-        {
-            UIManager.instance.OpenMissionCardsToChoosePanel(NextPlayer.MissionCardsInPlayerHand);
-            ChangeDisplayMissionToClickable(missionCardsToChoose);
+            photonView.RPC(nameof(EndFirstRound), RpcTarget.All);
         }
     }
 
-    private void EndFirstRound()
+    public bool AllPlayersSelectedMissionCard()
     {
-        UIManager.instance.CloseMissionCardsToChoosePanel();
-        PlayerRound();
+        foreach (var player in playerList)
+        {
+            if (!player.isAlreadySelectedMissionCard)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
+    [PunRPC]
+    private void EndFirstRound()
+    {
+        UIManager.instance.waitingScreen.SetActive(false);
+
+        PlayerRound();
+        photonView.RPC(nameof(PlayerRound), RpcTarget.Others);
+    }
+
+    [PunRPC]
     private void PlayerRound()
     {
         actionMade = false;
         var timer = TimerView.GetComponent<Timer>();
         timer.TimeLeft = roundTime;
         timer.TimerOn = true;
-        UIManager.instance.SetPlayerTurnIcon(ActualPlayer, playerTurn, 1f);
-        UIManager.instance.SetPlayerTurnIcon(NextPlayer, playerTurn, 0f);
-        ActualPlayer.Round();
+
+        bool isMyTurn = IsMyTurn();
+
+        UIManager.instance.SetPlayerTurnIcon(playerList[PhotonNetwork.LocalPlayer.ActorNumber - 1], playerTurn, isMyTurn ? 1f : 0f);
+        UIManager.instance.SetPlayerTurnIcon(playerList[PhotonNetwork.PlayerListOthers[0].ActorNumber - 1], playerTurn, isMyTurn ? 0f : 1f);
     }
 
-    private void PlayerEndRound()
-    {
-        ActualPlayer.EndRound();
-    }
-
+    [PunRPC]
     public void EndTurn()
     {
-        PlayerEndRound();
+        if (IsMyTurn())
+        {
+            int nextPlayer = (actualPlayerIndex + 1) % playerList.Count;
 
-        actualPlayerIndex = (actualPlayerIndex + 1) % playerList.Count;
+            photonView.RPC(nameof(SyncTurn), RpcTarget.AllBuffered, nextPlayer);
 
-        PlayerRound();
+            PlayerRound();
+            photonView.RPC(nameof(PlayerRound), RpcTarget.Others);
+        } else
+        {
+            Debug.Log("Não é sua vez");
+        }
     }
 
     public bool CanDrawCard(PlayerDeck playerdDeck)
@@ -418,5 +475,17 @@ public class GameManager : MonoBehaviour
                 territory.RemoveHighlight();
             }
         });
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(playerList[PhotonNetwork.LocalPlayer.ActorNumber - 1].isAlreadySelectedMissionCard);
+        }
+        else
+        {
+            playerList[PhotonNetwork.PlayerListOthers[0].ActorNumber - 1].isAlreadySelectedMissionCard = (bool)stream.ReceiveNext();
+        }
     }
 }
