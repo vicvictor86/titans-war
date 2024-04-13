@@ -225,7 +225,7 @@ public class GameManager : MonoBehaviour
         contestedTerritory = territory;
         attack = true;
         Debug.Log("Pode escolher a carta");
-        ActualPlayer.StartAttackDefenseRound();
+        ActualPlayer.SetAttackDefenseCardsClickable();
     }
 
     public void CancelAttackRound()
@@ -273,8 +273,9 @@ public class GameManager : MonoBehaviour
             attack = false;
 
             UIManager.instance.ShowAttackWarriorCard(attackingCard);
+            ActualPlayer.SetAttackDefenseCardsNotClickable();
 
-            if(ActualPlayer.PowerCardsInPlayerHand.Count > 0)
+            if (ActualPlayer.PowerCardsInPlayerHand.Count > 0)
             {
                 UIManager.instance.ShowExtraPowerCardPanel();
             } 
@@ -290,21 +291,19 @@ public class GameManager : MonoBehaviour
 
             UIManager.instance.ShowDefenseWarriorCard(defendindCard);
 
-            NextPlayer.EndAttackDefenseRound();
+            NextPlayer.SetAttackDefenseCardsNotClickable();
             StartCoroutine(CalculateWinner());
         }
     }
 
     public void EndAttackTurn()
     {
-        ActualPlayer.EndAttackDefenseRound();
-
         Debug.Log("Defesa pode escolher a carta");
 
         UIManager.instance.SetPlayerTurnIcon(ActualPlayer, attackTurn, 0f);
         UIManager.instance.SetPlayerTurnIcon(NextPlayer, defenseTurn, 1f);
 
-        NextPlayer.StartAttackDefenseRound();
+        NextPlayer.SetAttackDefenseCardsClickable();
     }
 
     public IEnumerator CalculateWinner()
