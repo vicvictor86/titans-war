@@ -831,6 +831,22 @@ PrefabInstance:
       propertyPath: Card
       value: 
       objectReference: {fileID: 11400000, guid: 4190c7902a9e1f44ca86f174b3e9aa80, type: 2}
+    - target: {fileID: 8761188385244054302, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8761188385244054302, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8761188385244054302, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8761188385244054302, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9057653673634451769, guid: ec303f1d2f420b447858aea4baae7e8d, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -32

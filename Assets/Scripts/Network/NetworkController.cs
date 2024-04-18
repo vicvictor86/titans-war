@@ -41,7 +41,7 @@ public class NetworkController : MonoBehaviourPunCallbacks
 
     public void HandleCreateAccount()
     {
-        Application.OpenURL("http://localhost:3000");
+        Application.OpenURL("https://titan-wars-server.onrender.com/");
     }
 
     public override void OnConnectedToMaster()

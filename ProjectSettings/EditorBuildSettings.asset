@@ -9,8 +9,6 @@ EditorBuildSettings:
     path: Assets/Scenes/DevelopmentScenes/Lobby.unity
     guid: 7821be9aeb141aa4796fc4f0cad76e0c
   - enabled: 1
-    path: Assets/Scenes/DevelopmentScenes/Multiplayer.unity
-    guid: ff942c5dd09f69e46b3d9a5fe7535b29
     path: Assets/Scenes/DevelopmentScenes/AdjustReviews.unity
     guid: b41f845e2ed00ad4b8a61bc724e536d7
   m_configObjects: {}

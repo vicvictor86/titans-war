@@ -6,8 +6,9 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Photon.Pun;
 
-public class PlayerDeck : MonoBehaviour
+public class PlayerDeck : MonoBehaviourPun, IPunObservable
 {
     [Header("Player Status")]
     [SerializeField] public string PlayerSide;
@@ -241,5 +242,16 @@ public class PlayerDeck : MonoBehaviour
 
         PowerCardsInPlayerHand.Remove(PowerCardsInPlayerHand.First(powerCard => powerCard.ExtraPoints == extraPoints));
         PowerCards[extraPoints]--;
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(isAlreadySelectedMissionCard);
+        }
+        else { 
+            isAlreadySelectedMissionCard = (bool)stream.ReceiveNext();
+        }
     }
 }

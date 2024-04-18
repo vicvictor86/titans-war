@@ -27,7 +27,7 @@ MonoBehaviour:
     EnableProtocolFallback: 1
     AuthMode: 0
     EnableLobbyStatistics: 0
-    NetworkLogging: 1
+    NetworkLogging: 5
   DevRegion: sa
   PunLogging: 2
   EnableSupportLogger: 0
@@ -50,6 +50,9 @@ MonoBehaviour:
   - StartGame
   - SyncTurn
   - SyncMissionCardSelection
+  - UpdatePlayerList
+  - InstantiatePlayer
+  - UpdatePlayerListTest
   DisableAutoOpenWizard: 1
-  ShowSettings: 0
+  ShowSettings: 1
   DevRegionSetOnce: 1

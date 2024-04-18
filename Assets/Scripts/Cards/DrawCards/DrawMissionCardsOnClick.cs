@@ -24,10 +24,10 @@ public class DrawMissionCardsOnClick : MonoBehaviour, IPointerClickHandler
             GameManager.instance.ActualPlayer.MissionCardsInPlayerHand.Add(missionCardSelected);
             GameManager.instance.missionCardsAvailables.Remove(missionCardSelected);
 
-            if (GameManager.instance.actualPlayerIndex == GameManager.instance.playerList.IndexOf(GameManager.instance.playerList.FirstOrDefault(player => player.PlayerSide == "Spartha"))) 
-            {
-                UIManager.instance.UpdateMissionCardsScroller(missionCardSelected);
-            }
+            //if (GameManager.instance.actualPlayerIndex == GameManager.instance.playerList.IndexOf(GameManager.instance.playerList.FirstOrDefault(player => player.PlayerSide == "Spartha"))) 
+            //{
+            //    UIManager.instance.UpdateMissionCardsScroller(missionCardSelected);
+            //}
 
             GameManager.instance.EndTurn();
         }
