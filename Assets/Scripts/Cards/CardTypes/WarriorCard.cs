@@ -1,7 +1,9 @@
 using Domain;
+using System;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Card", menuName = "WarriorCard")]
+[Serializable]
 public class WarriorCard : Card
 {
     public int TotalForce => WaterForce + DesertForce + MountainsForce + PlainsForce;

@@ -9,7 +9,7 @@ public class DiscartCard : MonoBehaviour
     public void DiscartWarriorCard(WarriorCard warriorCardDiscarted, Transform playerWarriorHandPanelTransform, List<WarriorCard> warriorCardsinPlayerHands, List<WarriorCard> discartedWarriorCards)
     {
         var warriorHand = playerWarriorHandPanelTransform.GetComponentsInChildren<DisplayWarriorCard>();
-        var warriorCard = warriorHand.FirstOrDefault(displayCard => displayCard.Card == warriorCardDiscarted);
+        var warriorCard = warriorHand.FirstOrDefault(displayCard => displayCard.Card.CardName == warriorCardDiscarted.CardName);
 
         Destroy(warriorCard.gameObject);
 

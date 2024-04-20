@@ -1059,6 +1059,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 90139833}
     - target: {fileID: 2480813102130496696, guid: 37be519d6a896c3488ec7a4eafd447f8, type: 3}
+      propertyPath: CityName
+      value: Micenas
+      objectReference: {fileID: 0}
+    - target: {fileID: 2480813102130496696, guid: 37be519d6a896c3488ec7a4eafd447f8, type: 3}
       propertyPath: cityBenefits.AdditiveCoefficient
       value: 10
       objectReference: {fileID: 0}
@@ -1186,6 +1190,10 @@ PrefabInstance:
     - target: {fileID: 793080499535706399, guid: 37be519d6a896c3488ec7a4eafd447f8, type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2480813102130496696, guid: 37be519d6a896c3488ec7a4eafd447f8, type: 3}
+      propertyPath: CityName
+      value: "Term\xF3pilas"
       objectReference: {fileID: 0}
     - target: {fileID: 2480813102130496696, guid: 37be519d6a896c3488ec7a4eafd447f8, type: 3}
       propertyPath: cityBenefits.AdditiveCoefficient
@@ -2404,6 +2412,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 992231164}
     - target: {fileID: 2480813102130496696, guid: 37be519d6a896c3488ec7a4eafd447f8, type: 3}
+      propertyPath: CityName
+      value: Maratona
+      objectReference: {fileID: 0}
+    - target: {fileID: 2480813102130496696, guid: 37be519d6a896c3488ec7a4eafd447f8, type: 3}
       propertyPath: cityBenefits.AdditiveCoefficient
       value: 15
       objectReference: {fileID: 0}
@@ -2808,6 +2820,10 @@ PrefabInstance:
       propertyPath: tilemap
       value: 
       objectReference: {fileID: 39134114}
+    - target: {fileID: 2480813102130496696, guid: 37be519d6a896c3488ec7a4eafd447f8, type: 3}
+      propertyPath: CityName
+      value: Efeso
+      objectReference: {fileID: 0}
     - target: {fileID: 2480813102130496696, guid: 37be519d6a896c3488ec7a4eafd447f8, type: 3}
       propertyPath: cityBenefits.AdditiveCoefficient
       value: 10
@@ -4395,6 +4411,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2480813102130496696, guid: 37be519d6a896c3488ec7a4eafd447f8, type: 3}
+      propertyPath: CityName
+      value: Salamina
+      objectReference: {fileID: 0}
+    - target: {fileID: 2480813102130496696, guid: 37be519d6a896c3488ec7a4eafd447f8, type: 3}
       propertyPath: cityBenefits.AdditiveCoefficient
       value: 15
       objectReference: {fileID: 0}
@@ -4588,6 +4608,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2480813102130496696, guid: 37be519d6a896c3488ec7a4eafd447f8, type: 3}
+      propertyPath: CityName
+      value: Plateia
+      objectReference: {fileID: 0}
+    - target: {fileID: 2480813102130496696, guid: 37be519d6a896c3488ec7a4eafd447f8, type: 3}
       propertyPath: cityBenefits.AdditiveCoefficient
       value: 12
       objectReference: {fileID: 0}
@@ -4720,6 +4744,10 @@ PrefabInstance:
       propertyPath: tilemap
       value: 
       objectReference: {fileID: 1259552994}
+    - target: {fileID: 2480813102130496696, guid: 37be519d6a896c3488ec7a4eafd447f8, type: 3}
+      propertyPath: CityName
+      value: Sardes
+      objectReference: {fileID: 0}
     - target: {fileID: 2480813102130496696, guid: 37be519d6a896c3488ec7a4eafd447f8, type: 3}
       propertyPath: cityBenefits.AdditiveCoefficient
       value: 15
@@ -6019,6 +6047,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2480813102130496696, guid: 37be519d6a896c3488ec7a4eafd447f8, type: 3}
+      propertyPath: CityName
+      value: "C\xEDtero"
+      objectReference: {fileID: 0}
+    - target: {fileID: 2480813102130496696, guid: 37be519d6a896c3488ec7a4eafd447f8, type: 3}
       propertyPath: cityBenefits.AdditiveCoefficient
       value: 12
       objectReference: {fileID: 0}
@@ -6146,6 +6178,10 @@ PrefabInstance:
     - target: {fileID: 793080499535706399, guid: 37be519d6a896c3488ec7a4eafd447f8, type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2480813102130496696, guid: 37be519d6a896c3488ec7a4eafd447f8, type: 3}
+      propertyPath: CityName
+      value: Atenas
       objectReference: {fileID: 0}
     - target: {fileID: 2480813102130496696, guid: 37be519d6a896c3488ec7a4eafd447f8, type: 3}
       propertyPath: cityBenefits.AdditiveCoefficient
@@ -7221,6 +7257,10 @@ PrefabInstance:
       propertyPath: tilemap
       value: 
       objectReference: {fileID: 1426119888}
+    - target: {fileID: 2480813102130496696, guid: 37be519d6a896c3488ec7a4eafd447f8, type: 3}
+      propertyPath: CityName
+      value: Esparta
+      objectReference: {fileID: 0}
     - target: {fileID: 2480813102130496696, guid: 37be519d6a896c3488ec7a4eafd447f8, type: 3}
       propertyPath: cityBenefits.AdditiveCoefficient
       value: 15

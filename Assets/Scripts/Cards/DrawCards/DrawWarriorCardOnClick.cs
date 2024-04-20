@@ -5,10 +5,9 @@ using UnityEngine.EventSystems;
 
 public class DrawWarriorCardOnClick : MonoBehaviour, IPointerClickHandler
 {
-    [SerializeField] private PlayerDeck playerDeck;
-
     public void OnPointerClick(PointerEventData eventData)
     {
+        var playerDeck = GameManager.instance.myPlayer;
         bool clickWithLeftButton = eventData.button == PointerEventData.InputButton.Left;
         bool canDrawCard = GameManager.instance.CanDrawCard(playerDeck);
         if (clickWithLeftButton && canDrawCard && playerDeck != null)

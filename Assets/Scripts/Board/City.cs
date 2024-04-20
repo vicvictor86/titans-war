@@ -1,4 +1,5 @@
 using Domain;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +10,11 @@ using UnityEngine.Tilemaps;
 public class City : MonoBehaviour
 {
     [Header("City Properties")]
-    [SerializeField] private string cityName;
+    [SerializeField] public string CityName;
     [SerializeField] private int pointWhenConquered;
     [SerializeField] private int multiplierWhenConquered;
     [SerializeField] private Tilemap tilemap;
-    private List<GameObject> territoriesGameObject = new();
+    [JsonIgnore] public List<GameObject> TerritoriesGameObject = new();
 
     [Header("Territories Quantity")]
     [SerializeField] private int desertQuantity;
@@ -29,7 +30,7 @@ public class City : MonoBehaviour
     [SerializeField] private int totalTerrainTypesQuantityReadOnly;
 
     [Header("Prefabs")]
-    [SerializeField] public GameObject cityInfoPrefab;
+    [JsonIgnore] public GameObject cityInfoPrefab;
 
     [SerializeField] private int totalTerrainTypesQuantity => desertQuantity + riverQuantity + plainsQuantity + mountainsQuantity;
 
@@ -51,7 +52,7 @@ public class City : MonoBehaviour
 
     public PlayerDeck Owner { get; private set; }
 
-    void Start()
+    private void Start()
     {
         desertQuantityReadOnly = desertQuantity;
         riverQuantityReadOnly = riverQuantity;
@@ -61,39 +62,25 @@ public class City : MonoBehaviour
 
         if (totalTerrainTypesQuantity < 12)
         {
-            Debug.LogError($"City {cityName} doesn't have 12 territories, instead have {totalTerrainTypesQuantity}." +
+            Debug.LogError($"City {CityName} doesn't have 12 territories, instead have {totalTerrainTypesQuantity}." +
                 $"Please go to 'Territories Quantity' and define the quantity of each territory.");
         }
 
-        territorySprites = Resources.LoadAll<Sprite>("Sprites/HexTerrains").ToList();
-        List<TerrainType> typesAvailable = Enum.GetValues(typeof(TerrainType)).Cast<TerrainType>().ToList();
-        typesAvailable.RemoveAll(terrainType => terrainType == TerrainType.JOKER);
-
-        Dictionary<TerrainType, Sprite> spritesByName = new()
-        {
-            { TerrainType.DESERT, territorySprites[0] },
-            { TerrainType.MOUNTAINS, territorySprites[1] },
-            { TerrainType.PLAINS, territorySprites[2] },
-            { TerrainType.RIVER, territorySprites[3] },
-        };
-
         foreach (Transform child in transform)
         {
-            territoriesGameObject.Add(child.gameObject);
+            TerritoriesGameObject.Add(child.gameObject);
         }
 
         List<Vector3> allCitiesVertices = new();
-        foreach (var territory in territoriesGameObject)
+        int count = 0;
+        foreach (var territory in TerritoriesGameObject)
         {
-            var territoryPointText = territory.GetComponentInChildren<TextMeshPro>();
             var territorySprite = territory.GetComponent<SpriteRenderer>();
             var territoryInstance = territory.GetComponent<Territory>();
 
             territoryInstance.SetCity(this);
 
-            ChooseTerritoryPoint(territoryPointText, territoryInstance);
-
-            ChooseTerritoryType(typesAvailable, spritesByName, territorySprite, territoryInstance);
+            territoryInstance.Id = count++;
 
             allCitiesVertices.AddRange(CityBorder.CalculateEdges(territorySprite));
         }
@@ -104,7 +91,7 @@ public class City : MonoBehaviour
         foreach (var cityVertex in allCitiesVertices)
         {
             int matchQuantity = 0;
-            foreach(var cityVertexToCompare in allCitiesVertices)
+            foreach (var cityVertexToCompare in allCitiesVertices)
             {
                 var distance = Vector3.Distance(cityVertex, cityVertexToCompare);
                 if (distance < 0.25f)
@@ -123,6 +110,32 @@ public class City : MonoBehaviour
         }
 
         CityBorder.CreateCityBorder(cityBorderVertexes, territoryLineRenderer);
+    }
+
+    public void StartMap()
+    {
+        territorySprites = Resources.LoadAll<Sprite>("Sprites/HexTerrains").ToList();
+        List<TerrainType> typesAvailable = Enum.GetValues(typeof(TerrainType)).Cast<TerrainType>().ToList();
+        typesAvailable.RemoveAll(terrainType => terrainType == TerrainType.JOKER);
+
+        Dictionary<TerrainType, Sprite> spritesByName = new()
+        {
+            { TerrainType.DESERT, territorySprites[0] },
+            { TerrainType.MOUNTAINS, territorySprites[1] },
+            { TerrainType.PLAINS, territorySprites[2] },
+            { TerrainType.RIVER, territorySprites[3] },
+        };
+
+        foreach (var territory in TerritoriesGameObject)
+        {
+            var territoryPointText = territory.GetComponentInChildren<TextMeshPro>();
+            var territorySprite = territory.GetComponent<SpriteRenderer>();
+            var territoryInstance = territory.GetComponent<Territory>();
+
+            ChooseTerritoryPoint(territoryPointText, territoryInstance);
+
+            ChooseTerritoryType(typesAvailable, spritesByName, territorySprite, territoryInstance);
+        }
     }
 
     public int GetDesertQuantity()
@@ -152,7 +165,7 @@ public class City : MonoBehaviour
 
     public void ValidAndSetOwnership(PlayerDeck player)
     {
-        int playerTerritoryCount = territoriesGameObject.Select(territory => territory.GetComponent<Territory>())
+        int playerTerritoryCount = TerritoriesGameObject.Select(territory => territory.GetComponent<Territory>())
             .Where(territory => territory.Owner == player).Count();
         if (playerTerritoryCount >= 7)
         {
@@ -162,7 +175,7 @@ public class City : MonoBehaviour
 
     public int GetPointsForPlayer(PlayerDeck player)
     {
-        var basePoints = territoriesGameObject.Select(territory => territory.GetComponent<Territory>())
+        var basePoints = TerritoriesGameObject.Select(territory => territory.GetComponent<Territory>())
             .Where(territory => territory.Owner == player).Sum(territoty => territoty.Point);
 
         return player == Owner ? 
@@ -170,14 +183,14 @@ public class City : MonoBehaviour
             : basePoints;
     }
 
-    private void ChooseTerritoryPoint(TextMeshPro territoryPointText, Territory territoryInstance)
+    public void ChooseTerritoryPoint(TextMeshPro territoryPointText, Territory territoryInstance)
     {
         int randomPoint = UnityEngine.Random.Range(minPoint, maxPoint + 1);
         territoryPointText.text = randomPoint.ToString();
         territoryInstance.Point = randomPoint;
     }
 
-    private void ChooseTerritoryType(List<TerrainType> typesAvailable, Dictionary<TerrainType, Sprite> spritesByName,
+    public void ChooseTerritoryType(List<TerrainType> typesAvailable, Dictionary<TerrainType, Sprite> spritesByName,
         SpriteRenderer territorySprite, Territory territoryInstance)
     {
         int indexTypeChoosed = UnityEngine.Random.Range(0, typesAvailable.Count);

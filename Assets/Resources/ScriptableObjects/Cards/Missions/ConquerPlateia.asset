@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: ConquerPlateia
   m_EditorClassIdentifier: 
   CardName: ConquerPlateia
+  CardImage: {fileID: 21300000, guid: 6f6866feb3b863249a02fed4905d19e2, type: 3}
   Description: Dominar Plateia
   Points: 40
   MissionType: 6

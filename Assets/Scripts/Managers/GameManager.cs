@@ -11,6 +11,7 @@ using UnityEngine.UI;
 using Photon.Pun;
 using Photon.Realtime;
 using Newtonsoft.Json;
+using System;
 
 public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 {
@@ -21,8 +22,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public PlayerDeck myPlayer;
     public PlayerDeck opponentPlayer;
 
-    public PlayerDeck ActualPlayer => playerList[actualPlayerIndex];
-    public PlayerDeck NextPlayer => playerList[(actualPlayerIndex + 1) % playerList.Count];
+    //public PlayerDeck ActualPlayer => playerList[actualPlayerIndex];
+    //public PlayerDeck NextPlayer => playerList[(actualPlayerIndex + 1) % playerList.Count];
     [Header("Players")]
     public List<PlayerDeck> playerList;
     public int actualPlayerIndex;
@@ -37,6 +38,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public Territory contestedTerritory = null;
     public bool attack = false;
     private int extraPower = 0;
+    private string attackCardSerialized;
     [SerializeField] private TextMeshProUGUI endAttackTurnText;
 
     [SerializeField] private Button endTurnButton;
@@ -153,12 +155,69 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             };
             cardsSelectedJson = JsonConvert.SerializeObject(missionCardsSerializable);
 
+            var cities = GameObject.FindGameObjectsWithTag("City").Select(gameObject => gameObject.GetComponent<City>());
+
+            var startMap = new StartMap();
+
+            foreach (var city in cities)
+            {
+                city.StartMap();
+                startMap.startTerritoriesData.AddRange(city.TerritoriesGameObject.Select(territory =>
+                {
+                    var territoryComponent = territory.GetComponent<Territory>();
+                    return new StartTerritoryData
+                    {
+                        Id = territoryComponent.Id,
+                        CityName = city.CityName,
+                        Point = territoryComponent.Point,
+                        Type = territoryComponent.Type
+                    };
+                }).ToList());
+            }
+
+            var startMapSerialized = JsonConvert.SerializeObject(startMap);
+            photonView.RPC(nameof(SendMap), RpcTarget.Others, startMapSerialized);
 
             SendCardsToOtherPlayer(cardsSelectedJson);
             photonView.RPC(nameof(SendCardsToOtherPlayer), RpcTarget.Others, cardsSelectedJson);
 
-            actualPlayerIndex = Random.Range(0, PhotonNetwork.PlayerList.Count());
+            actualPlayerIndex = UnityEngine.Random.Range(0, PhotonNetwork.PlayerList.Count());
             photonView.RPC(nameof(SyncTurn), RpcTarget.OthersBuffered, actualPlayerIndex);
+        }
+    }
+
+    [PunRPC]
+    private void SendMap(string serializedMapData)
+    {
+        var startMap = JsonConvert.DeserializeObject<StartMap>(serializedMapData);
+
+        var territorySprites = Resources.LoadAll<Sprite>("Sprites/HexTerrains").ToList();
+        List<TerrainType> typesAvailable = Enum.GetValues(typeof(TerrainType)).Cast<TerrainType>().ToList();
+        typesAvailable.RemoveAll(terrainType => terrainType == TerrainType.JOKER);
+
+        Dictionary<TerrainType, Sprite> spritesByName = new()
+        {
+            { TerrainType.DESERT, territorySprites[0] },
+            { TerrainType.MOUNTAINS, territorySprites[1] },
+            { TerrainType.PLAINS, territorySprites[2] },
+            { TerrainType.RIVER, territorySprites[3] },
+        };
+
+        foreach (var startTerritoryData in startMap.startTerritoriesData)
+        {
+            var city = GameObject.Find(startTerritoryData.CityName).GetComponent<City>();
+            var territory = city.TerritoriesGameObject.Where(territory => territory.GetComponent<Territory>().Id == startTerritoryData.Id).FirstOrDefault().GetComponent<Territory>();
+
+            var territoryPointText = territory.GetComponentInChildren<TextMeshPro>();
+            var territorySprite = territory.GetComponent<SpriteRenderer>();
+            var territoryInstance = territory.GetComponent<Territory>();
+
+            territory.Point = startTerritoryData.Point;
+            territory.Type = startTerritoryData.Type;
+
+            city.ChooseTerritoryPoint(territoryPointText, territoryInstance);
+
+            city.ChooseTerritoryType(typesAvailable, spritesByName, territorySprite, territoryInstance);
         }
     }
 
@@ -312,9 +371,20 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         endTurnButton.interactable = false;
         isOnBattle = true;
 
-        UIManager.instance.SetBattleFieldData(territory);
-        UIManager.instance.SetPlayerTurnIcon(ActualPlayer, attackTurn, 1f);
-        UIManager.instance.ShowBattlefield();
+        TerritoryDataSerializable territoryDataSerializable = new()
+        {
+            Type = territory.Type,
+            Point = territory.Point,
+            CityName = territory.City?.CityName,
+        };
+
+        string serializedTerritory = JsonConvert.SerializeObject(territoryDataSerializable, new JsonSerializerSettings
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        });
+
+        IniatilizeBattle(serializedTerritory);
+
         Destroy(GameObject.FindWithTag("AttackButton"));
         Instantiate(CancelAttackButton, attackButtonPosition.position, Quaternion.identity, canvas.transform);
 
@@ -322,7 +392,37 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         contestedTerritory = territory;
         attack = true;
         Debug.Log("Pode escolher a carta");
-        ActualPlayer.SetAttackDefenseCardsClickable();
+    }
+
+    [PunRPC]
+    public void IniatilizeBattle(string serializedTerritory, string serializedWarriorCard = null)
+    {
+        var territoryData = JsonConvert.DeserializeObject<TerritoryDataSerializable>(serializedTerritory);
+
+        Territory territory = new()
+        {
+            Type = territoryData.Type,
+            Point = territoryData.Point,
+            City = territoryData.CityName != null ? GameObject.Find(territoryData.CityName).GetComponent<City>() : null,
+            Owner = territoryData.OwnerPlayerSide != null ? GameObject.Find(territoryData.OwnerPlayerSide).GetComponent<PlayerDeck>() : null
+        };
+
+        if (serializedWarriorCard != null)
+        {
+            attackingCard = JsonConvert.DeserializeObject<WarriorCard>(serializedWarriorCard);
+            UIManager.instance.ShowAttackWarriorCard(attackingCard);
+
+            contestedTerritory = territory;
+        }
+
+        UIManager.instance.SetBattleFieldData(territory);
+
+        var icon = IsMyTurn() ? attackTurn : defenseTurn;
+
+        UIManager.instance.SetPlayerTurnIcon(myPlayer, icon, 1f);
+        UIManager.instance.ShowBattlefield();
+
+        myPlayer.SetAttackDefenseCardsClickable();
     }
 
     public void CancelAttackRound()
@@ -333,8 +433,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         isOnBattle = false;
 
         UIManager.instance.HideCards();
-        UIManager.instance.SetPlayerTurnIcon(ActualPlayer, playerTurn, 1f);
+        UIManager.instance.SetPlayerTurnIcon(myPlayer, playerTurn, 1f);
+
         Destroy(GameObject.FindWithTag("CancelAttackButton"));
+
         var attackButton = Instantiate(AttackButton, attackButtonPosition.position, Quaternion.identity, canvas.transform);
         attackButton.GetComponent<AttackButton>().territory = contestedTerritory;
 
@@ -353,59 +455,82 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public void EndAttackTurnWithExtraPowerCard()
     {
         UIManager.instance.CloseExtraPowerCardPanel();
-        ActualPlayer.RemovePowerCard(extraPower);
+        myPlayer.RemovePowerCard(extraPower);
 
-        EndAttackTurn();
+        EndAttackTurn(attackCardSerialized);
     }
 
-    public void SetAttackDefenseCard(WarriorCard card)
+    [PunRPC]
+    public void StopTimer()
     {
-        if (attack)
+        TimerView.GetComponent<Timer>().TimerOn = false;
+    }
+
+    [PunRPC]
+    public void SetAttackCard(string serializedCard)
+    {
+        attackCardSerialized = serializedCard;
+        var card = JsonConvert.DeserializeObject<WarriorCard>(serializedCard);
+
+        Debug.Log("Setou a carta de ataque");
+        Destroy(GameObject.FindWithTag("CancelAttackButton"));
+
+        StopTimer();
+        photonView.RPC(nameof(StopTimer), RpcTarget.Others);
+
+        attackingCard = card;
+        attack = false;
+
+        UIManager.instance.ShowAttackWarriorCard(attackingCard);
+        myPlayer.SetAttackDefenseCardsNotClickable();
+
+        if (myPlayer.PowerCardsInPlayerHand.Count > 0)
         {
-            Debug.Log("Setou a carta de ataque");
-            Destroy(GameObject.FindWithTag("CancelAttackButton"));
-            TimerView.GetComponent<Timer>().TimerOn = false;
-
-            attackingCard = card;
-            attack = false;
-
-            UIManager.instance.ShowAttackWarriorCard(attackingCard);
-            ActualPlayer.SetAttackDefenseCardsNotClickable();
-
-            if (ActualPlayer.PowerCardsInPlayerHand.Count > 0)
-            {
-                UIManager.instance.ShowExtraPowerCardPanel();
-            }
-            else
-            {
-                EndAttackTurn();
-            }
+            UIManager.instance.ShowExtraPowerCardPanel();
         }
         else
         {
-            Debug.Log("Setou a carta de defesa");
-            defendindCard = card;
-
-            UIManager.instance.ShowDefenseWarriorCard(defendindCard);
-
-            NextPlayer.SetAttackDefenseCardsNotClickable();
-            StartCoroutine(CalculateWinner());
+            EndAttackTurn(serializedCard);
         }
     }
 
-    public void EndAttackTurn()
+    [PunRPC]
+    public void SetDefenseCard(string serializedCard)
+    {
+        var card = JsonConvert.DeserializeObject<WarriorCard>(serializedCard);
+
+        Debug.Log("Setou a carta de defesa");
+        defendindCard = card;
+
+        UIManager.instance.ShowDefenseWarriorCard(defendindCard);
+
+        myPlayer.SetAttackDefenseCardsNotClickable();
+
+        StartCoroutine(CalculateWinner());
+    }
+
+    public void EndAttackTurn(string serializedCard)
     {
         Debug.Log("Defesa pode escolher a carta");
 
-        UIManager.instance.SetPlayerTurnIcon(ActualPlayer, attackTurn, 0f);
-        UIManager.instance.SetPlayerTurnIcon(NextPlayer, defenseTurn, 1f);
+        UIManager.instance.SetPlayerTurnIcon(myPlayer, attackTurn, 0f);
+        UIManager.instance.SetPlayerTurnIcon(opponentPlayer, defenseTurn, 1f);
 
-        NextPlayer.SetAttackDefenseCardsClickable();
+        TerritoryDataSerializable territory = new()
+        {
+            Type = contestedTerritory.Type,
+            Point = contestedTerritory.Point,
+            CityName = contestedTerritory.City != null ? contestedTerritory.City.CityName : null,
+        };
+
+        string serializedTerritory = JsonConvert.SerializeObject(territory);
+
+        photonView.RPC(nameof(IniatilizeBattle), RpcTarget.Others, serializedTerritory, serializedCard);
     }
 
     public IEnumerator CalculateWinner()
     {
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(1f);
 
         var attackValue = attackingCard.GetPowerValue(contestedTerritory.Type) + extraPower;
         var defenseValue = defendindCard.GetPowerValue(contestedTerritory.Type);
@@ -413,37 +538,63 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         if (attackValue > defenseValue)
         {
             Debug.Log("Ataque venceu");
-            UIManager.instance.SetPlayerTurnIcon(ActualPlayer, winner, 1f);
-            UIManager.instance.SetPlayerTurnIcon(NextPlayer, looser, 1f);
-            ActualPlayer.AddTerritory(contestedTerritory);
 
-            UIManager.instance.playerMissionCardsContent.GetComponentsInChildren<DisplayMissionCard>()
+            if (IsMyTurn())
+            {
+                UIManager.instance.SetPlayerTurnIcon(myPlayer, winner, 1f);
+                UIManager.instance.SetPlayerTurnIcon(opponentPlayer, looser, 1f);
+                myPlayer.AddTerritory(contestedTerritory);
+
+                UIManager.instance.playerMissionCardsContent.GetComponentsInChildren<DisplayMissionCard>()
                 .Where(displayMissionCard => MissionStrategyFactory
                 .GetMissionCardStrategy(displayMissionCard.Card.MissionType)
-                .IsComplete(ActualPlayer))
+                .IsComplete(myPlayer))
                 .ToList()
                 .ForEach(displayMissionCard => displayMissionCard.GetComponentInChildren<Image>().color = new Color(0.5f, 0.5f, 0.5f, 0.5f));
+            }
+            else
+            {
+                UIManager.instance.SetPlayerTurnIcon(opponentPlayer, winner, 1f);
+                UIManager.instance.SetPlayerTurnIcon(myPlayer, looser, 1f);
+            }
         }
         else if (defenseValue > attackValue)
         {
             Debug.Log("Defesa Venceu");
-            UIManager.instance.SetPlayerTurnIcon(ActualPlayer, looser, 1f);
-            UIManager.instance.SetPlayerTurnIcon(NextPlayer, winner, 1f);
-            int randomIndexPowerCard = Random.Range(0, powerCardsAvailable.Count);
-            NextPlayer.AddNewPowerCard(powerCardsAvailable[randomIndexPowerCard]);
+
+            if (IsMyTurn())
+            {
+                UIManager.instance.SetPlayerTurnIcon(myPlayer, looser, 1f);
+                UIManager.instance.SetPlayerTurnIcon(opponentPlayer, winner, 1f);
+            }
+            else
+            {
+                UIManager.instance.SetPlayerTurnIcon(opponentPlayer, looser, 1f);
+                UIManager.instance.SetPlayerTurnIcon(myPlayer, winner, 1f);
+
+                int randomIndexPowerCard = UnityEngine.Random.Range(0, powerCardsAvailable.Count);
+                myPlayer.AddNewPowerCard(powerCardsAvailable[randomIndexPowerCard]);
+            }
         }
         else
         {
-            UIManager.instance.SetPlayerTurnIcon(ActualPlayer, draw, 1f);
-            UIManager.instance.SetPlayerTurnIcon(NextPlayer, draw, 1f);
+            UIManager.instance.SetPlayerTurnIcon(myPlayer, draw, 1f);
+            UIManager.instance.SetPlayerTurnIcon(opponentPlayer, draw, 1f);
             Debug.Log("Empate");
         }
-        ActualPlayer.DiscartWarriorCard(attackingCard);
-        NextPlayer.DiscartWarriorCard(defendindCard);
 
-        ActualPlayer.DiscartTerrainCardByType(ActualPlayer.TerrainCardsQuantity[contestedTerritory.Type] > 0 ?
+        if (IsMyTurn())
+        {
+            myPlayer.DiscartWarriorCard(attackingCard);
+
+            myPlayer.DiscartTerrainCardByType(myPlayer.TerrainCardsQuantity[contestedTerritory.Type] > 0 ?
             contestedTerritory.Type :
             TerrainType.JOKER);
+        }
+        else
+        {
+            myPlayer.DiscartWarriorCard(defendindCard);
+        }
 
         attackingCard = null;
         defendindCard = null;
@@ -453,6 +604,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         UIManager.instance.HideCards();
         endTurnButton.interactable = true;
         isOnBattle = false;
+
         if (ValidEndGame())
         {
             EndGame();
@@ -464,16 +616,20 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         Destroy(GameObject.FindWithTag("CityInfo"));
         Destroy(GameObject.FindWithTag("TerritoryInfo"));
         Destroy(GameObject.FindWithTag("AttackButton"));
+
         var canvas = GameObject.FindWithTag("Canvas").GetComponent<Canvas>();
         var cityInfoInstance = Instantiate(city.cityInfoPrefab, cityInfoPanelPosition.position, Quaternion.identity, canvas.transform);
         cityInfoInstance.GetComponent<DisplayCityInfo>().City = city;
+
         var territoryInfoInstace = Instantiate(territory.territoryInfoPrefab, territoryInfoPanelPosition.position, Quaternion.identity, canvas.transform);
         territoryInfoInstace.GetComponent<DisplayTerritoryInfo>().Territory = territory;
-        if ((ActualPlayer.ListTerrainTypesDisponibleToAttack().Contains(terrainType)
-            || ActualPlayer.ListTerrainTypesDisponibleToAttack().Contains(TerrainType.JOKER)) &&
+
+        if (IsMyTurn() &&
+            (myPlayer.ListTerrainTypesDisponibleToAttack().Contains(terrainType)
+            || myPlayer.ListTerrainTypesDisponibleToAttack().Contains(TerrainType.JOKER)) &&
             !actionMade &&
-            ActualPlayer.WarriorCardsInPlayerHand.Any() &&
-            NextPlayer.WarriorCardsInPlayerHand.Any() &&
+            myPlayer.WarriorCardsInPlayerHand.Any() &&
+            //NextPlayer.WarriorCardsInPlayerHand.Any() &&
             territory.Owner == null)
         {
             var attackButton = Instantiate(AttackButton, attackButtonPosition.position, Quaternion.identity, canvas.transform);

@@ -1,17 +1,21 @@
 using Domain;
+using Newtonsoft.Json;
+using System;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+[Serializable]
 public class Territory : MonoBehaviour, IPointerClickHandler
 {
+    public int Id;
     public TerrainType Type;
     public int Point;
-    public PlayerDeck Owner { get; private set; }
-    public City City { get; private set; }
+    public PlayerDeck Owner { get; set; }
+    public City City { get; set; }
 
     [Header("Prefabs")]
-    public GameObject territoryInfoPrefab;
+    [JsonIgnore] public GameObject territoryInfoPrefab;
 
     public void SetOwner(PlayerDeck newOwner)
     {

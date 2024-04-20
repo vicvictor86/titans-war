@@ -54,6 +54,14 @@ MonoBehaviour:
   - InstantiatePlayer
   - UpdatePlayerListTest
   - SendCardsToOtherPlayer
+  - IniatilizeAttackRound
+  - SelectedCardOnBattlefield
+  - SetAttackDefenseCard
+  - SetDefenseCard
+  - IniatilizeBattle
+  - SetAttackCard
+  - StopTimer
+  - SendMap
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
