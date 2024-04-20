@@ -28,20 +28,20 @@ public class DrawCard : MonoBehaviour
         }
     }
 
-    public List<MissionCard> DrawInitialsMissionsCard(List<MissionCard> missionCardsAvailable, PlayerDeck playerDeck)
+    public static List<MissionCard> DrawInitialsMissionsCard(List<MissionCard> missionCardsAvailable)
     {
-        for (int i = playerDeck.MissionCardsInitialQuantity; i > 0; i--)
+        List<MissionCard> cardsSelected = new();
+
+        for (int i = GameManager.instance.MissionCardsInitialQuantity; i > 0; i--)
         {
             int randomCard = Random.Range(0, missionCardsAvailable.Count);
 
-            var cardSelected = missionCardsAvailable[randomCard];
-            //playerDeck.InstantiateNewMissionCard(cardSelected);
+            cardsSelected.Add(missionCardsAvailable[randomCard]);
 
-            playerDeck.MissionCardsInPlayerHand.Add(cardSelected);
             missionCardsAvailable.Remove(missionCardsAvailable[randomCard]);
         }
 
-        return playerDeck.MissionCardsInPlayerHand;
+        return cardsSelected;
     }
 
     public WarriorCard DrawWarriorCard(PlayerDeck playerDeck)

@@ -100,13 +100,6 @@ public class PlayerDeck : MonoBehaviourPun, IPunObservable
         return TerrainCardsInPlayerHand;
     }
 
-    public List<MissionCard> DrawInitialsMissionsCard(List<MissionCard> missionCardsAvailable)
-    {
-        drawCard.DrawInitialsMissionsCard(missionCardsAvailable, this);
-
-        return MissionCardsInPlayerHand;
-    }
-
     public GameObject InstantiateNewWarriorCard(WarriorCard warriorCard)
     {
         var cardInstance = instantiateCard.InstantiateNewWarriorCard(warriorCard, warriorPrefab, playerWarriorHandPanelTransform);

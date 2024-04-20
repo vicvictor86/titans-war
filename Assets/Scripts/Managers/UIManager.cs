@@ -16,7 +16,7 @@ public class UIManager : MonoBehaviourPun
 
     [Header("Icons")]
     [SerializeField] private GameObject turnIcon;
-    [SerializeField] private Dictionary<string, Sprite> iconsAvailable; 
+    [SerializeField] private Dictionary<string, Sprite> iconsAvailable;
 
     [Header("Mission Cards")]
     [SerializeField] private GameObject firstRoundGameObject;
@@ -26,7 +26,6 @@ public class UIManager : MonoBehaviourPun
     public bool isMouseOverMissionCardsScroller = false;
 
     private List<MissionCard> missionCardsInScroller = new();
-    private bool missionCardScrollerIsOpen = false;
 
     [Header("Prefabs")]
     [SerializeField] private GameObject missionCardPrefab;
@@ -62,8 +61,8 @@ public class UIManager : MonoBehaviourPun
     private void Start()
     {
         iconsAvailable = Resources.LoadAll<Sprite>("Sprites/UI/Round").ToDictionary(sprite => sprite.name, sprite => sprite);
-        terrainInfo = new() 
-        { 
+        terrainInfo = new()
+        {
             { TerrainType.MOUNTAINS, ("Montanhas", MountainsImage) },
             { TerrainType.RIVER, ("Rio", RiverImage) },
             { TerrainType.DESERT, ("Deserto", DesertImage) },
@@ -92,33 +91,25 @@ public class UIManager : MonoBehaviourPun
 
     private void Update()
     {
-        if (missionCardScrollerIsOpen)
+        if (GameManager.instance.myPlayer.isAlreadySelectedMissionCard)
         {
-            var missionCardsInPlayerHand = GameManager.instance.ActualPlayer.MissionCardsInPlayerHand;
+            var missionCardsInPlayerHand = GameManager.instance.myPlayer.MissionCardsInPlayerHand;
             if (missionCardsInScroller.Count != missionCardsInPlayerHand.Count)
             {
-                MissionCard newMissionCard = null;
-                foreach(var missionCardsInScrollerActual in missionCardsInScroller)
-                {
-                    foreach(var missionCardInPlayerHandActualIteration in missionCardsInPlayerHand)
+                missionCardsInPlayerHand
+                    .Where(playerCard => !missionCardsInScroller
+                    .Any(scrollerCard => scrollerCard.Description == playerCard.Description))
+                    .ToList()
+                    .ForEach(playerCard =>
                     {
-                        if (missionCardsInScrollerActual.Description != missionCardInPlayerHandActualIteration.Description)
-                        {
-                            newMissionCard = missionCardInPlayerHandActualIteration;
-                        }
-                    }
-                }
-
-                if (newMissionCard)
-                {
-                    var cardInstance = Instantiate(missionCardPrefab, playerMissionCardsContent.transform);
-                    cardInstance.GetComponent<DisplayMissionCard>().Card = newMissionCard;
-                    missionCardsInScroller.Add(newMissionCard);
-                }
+                        var cardInstance = Instantiate(missionCardPrefab, playerMissionCardsContent.transform);
+                        cardInstance.GetComponent<DisplayMissionCard>().Card = playerCard;
+                        missionCardsInScroller.Add(playerCard);
+                    });
             }
+
+            panelGlowAnimator.SetBool("CandEndTurn", GameManager.instance.actionMade && !GameManager.instance.isOnBattle);
         }
-    
-        panelGlowAnimator.SetBool("CandEndTurn", GameManager.instance.actionMade && !GameManager.instance.isOnBattle);
     }
 
     public void OpenMissionCardsToChoosePanel(List<MissionCard> missionCardsInPlayerHand)

@@ -1,9 +1,11 @@
+using Newtonsoft.Json;
 using System;
 using UnityEngine;
 
-[CreateAssetMenu(fileName ="New Card", menuName = "Card")] 
+[CreateAssetMenu(fileName ="New Card", menuName = "Card")]
+[Serializable]
 public class Card : ScriptableObject
 {
-    public string CardName;
-    public Sprite CardImage;
+    [SerializeField] public string CardName;
+    [JsonIgnore] public Sprite CardImage;
 }
