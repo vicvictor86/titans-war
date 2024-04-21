@@ -9,7 +9,7 @@ public class DisplayTerritoryInfo : MonoBehaviour
     protected void Start()
     {
         //Deve ser trocado para nome do jogador ou coisa do tipo
-        Player.text = Territory.Owner?.PlayerSide ?? "Livre";
+        Player.text = Territory.Owner != null ? Territory.Owner.PlayerSide : null ?? "Livre";
     }
 
 }

@@ -3054,6 +3054,7 @@ MonoBehaviour:
   actualPlayerIndex: 0
   playerSet: {fileID: 130680680}
   opponentSet: {fileID: 336910971}
+  MyChooseExtraPowerCardPanel: {fileID: 0}
   MissionCardsInitialQuantity: 6
   actionMade: 0
   attackingCard: {fileID: 0}
@@ -3618,6 +3619,7 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1641350488}
   - {fileID: 115731206}
   - {fileID: 130680681}
   - {fileID: 336910972}
@@ -3628,7 +3630,6 @@ RectTransform:
   - {fileID: 1092246492}
   - {fileID: 632054097}
   - {fileID: 680382539}
-  - {fileID: 1641350488}
   - {fileID: 1033860201}
   - {fileID: 1091127723}
   - {fileID: 1323769080}

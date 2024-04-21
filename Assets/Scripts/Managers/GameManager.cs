@@ -29,6 +29,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public int actualPlayerIndex;
     public GameObject playerSet;
     public GameObject opponentSet;
+    public GameObject MyChooseExtraPowerCardPanel;
     public int MissionCardsInitialQuantity = 6;
 
     [Header("Attack/Defense")]
@@ -101,10 +102,12 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         GameObject playerInstance = PhotonNetwork.Instantiate("PlayerSet", playerSet.transform.position, Quaternion.identity);
 
+        MyChooseExtraPowerCardPanel = playerInstance.transform.Find("ChooseExtraPowerCardPanel").GameObject();
+
         playerInstance.transform.SetParent(playerSet.transform);
         playerInstance.transform.localScale = new Vector3(1, 1, 1);
 
-        playerSet.transform.SetAsFirstSibling();
+        playerSet.transform.SetSiblingIndex(1);
 
         myPlayer = playerInstance.GetComponentInChildren<PlayerDeck>();
         myPlayer.PlayerSide = PhotonNetwork.PlayerList.Count() > 1 ? "Persa" : "Spartha";
@@ -167,7 +170,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
                     var territoryComponent = territory.GetComponent<Territory>();
                     return new StartTerritoryData
                     {
-                        Id = territoryComponent.Id,
+                        posx = territory.transform.position.x,
+                        posy = territory.transform.position.y,
                         CityName = city.CityName,
                         Point = territoryComponent.Point,
                         Type = territoryComponent.Type
@@ -192,8 +196,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         var startMap = JsonConvert.DeserializeObject<StartMap>(serializedMapData);
 
         var territorySprites = Resources.LoadAll<Sprite>("Sprites/HexTerrains").ToList();
-        List<TerrainType> typesAvailable = Enum.GetValues(typeof(TerrainType)).Cast<TerrainType>().ToList();
-        typesAvailable.RemoveAll(terrainType => terrainType == TerrainType.JOKER);
 
         Dictionary<TerrainType, Sprite> spritesByName = new()
         {
@@ -203,22 +205,36 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             { TerrainType.RIVER, territorySprites[3] },
         };
 
-        foreach (var startTerritoryData in startMap.startTerritoriesData)
+        GameObject.FindGameObjectsWithTag("City").ToList().ForEach(cityObject =>
         {
-            var city = GameObject.Find(startTerritoryData.CityName).GetComponent<City>();
-            var territory = city.TerritoriesGameObject.Where(territory => territory.GetComponent<Territory>().Id == startTerritoryData.Id).FirstOrDefault().GetComponent<Territory>();
+            var city = cityObject.GetComponent<City>();
 
-            var territoryPointText = territory.GetComponentInChildren<TextMeshPro>();
-            var territorySprite = territory.GetComponent<SpriteRenderer>();
-            var territoryInstance = territory.GetComponent<Territory>();
+            List<TerrainType> typesAvailable = Enum.GetValues(typeof(TerrainType)).Cast<TerrainType>().ToList();
+            typesAvailable.RemoveAll(terrainType => terrainType == TerrainType.JOKER);
 
-            territory.Point = startTerritoryData.Point;
-            territory.Type = startTerritoryData.Type;
+            var startTerritoryInCity = startMap.startTerritoriesData.Where(startTerritoryData => startTerritoryData.CityName == city.CityName);
 
-            city.ChooseTerritoryPoint(territoryPointText, territoryInstance);
+            city.TerritoriesGameObject.ForEach(territoryObject =>
+            {
+                var territory = territoryObject.GetComponent<Territory>();
 
-            city.ChooseTerritoryType(typesAvailable, spritesByName, territorySprite, territoryInstance);
-        }
+                var startTerritory = startMap.startTerritoriesData
+                .FirstOrDefault(startTerritoryData =>
+                    startTerritoryData.posx == territoryObject.transform.position.x &&
+                    startTerritoryData.posy == territoryObject.transform.position.y
+                );
+
+                var territoryPointText = territory.GetComponentInChildren<TextMeshPro>();
+                var territorySprite = territory.GetComponent<SpriteRenderer>();
+
+                territory.Point = startTerritory.Point;
+                territory.Type = startTerritory.Type;
+
+                city.ChooseTerritoryPoint(territoryPointText, territory, territory.Point);
+
+                city.ChooseTerritoryType(typesAvailable, spritesByName, territorySprite, territory, territory.Type);
+            });
+        });
     }
 
     [PunRPC]
@@ -390,8 +406,22 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
         actionMade = true;
         contestedTerritory = territory;
+        photonView.RPC(nameof(SetContestedTerritory), RpcTarget.Others, territory.transform.position.x, territory.transform.position.y);
+
         attack = true;
         Debug.Log("Pode escolher a carta");
+    }
+
+    [PunRPC]
+    public void SetContestedTerritory(float posx, float posy)
+    {
+        var territoryGameObject = GameObject.FindGameObjectsWithTag("Territory").FirstOrDefault(territoryObject => territoryObject.transform.position.x == posx &&
+            territoryObject.transform.position.y == posy
+        );
+
+        var territory = territoryGameObject.GetComponent<Territory>();
+
+        contestedTerritory = territory;
     }
 
     [PunRPC]
@@ -410,9 +440,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         if (serializedWarriorCard != null)
         {
             attackingCard = JsonConvert.DeserializeObject<WarriorCard>(serializedWarriorCard);
+            attackingCard.CardImage = Resources.Load<Sprite>($"Sprites/{opponentPlayer.PlayerSide}/{attackingCard.CardName}");
             UIManager.instance.ShowAttackWarriorCard(attackingCard);
-
-            contestedTerritory = territory;
         }
 
         UIManager.instance.SetBattleFieldData(territory);
@@ -479,6 +508,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         photonView.RPC(nameof(StopTimer), RpcTarget.Others);
 
         attackingCard = card;
+        attackingCard.CardImage = Resources.Load<Sprite>($"Sprites/{myPlayer.PlayerSide}/{card.CardName}");
         attack = false;
 
         UIManager.instance.ShowAttackWarriorCard(attackingCard);
@@ -501,6 +531,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
         Debug.Log("Setou a carta de defesa");
         defendindCard = card;
+
+        var defendingPlayerSide = IsMyTurn() ? opponentPlayer.PlayerSide : myPlayer.PlayerSide;
+
+        defendindCard.CardImage = Resources.Load<Sprite>($"Sprites/{defendingPlayerSide}/{card.CardName}");
 
         UIManager.instance.ShowDefenseWarriorCard(defendindCard);
 
@@ -554,6 +588,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             }
             else
             {
+                opponentPlayer.AddTerritory(contestedTerritory);
                 UIManager.instance.SetPlayerTurnIcon(opponentPlayer, winner, 1f);
                 UIManager.instance.SetPlayerTurnIcon(myPlayer, looser, 1f);
             }
@@ -625,8 +660,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         territoryInfoInstace.GetComponent<DisplayTerritoryInfo>().Territory = territory;
 
         if (IsMyTurn() &&
-            (myPlayer.ListTerrainTypesDisponibleToAttack().Contains(terrainType)
-            || myPlayer.ListTerrainTypesDisponibleToAttack().Contains(TerrainType.JOKER)) &&
+            (myPlayer.ListTerrainTypesDisponibleToAttack().Contains(terrainType) ||
+            myPlayer.ListTerrainTypesDisponibleToAttack().Contains(TerrainType.JOKER)) &&
             !actionMade &&
             myPlayer.WarriorCardsInPlayerHand.Any() &&
             //NextPlayer.WarriorCardsInPlayerHand.Any() &&
@@ -694,7 +729,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             actualPlayerIndex = (int)stream.ReceiveNext();
 
-            if (opponentPlayer)
+            if (opponentPlayer != null)
             {
                 opponentPlayer.isAlreadySelectedMissionCard = (bool)stream.ReceiveNext();
                 opponentPlayer.PlayerSide = (string)stream.ReceiveNext();
@@ -716,12 +751,14 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
                 var warriorDeckPanel = opponentPlayerSet.transform.GetComponentsInChildren<Transform>().Where(childrenTransform => childrenTransform.name == "WarriorDeckPanel").FirstOrDefault();
                 var opponentPlayerSide = myPlayer.PlayerSide == "Persa" ? "Spartha" : "Persa";
+                
                 var backCardSprite = Resources.Load<Sprite>($"Sprites/BackCard/Back{opponentPlayerSide}");
                 warriorDeckPanel.GetComponent<Image>().sprite = backCardSprite;
 
                 opponentPlayer.transform.parent.transform.SetParent(opponentSet.transform);
                 opponentPlayer.transform.localPosition = opponentSet.transform.localPosition;
                 opponentPlayer.transform.localScale = opponentSet.transform.localScale;
+                opponentPlayer.PlayerSide = opponentPlayerSide;
 
                 opponentPlayer.transform.parent.transform.SetAsFirstSibling();
             }

@@ -8,7 +8,6 @@ using UnityEngine.EventSystems;
 [Serializable]
 public class Territory : MonoBehaviour, IPointerClickHandler
 {
-    public int Id;
     public TerrainType Type;
     public int Point;
     public PlayerDeck Owner { get; set; }

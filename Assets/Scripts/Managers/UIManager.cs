@@ -174,11 +174,15 @@ public class UIManager : MonoBehaviourPun
 
     public void ShowExtraPowerCardPanel()
     {
+        chooseExtraPowerCardPanel = GameManager.instance.MyChooseExtraPowerCardPanel;
+
         chooseExtraPowerCardPanel.SetActive(true);
+
         chooseExtraPowerCardPanel.GetComponentsInChildren<DisplayPowerCard>()
             .ToList()
             .ForEach(card => card.Player = GameManager.instance.myPlayer);
-        var displayPowerCounter = chooseExtraPowerCardPanel.GetComponentInChildren<DisplayPowerCounter>();
+
+        var displayPowerCounter = chooseExtraPowerCardPanel.GetComponent<DisplayPowerCounter>();
         displayPowerCounter.Player = GameManager.instance.myPlayer;
         displayPowerCounter.UpdatePowerCounter();
     }

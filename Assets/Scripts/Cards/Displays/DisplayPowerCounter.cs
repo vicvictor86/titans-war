@@ -7,7 +7,7 @@ public class DisplayPowerCounter : MonoBehaviour
 {
     [SerializeField] public PlayerDeck Player;
 
-    [Header("Terrain Cards")]
+    [Header("Power Cards")]
     [SerializeField] private TextMeshProUGUI power1CardsQuantityText;
     [SerializeField] private TextMeshProUGUI power2CardsQuantityText;
     [SerializeField] private TextMeshProUGUI power3CardsQuantityText;

@@ -12,7 +12,8 @@ public class StartMap
 
 public class StartTerritoryData
 {
-    public int Id;
+    public float posx;
+    public float posy;
     public string CityName;
     public int Point;
     public TerrainType Type;

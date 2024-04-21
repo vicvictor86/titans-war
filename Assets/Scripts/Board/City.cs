@@ -72,15 +72,12 @@ public class City : MonoBehaviour
         }
 
         List<Vector3> allCitiesVertices = new();
-        int count = 0;
         foreach (var territory in TerritoriesGameObject)
         {
             var territorySprite = territory.GetComponent<SpriteRenderer>();
             var territoryInstance = territory.GetComponent<Territory>();
 
             territoryInstance.SetCity(this);
-
-            territoryInstance.Id = count++;
 
             allCitiesVertices.AddRange(CityBorder.CalculateEdges(territorySprite));
         }
@@ -132,9 +129,14 @@ public class City : MonoBehaviour
             var territorySprite = territory.GetComponent<SpriteRenderer>();
             var territoryInstance = territory.GetComponent<Territory>();
 
-            ChooseTerritoryPoint(territoryPointText, territoryInstance);
+            int randomPoint = UnityEngine.Random.Range(minPoint, maxPoint + 1);
 
-            ChooseTerritoryType(typesAvailable, spritesByName, territorySprite, territoryInstance);
+            ChooseTerritoryPoint(territoryPointText, territoryInstance, randomPoint);
+
+            int indexTypeChoosed = UnityEngine.Random.Range(0, typesAvailable.Count);
+            var terrainType = typesAvailable[indexTypeChoosed];
+
+            ChooseTerritoryType(typesAvailable, spritesByName, territorySprite, territoryInstance, terrainType);
         }
     }
 
@@ -183,21 +185,17 @@ public class City : MonoBehaviour
             : basePoints;
     }
 
-    public void ChooseTerritoryPoint(TextMeshPro territoryPointText, Territory territoryInstance)
+    public void ChooseTerritoryPoint(TextMeshPro territoryPointText, Territory territoryInstance, int point)
     {
-        int randomPoint = UnityEngine.Random.Range(minPoint, maxPoint + 1);
-        territoryPointText.text = randomPoint.ToString();
-        territoryInstance.Point = randomPoint;
+        territoryPointText.text = point.ToString();
+        territoryInstance.Point = point;
     }
 
     public void ChooseTerritoryType(List<TerrainType> typesAvailable, Dictionary<TerrainType, Sprite> spritesByName,
-        SpriteRenderer territorySprite, Territory territoryInstance)
+        SpriteRenderer territorySprite, Territory territoryInstance, TerrainType terrainType)
     {
-        int indexTypeChoosed = UnityEngine.Random.Range(0, typesAvailable.Count);
-        TerrainType typeChoosed = typesAvailable[indexTypeChoosed];
-
         bool needToRemove = false;
-        switch (typeChoosed)
+        switch (terrainType)
         {
             case TerrainType.DESERT:
                 desertQuantity--;
@@ -219,10 +217,10 @@ public class City : MonoBehaviour
 
         if (needToRemove)
         {
-            typesAvailable.RemoveAt(indexTypeChoosed);
+            typesAvailable.RemoveAt(typesAvailable.IndexOf(terrainType));
         }
 
-        territorySprite.sprite = spritesByName[typeChoosed];
-        territoryInstance.Type = typeChoosed;
+        territorySprite.sprite = spritesByName[terrainType];
+        territoryInstance.Type = terrainType;
     }
 }

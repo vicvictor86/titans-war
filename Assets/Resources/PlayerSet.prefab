@@ -351,10 +351,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Player: {fileID: 0}
-  power1CardsQuantityText: {fileID: 0}
-  power2CardsQuantityText: {fileID: 0}
+  power1CardsQuantityText: {fileID: 1740841466021499827}
+  power2CardsQuantityText: {fileID: 2822637393841812373}
   power3CardsQuantityText: {fileID: 5295355968498602983}
-  power4CardsQuantityText: {fileID: 0}
+  power4CardsQuantityText: {fileID: 226486965375890601}
   power5CardsQuantityText: {fileID: 8993538320708029385}
 --- !u!1 &2161911348734419730
 GameObject:
