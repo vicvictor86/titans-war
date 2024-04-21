@@ -15,7 +15,6 @@ public class DiscartOnClick : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-
         bool clickWithLeftButton = eventData.button == PointerEventData.InputButton.Left;
         if (clickWithLeftButton && playerDeck != null)
         {

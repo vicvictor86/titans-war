@@ -18,12 +18,11 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public static GameManager instance;
     public GameObject myPlayerSet;
     public GameObject opponentPlayerSet;
+    private GameObject opponentPlayerSetWarriorHandPanel;
 
     public PlayerDeck myPlayer;
     public PlayerDeck opponentPlayer;
 
-    //public PlayerDeck ActualPlayer => playerList[actualPlayerIndex];
-    //public PlayerDeck NextPlayer => playerList[(actualPlayerIndex + 1) % playerList.Count];
     [Header("Players")]
     public List<PlayerDeck> playerList;
     public int actualPlayerIndex;
@@ -59,6 +58,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public Dictionary<TerrainType, TerrainCardDeck> terrainCardsAvailable = new();
     public List<DisplayMissionCard> missionCardsToChoose = new();
     public List<PowerCard> powerCardsAvailable = new();
+    public int opponentWarriorCardsQuantityActual = 0;
+    public int opponentWarriorCardsQuantityOld = 0;
 
     const string playerTurn = "playerTurn";
     const string defenseTurn = "defenseTurn";
@@ -75,6 +76,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public GameObject AttackButton;
     public GameObject CancelAttackButton;
     public GameObject TimerView;
+    public GameObject BackWarriorCard;
 
     [Header("References")]
     private List<HighlightTerritory> allTerritoriesHighlightScript;
@@ -92,9 +94,33 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         }
     }
 
+    private void Update()
+    {
+        if (opponentWarriorCardsQuantityOld != opponentWarriorCardsQuantityActual)
+        {
+            if (opponentWarriorCardsQuantityActual > opponentWarriorCardsQuantityOld)
+            {
+                Instantiate(BackWarriorCard, opponentPlayerSetWarriorHandPanel.transform);
+            }
+            else
+            {
+                Destroy(opponentPlayerSetWarriorHandPanel.transform.GetChild(0).gameObject);
+            }
+
+            opponentWarriorCardsQuantityOld = opponentWarriorCardsQuantityActual;
+        }
+    }
+
     void Start()
     {
         SpawnPlayer();
+    }
+
+    [PunRPC]
+    public void SendOpponentWarriorCardsQuantity(int quantity)
+    {
+        opponentWarriorCardsQuantityOld = opponentWarriorCardsQuantityActual;
+        opponentWarriorCardsQuantityActual = quantity;
     }
 
     void SpawnPlayer()
@@ -410,7 +436,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         photonView.RPC(nameof(SetContestedTerritory), RpcTarget.Others, territory.transform.position.x, territory.transform.position.y);
 
         attack = true;
-        Debug.Log("Pode escolher a carta");
     }
 
     [PunRPC]
@@ -487,6 +512,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public void SetExtraPowerValue(int extraPowerValue)
     {
         extraPower = extraPowerValue;
+        Debug.Log("Recebi o valor do poder extra: " + extraPower);
     }
 
     public void EndAttackTurnWithExtraPowerCard()
@@ -509,7 +535,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         attackCardSerialized = serializedCard;
         var card = JsonConvert.DeserializeObject<WarriorCard>(serializedCard);
 
-        Debug.Log("Setou a carta de ataque");
         Destroy(GameObject.FindWithTag("CancelAttackButton"));
 
         StopTimer();
@@ -537,7 +562,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         var card = JsonConvert.DeserializeObject<WarriorCard>(serializedCard);
 
-        Debug.Log("Setou a carta de defesa");
         defendindCard = card;
 
         var defendingPlayerSide = IsMyTurn() ? opponentPlayer.PlayerSide : myPlayer.PlayerSide;
@@ -553,8 +577,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
     public void EndAttackTurn(string serializedCard)
     {
-        Debug.Log("Defesa pode escolher a carta");
-
         UIManager.instance.SetPlayerTurnIcon(myPlayer, attackTurn, 0f);
         UIManager.instance.SetPlayerTurnIcon(opponentPlayer, defenseTurn, 1f);
 
@@ -579,8 +601,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
         if (attackValue > defenseValue)
         {
-            Debug.Log("Ataque venceu");
-
             if (IsMyTurn())
             {
                 UIManager.instance.SetPlayerTurnIcon(myPlayer, winner, 1f);
@@ -603,8 +623,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         }
         else if (defenseValue > attackValue)
         {
-            Debug.Log("Defesa Venceu");
-
             if (IsMyTurn())
             {
                 UIManager.instance.SetPlayerTurnIcon(myPlayer, looser, 1f);
@@ -623,7 +641,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             UIManager.instance.SetPlayerTurnIcon(myPlayer, draw, 1f);
             UIManager.instance.SetPlayerTurnIcon(opponentPlayer, draw, 1f);
-            Debug.Log("Empate");
         }
 
         if (IsMyTurn())
@@ -639,11 +656,13 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             myPlayer.DiscartWarriorCard(defendindCard);
         }
 
+        photonView.RPC(nameof(SendOpponentWarriorCardsQuantity), RpcTarget.Others, myPlayer.WarriorCardsInPlayerHand.Count);
+
         attackingCard = null;
         defendindCard = null;
         contestedTerritory = null;
         extraPower = 0;
-        photonView.RPC(nameof(SetExtraPowerValue), RpcTarget.Others, extraPower);
+        myPlayer.EndAttackTurnText.text = "Atacar sem poder extra";
 
         UIManager.instance.HideCards();
         endTurnButton.interactable = true;
@@ -760,14 +779,39 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
                 var warriorDeckPanel = opponentPlayerSet.transform.GetComponentsInChildren<Transform>().Where(childrenTransform => childrenTransform.name == "WarriorDeckPanel").FirstOrDefault();
                 var opponentPlayerSide = myPlayer.PlayerSide == "Persa" ? "Spartha" : "Persa";
-                
+
                 var backCardSprite = Resources.Load<Sprite>($"Sprites/BackCard/Back{opponentPlayerSide}");
                 warriorDeckPanel.GetComponent<Image>().sprite = backCardSprite;
 
                 opponentPlayer.transform.parent.transform.SetParent(opponentSet.transform);
-                opponentPlayer.transform.localPosition = opponentSet.transform.localPosition;
-                opponentPlayer.transform.localScale = opponentSet.transform.localScale;
+                opponentPlayerSet.transform.GetComponent<RectTransform>().position = opponentSet.transform.GetComponent<RectTransform>().position;
+
+                var eulerAngle = opponentPlayerSet.transform.GetComponent<RectTransform>().rotation.eulerAngles;
+                eulerAngle = new Vector3(eulerAngle.x, eulerAngle.y, eulerAngle.z + 180f);
+                opponentPlayerSet.transform.GetComponent<RectTransform>().rotation = Quaternion.Euler(eulerAngle);
+
+                var pointsEulerAngle = opponentPlayerSet.transform.Find("Points").GetComponent<RectTransform>().rotation.eulerAngles;
+                pointsEulerAngle = new Vector3(pointsEulerAngle.x, pointsEulerAngle.y, pointsEulerAngle.z + 180f);
+                opponentPlayerSet.transform.Find("Points").GetComponent<RectTransform>().rotation = Quaternion.Euler(pointsEulerAngle);
+
+                opponentPlayerSet.transform.GetComponent<RectTransform>().localScale = opponentSet.transform.GetComponent<RectTransform>().localScale;
                 opponentPlayer.PlayerSide = opponentPlayerSide;
+
+                var playerTerrainHandPanel = opponentPlayerSet.transform.Find("TerrainCardsArea/PlayerTerrainHandPanel");
+
+                foreach (Transform terrainCard in playerTerrainHandPanel)
+                {
+                    terrainCard.transform.Find("CardQuantity").gameObject.SetActive(false);
+                }
+
+                opponentPlayerSetWarriorHandPanel = opponentPlayerSet.transform.Find("PlayerWarriorHandPanel").gameObject;
+                opponentPlayerSetWarriorHandPanel.GetComponent<HorizontalLayoutGroup>().padding.bottom = 0;
+
+                for (int i = 0; i < opponentPlayer.WarriorsInitialQuantity; i++)
+                {
+                    Instantiate(BackWarriorCard, opponentPlayerSetWarriorHandPanel.transform);
+                }
+                photonView.RPC(nameof(SendOpponentWarriorCardsQuantity), RpcTarget.Others, opponentPlayer.WarriorsInitialQuantity);
 
                 opponentPlayer.transform.parent.transform.SetAsFirstSibling();
             }

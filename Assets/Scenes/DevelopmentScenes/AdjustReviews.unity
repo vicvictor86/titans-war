@@ -1623,7 +1623,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 445}
+  m_AnchoredPosition: {x: 0, y: 385}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &425394510
@@ -3061,7 +3061,8 @@ MonoBehaviour:
   defendindCard: {fileID: 0}
   contestedTerritory: {fileID: 0}
   attack: 0
-  endAttackTurnText: {fileID: 1809818113}
+  extraPower: 0
+  attackCardSerialized: 
   endTurnButton: {fileID: 1315647309}
   cityInfoPanelPosition: {fileID: 1310055305}
   territoryInfoPanelPosition: {fileID: 680382539}
@@ -3078,6 +3079,7 @@ MonoBehaviour:
   AttackButton: {fileID: 3578613420325582821, guid: 36764ecda21aec34cad80bb41615ee27, type: 3}
   CancelAttackButton: {fileID: 5432925331332213111, guid: 2975cce9c30c8ef4cb42c5f54df6f464, type: 3}
   TimerView: {fileID: 1091127722}
+  BackWarriorCard: {fileID: 1246180340114724520, guid: 6bdbdac0c2e26fd4597e66768bfeaef9, type: 3}
   cardsSelectedJson: 
 --- !u!4 &909507905
 Transform:
@@ -4517,11 +4519,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6453866344946734653, guid: 37be519d6a896c3488ec7a4eafd447f8, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 0.019
       objectReference: {fileID: 0}
     - target: {fileID: 6453866344946734653, guid: 37be519d6a896c3488ec7a4eafd447f8, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.699
+      value: -2.65
       objectReference: {fileID: 0}
     - target: {fileID: 6453866344946734653, guid: 37be519d6a896c3488ec7a4eafd447f8, type: 3}
       propertyPath: m_LocalPosition.z
