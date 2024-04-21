@@ -288,8 +288,8 @@ RectTransform:
   m_GameObject: {fileID: 1696065699850371207}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3.83232, y: 1.9751799, z: 1.9751799}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 8, y: 4.1232047, z: 4.1232047}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 3661924266224546056}
   - {fileID: 1588469370400045441}
@@ -297,7 +297,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 270.12}
+  m_AnchoredPosition: {x: 0, y: 155}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6683307810426767459
@@ -803,6 +803,7 @@ MonoBehaviour:
   playerWarriorHandPanelTransform: {fileID: 9057653673634451769}
   playerTerrainHandPanelTransform: {fileID: 7719032761308614735}
   turnIcon: {fileID: 7425743983486987047}
+  EndAttackTurnText: {fileID: 7744570754107158075}
   discartCards: {fileID: 8839504218941381859}
   drawCard: {fileID: 4586921219217348730}
   instantiateCard: {fileID: 2297557256921513640}
@@ -892,7 +893,7 @@ GameObject:
   - component: {fileID: 3547544163139719993}
   - component: {fileID: 7744570754107158075}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: ChooseExtraPowerText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1379,8 +1380,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+      - m_Target: {fileID: 6703254021995995401}
+        m_TargetAssemblyTypeName: PlayerDeck, Assembly-CSharp
         m_MethodName: EndAttackTurnWithExtraPowerCard
         m_Mode: 1
         m_Arguments:

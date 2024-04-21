@@ -7,6 +7,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
+using Photon.Realtime;
 
 public class PlayerDeck : MonoBehaviourPun, IPunObservable
 {
@@ -57,6 +58,7 @@ public class PlayerDeck : MonoBehaviourPun, IPunObservable
 
     [Header("UI")]
     [SerializeField] public Image turnIcon;
+    [SerializeField] public TextMeshProUGUI EndAttackTurnText;
 
     [Header("Related Scripts")]
     [SerializeField] private DiscartCard discartCards;
@@ -246,5 +248,12 @@ public class PlayerDeck : MonoBehaviourPun, IPunObservable
         else { 
             isAlreadySelectedMissionCard = (bool)stream.ReceiveNext();
         }
+    }
+    public void EndAttackTurnWithExtraPowerCard()
+    {
+        UIManager.instance.CloseExtraPowerCardPanel();
+        RemovePowerCard(GameManager.instance.extraPower);
+
+        GameManager.instance.EndAttackTurn(GameManager.instance.attackCardSerialized);
     }
 }

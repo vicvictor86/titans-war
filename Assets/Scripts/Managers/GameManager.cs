@@ -38,9 +38,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public WarriorCard defendindCard;
     public Territory contestedTerritory = null;
     public bool attack = false;
-    private int extraPower = 0;
-    private string attackCardSerialized;
-    [SerializeField] private TextMeshProUGUI endAttackTurnText;
+    public int extraPower = 0;
+    public string attackCardSerialized;
 
     [SerializeField] private Button endTurnButton;
 
@@ -362,6 +361,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (IsMyTurn())
         {
+            Destroy(GameObject.FindWithTag("AttackButton"));
+
             int nextPlayer = (actualPlayerIndex + 1) % PhotonNetwork.PlayerList.Count();
 
             photonView.RPC(nameof(SyncTurn), RpcTarget.AllBuffered, nextPlayer);
@@ -477,8 +478,15 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public void SetExtraPower(int extraPowerSelected)
     {
         extraPower = extraPowerSelected == extraPower ? 0 : extraPowerSelected;
+        photonView.RPC(nameof(SetExtraPowerValue), RpcTarget.Others, extraPower);
 
-        endAttackTurnText.text = extraPower == 0 ? "Atacar sem poder extra" : $"Atacar com poder extra de {extraPower}";
+        myPlayer.EndAttackTurnText.text = extraPower == 0 ? "Atacar sem poder extra" : $"Atacar com poder extra de {extraPower}";
+    }
+
+    [PunRPC]
+    public void SetExtraPowerValue(int extraPowerValue)
+    {
+        extraPower = extraPowerValue;
     }
 
     public void EndAttackTurnWithExtraPowerCard()
@@ -635,6 +643,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         defendindCard = null;
         contestedTerritory = null;
         extraPower = 0;
+        photonView.RPC(nameof(SetExtraPowerValue), RpcTarget.Others, extraPower);
 
         UIManager.instance.HideCards();
         endTurnButton.interactable = true;

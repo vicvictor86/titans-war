@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7fb11018e7a9c0041a27e0e861c036d1, type: 3}
-  m_Name: Darius IV
+  m_Name: Xerxes II
   m_EditorClassIdentifier: 
-  CardName: Darius IV
-  CardImage: {fileID: 21300000, guid: be00ff8aa365e8940a6d60327c7b10ba, type: 3}
-  WaterForce: 6
-  DesertForce: 2
+  CardName: Xerxes II
+  CardImage: {fileID: 21300000, guid: 065d589779154314e86bf4466c458cd0, type: 3}
+  WaterForce: 2
+  DesertForce: 4
   MountainsForce: 5
-  PlainsForce: 3
+  PlainsForce: 6
   Nationality: Persa
