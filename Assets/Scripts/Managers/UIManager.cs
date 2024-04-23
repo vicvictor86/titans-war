@@ -161,6 +161,11 @@ public class UIManager : MonoBehaviourPun
         battlefieldUI.ShowAttackWarriorCard(warriorCard);
     }
 
+    public void ShowDummyCard(string playerSide)
+    {
+        battlefieldUI.ShowDummyCard(playerSide);
+    }
+
     public void ShowDefenseWarriorCard(WarriorCard warriorCard)
     {
         battlefieldUI.ShowDefenseWarriorCard(warriorCard);

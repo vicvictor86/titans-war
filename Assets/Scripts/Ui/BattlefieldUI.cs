@@ -23,6 +23,14 @@ public class BattlefieldUI : MonoBehaviour
         attackDisplayWarriorCard.UpdateInfos();
     }
 
+    public void ShowDummyCard(string playerSide)
+    {
+        attackWarriorCard.SetActive(true);
+        attackDisplayWarriorCard.Card = new();
+        attackDisplayWarriorCard.Card.CardImage = Resources.Load<Sprite>($"Sprites/BackCard/Back{playerSide}");
+        attackDisplayWarriorCard.UpdateInfos();
+    }
+
     public void ShowDefenseWarriorCard(WarriorCard warriorCard)
     {
         defenseWarriorCard.SetActive(true);

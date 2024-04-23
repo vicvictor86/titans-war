@@ -475,7 +475,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             attackingCard = JsonConvert.DeserializeObject<WarriorCard>(serializedWarriorCard);
             attackingCard.CardImage = Resources.Load<Sprite>($"Sprites/{opponentPlayer.PlayerSide}/{attackingCard.CardName}");
-            UIManager.instance.ShowAttackWarriorCard(attackingCard);
+            UIManager.instance.ShowDummyCard(opponentPlayer.PlayerSide);
         }
 
         UIManager.instance.SetBattleFieldData(territory);
@@ -576,6 +576,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
         defendindCard.CardImage = Resources.Load<Sprite>($"Sprites/{defendingPlayerSide}/{card.CardName}");
 
+        if (!IsMyTurn())
+        {
+            UIManager.instance.ShowAttackWarriorCard(attackingCard);
+        }
         UIManager.instance.ShowDefenseWarriorCard(defendindCard);
 
         myPlayer.SetAttackDefenseCardsNotClickable();
@@ -679,6 +683,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         if (ValidEndGame())
         {
             EndGame();
+        }
+        if (IsMyTurn())
+        {
+            EndTurn();
         }
     }
 
