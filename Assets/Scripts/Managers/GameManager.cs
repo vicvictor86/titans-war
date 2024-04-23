@@ -24,7 +24,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public PlayerDeck opponentPlayer;
 
     [Header("Players")]
-    public List<PlayerDeck> playerList;
     public int actualPlayerIndex;
     public GameObject playerSet;
     public GameObject opponentSet;
@@ -58,8 +57,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public Dictionary<TerrainType, TerrainCardDeck> terrainCardsAvailable = new();
     public List<DisplayMissionCard> missionCardsToChoose = new();
     public List<PowerCard> powerCardsAvailable = new();
-    public int opponentWarriorCardsQuantityActual = 0;
-    public int opponentWarriorCardsQuantityOld = 0;
+    public int opponentWarriorCardsQuantityActual;
+    public int opponentWarriorCardsQuantityOld;
 
     const string playerTurn = "playerTurn";
     const string defenseTurn = "defenseTurn";
@@ -113,6 +112,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
     void Start()
     {
+        opponentWarriorCardsQuantityActual = 3;
+        opponentWarriorCardsQuantityOld = 3;
         SpawnPlayer();
     }
 
@@ -326,6 +327,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             if (!displayMissionCardActual.IsSelected)
             {
                 myPlayer.DiscartMissionCard(displayMissionCardActual.Card);
+                photonView.RPC(nameof(SendMissionCardToRemove), RpcTarget.Others, displayMissionCardActual.Card.CardName);
             }
 
             displayMissionCardActual.isClickable = false;
@@ -338,6 +340,12 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         UIManager.instance.waitingScreen.SetActive(true);
 
         photonView.RPC(nameof(SyncMissionCardSelection), RpcTarget.All);
+    }
+
+    [PunRPC]
+    public void SendMissionCardToRemove(string cardName)
+    {
+        var missionCardSelected = opponentPlayer.MissionCardsInPlayerHand.RemoveAll(missionCard => missionCard.CardName == cardName);
     }
 
     [PunRPC]
@@ -594,7 +602,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
     public IEnumerator CalculateWinner()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(5f);
 
         var attackValue = attackingCard.GetPowerValue(contestedTerritory.Type) + extraPower;
         var defenseValue = defendindCard.GetPowerValue(contestedTerritory.Type);
@@ -674,6 +682,13 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         }
     }
 
+    [PunRPC]
+    public void SendMissionCardToOpponent(string cardName) 
+    {
+        var selectedMission = CardDatabase.MissionCardList.FirstOrDefault(missionCard => missionCard.CardName == cardName);
+        opponentPlayer.MissionCardsInPlayerHand.Add(selectedMission);
+    }
+
     public void InstantiateCityAndTerritoryInfo(City city, TerrainType terrainType, Territory territory)
     {
         Destroy(GameObject.FindWithTag("CityInfo"));
@@ -692,7 +707,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             myPlayer.ListTerrainTypesDisponibleToAttack().Contains(TerrainType.JOKER)) &&
             !actionMade &&
             myPlayer.WarriorCardsInPlayerHand.Any() &&
-            //NextPlayer.WarriorCardsInPlayerHand.Any() &&
+            opponentWarriorCardsQuantityActual > 0 &&
             territory.Owner == null)
         {
             var attackButton = Instantiate(AttackButton, attackButtonPosition.position, Quaternion.identity, canvas.transform);
@@ -702,35 +717,47 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
     private bool ValidEndGame()
     {
-        return GameObject.FindGameObjectsWithTag("City").Select(gameObject => gameObject.GetComponent<City>()).All(city => city.Owner != null);
+        return GameObject.FindGameObjectsWithTag("City").Select(gameObject => gameObject.GetComponent<City>())
+            .All(city => city.Owner != null || 
+            city.TerritoriesGameObject.All(territory => territory.GetComponent<Territory>().Owner != null));
     }
 
     private void EndGame()
     {
         var canvas = GameObject.FindWithTag("Canvas").GetComponent<Canvas>();
         Instantiate(EndGameImage, canvas.transform);
-        EndGameText.text = $"Player {GetWinner()} venceu";
+        EndGameText.text = GetWinner() + " venceu";
         EndGameText.gameObject.SetActive(true);
     }
 
-    private int GetWinner()
+    private string GetWinner()
     {
-        List<(int index, int points)> playerPoints = new();
+        List<(string playerSide, int points)> playerPoints = new();
+        List<PlayerDeck> players = new()
+        {
+            myPlayer,
+            opponentPlayer,
+        };
 
-        playerList.Select((player, index) => new { player, index })
+        players.Select((player) => new { player, player.PlayerSide })
             .ToList().ForEach(indexedPlayer =>
             {
-                var finalPoints = indexedPlayer.player.GetPoints()
-                + indexedPlayer.player.MissionCardsInPlayerHand.Where(mission => MissionStrategyFactory.GetMissionCardStrategy(mission.MissionType).IsComplete(indexedPlayer.player)).Sum(mission => mission.Points)
-                - indexedPlayer.player.MissionCardsInPlayerHand.Where(mission => !MissionStrategyFactory.GetMissionCardStrategy(mission.MissionType).IsComplete(indexedPlayer.player)).Sum(mission => mission.Points);
+                var missionPointsPlus = indexedPlayer.player.MissionCardsInPlayerHand.Where(mission => MissionStrategyFactory.GetMissionCardStrategy(mission.MissionType).IsComplete(indexedPlayer.player)).Sum(mission => mission.Points);
+                var missionPointsMinus = indexedPlayer.player.MissionCardsInPlayerHand.Where(mission => !MissionStrategyFactory.GetMissionCardStrategy(mission.MissionType).IsComplete(indexedPlayer.player)).Sum(mission => mission.Points);
+
+                var finalPoints = indexedPlayer.player.GetPoints() + missionPointsPlus - missionPointsMinus;
+
+                Debug.Log($"Pontos do player {IsMyTurn()}: {indexedPlayer.player.GetPoints()}");
+                Debug.Log($"Pontos missao mais do player {IsMyTurn()}: {missionPointsPlus}");
+                Debug.Log($"Pontos missao menos do player {IsMyTurn()}: {missionPointsMinus}");
 
                 indexedPlayer.player.FinalPoints.gameObject.SetActive(true);
                 indexedPlayer.player.FinalPoints.text = finalPoints.ToString();
 
-                playerPoints.Add(new(indexedPlayer.index + 1, finalPoints));
+                playerPoints.Add(new(indexedPlayer.PlayerSide, finalPoints));
             });
 
-        return playerPoints.OrderByDescending(player => player.points).FirstOrDefault().index;
+        return playerPoints.OrderByDescending(player => player.points).FirstOrDefault().playerSide;
     }
 
     public void RemoveHighlightOfAllTerritories(GameObject highlightClicked)
@@ -782,6 +809,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
                 var backCardSprite = Resources.Load<Sprite>($"Sprites/BackCard/Back{opponentPlayerSide}");
                 warriorDeckPanel.GetComponent<Image>().sprite = backCardSprite;
+                Destroy(warriorDeckPanel.GetComponent<DrawWarriorCardOnClick>());
 
                 opponentPlayer.transform.parent.transform.SetParent(opponentSet.transform);
                 opponentPlayerSet.transform.GetComponent<RectTransform>().position = opponentSet.transform.GetComponent<RectTransform>().position;
@@ -793,6 +821,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
                 var pointsEulerAngle = opponentPlayerSet.transform.Find("Points").GetComponent<RectTransform>().rotation.eulerAngles;
                 pointsEulerAngle = new Vector3(pointsEulerAngle.x, pointsEulerAngle.y, pointsEulerAngle.z + 180f);
                 opponentPlayerSet.transform.Find("Points").GetComponent<RectTransform>().rotation = Quaternion.Euler(pointsEulerAngle);
+
+                var finalPointsEulerAngle = opponentPlayerSet.transform.Find("FinalPoints").GetComponent<RectTransform>().rotation.eulerAngles;
+                finalPointsEulerAngle = new Vector3(finalPointsEulerAngle.x, finalPointsEulerAngle.y, finalPointsEulerAngle.z + 180f);
+                opponentPlayerSet.transform.Find("FinalPoints").GetComponent<RectTransform>().rotation = Quaternion.Euler(finalPointsEulerAngle);
 
                 opponentPlayerSet.transform.GetComponent<RectTransform>().localScale = opponentSet.transform.GetComponent<RectTransform>().localScale;
                 opponentPlayer.PlayerSide = opponentPlayerSide;
@@ -807,11 +839,12 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
                 opponentPlayerSetWarriorHandPanel = opponentPlayerSet.transform.Find("PlayerWarriorHandPanel").gameObject;
                 opponentPlayerSetWarriorHandPanel.GetComponent<HorizontalLayoutGroup>().padding.bottom = 0;
 
+                BackWarriorCard.transform.Find("PlayerSideImage").GetComponent<Image>().sprite = backCardSprite;
+
                 for (int i = 0; i < opponentPlayer.WarriorsInitialQuantity; i++)
                 {
                     Instantiate(BackWarriorCard, opponentPlayerSetWarriorHandPanel.transform);
                 }
-                photonView.RPC(nameof(SendOpponentWarriorCardsQuantity), RpcTarget.Others, opponentPlayer.WarriorsInitialQuantity);
 
                 opponentPlayer.transform.parent.transform.SetAsFirstSibling();
             }

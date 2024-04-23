@@ -23,6 +23,7 @@ public class DrawMissionCardsOnClick : MonoBehaviour, IPointerClickHandler
 
             GameManager.instance.myPlayer.MissionCardsInPlayerHand.Add(missionCardSelected);
             GameManager.instance.missionCardsAvailables.Remove(missionCardSelected);
+            GameManager.instance.photonView.RPC(nameof(GameManager.instance.SendMissionCardToOpponent), Photon.Pun.RpcTarget.Others, missionCardSelected.CardName);
 
             GameManager.instance.EndTurn();
         }

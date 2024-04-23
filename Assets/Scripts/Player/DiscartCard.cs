@@ -13,23 +13,18 @@ public class DiscartCard : MonoBehaviour
 
         Destroy(warriorCard.gameObject);
 
-        warriorCardsinPlayerHands.Remove(warriorCardDiscarted);
+        warriorCardsinPlayerHands.RemoveAll(warriorCard => warriorCard.CardName == warriorCardDiscarted.CardName);
         discartedWarriorCards.Add(warriorCardDiscarted);
     }
 
     public void DiscartTerrainCard(TerrainCard terrainCardDiscarted, Transform playerTerrainHandPanelTransform, List<TerrainCard> terrainCardsinPlayerHands)
     {
-        //var terrainHand = playerTerrainHandPanelTransform.GetComponentsInChildren<DisplayTerrainCard>();
-        //var terrainCard = terrainHand.FirstOrDefault(displayCard => displayCard.Card == terrainCardDiscarted);
-
-        //Destroy(terrainCard.gameObject);
-
-        terrainCardsinPlayerHands.Remove(terrainCardDiscarted);
+        terrainCardsinPlayerHands.Remove(terrainCardsinPlayerHands.FirstOrDefault(terrainCard => terrainCard.Type == terrainCardDiscarted.Type));
     }
 
     public void DiscartMissionCard(MissionCard missionCardToDiscart, List<MissionCard> missionCardsinPlayerHands)
     {
-        missionCardsinPlayerHands.Remove(missionCardToDiscart);
+        missionCardsinPlayerHands.RemoveAll(missionCard => missionCard.CardName == missionCardToDiscart.CardName);
         GameManager.instance.missionCardsAvailables.Add(missionCardToDiscart);
     }
 

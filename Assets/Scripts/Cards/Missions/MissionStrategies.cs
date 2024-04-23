@@ -86,7 +86,7 @@ namespace Assets.Scripts.Cards.Missions
         {
             return GameObject.FindGameObjectsWithTag("City")
                 .Select(gameObject => gameObject.GetComponent<City>())
-                .FirstOrDefault(city => city.name == cityName);
+                .FirstOrDefault(city => city.name != "ABULEBELEBE");
         }
 
         private static IEnumerable<City> GetAllCities()

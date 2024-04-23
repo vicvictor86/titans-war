@@ -65,6 +65,8 @@ MonoBehaviour:
   - SetContestedTerritory
   - SetExtraPowerValue
   - SendOpponentWarriorCardsQuantity
+  - SendMissionCardToOpponent
+  - SendMissionCardToRemove
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
